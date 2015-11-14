@@ -8,6 +8,9 @@ use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\WebPage;
 use \Jackbooted\Html\Widget;
 use \Jackbooted\Util\MenuUtils;
+use \Jackbooted\Html\Lists;
+use \Jackbooted\Util\AutoLoader;
+use \Jackbooted\Util\ClassLocator;
 
 class JackMain extends WebPage {
     const DEF = '\App\Controllers\JackMain->index()';
@@ -24,6 +27,10 @@ class JackMain extends WebPage {
                  [ 'name'    => 'TODO List',
                    'url'     => '?' . $resp->action ( __CLASS__ . '->todo()' ),
                    'attribs' =>  [ 'title' => 'List of outstanding items' ] ],
+                 [ 'name'    => 'Browse Classes',
+                   'url'     => '?' . $resp->action ( __CLASS__ . '->browse()' ),
+                   'slug'    => 'browse_classes',
+                   'attribs' => [ 'title' => 'Browse All Classes' ] ],
                  [ 'name'    => 'Edit Account',
                    'url'     => '?' . $resp->action ( '\Jackbooted\Admin\Admin->editAccount()' ),
                    'attribs' =>  [ 'title' => 'Edit My Account Details' ] ],
@@ -114,6 +121,40 @@ SQL;
         </td>
     </tr>
 </table>
+HTML;
+        return $html;
+    }
+
+    public function browse ( ) {
+        $classes = array ();
+        foreach ( ClassLocator::getDefaultClassLocator()->getLocatorArray() as $className => $fileName ) {
+            if ( preg_match ( AutoLoader::THIRD_PARTY_REGEX, $fileName ) ) continue;
+            $classes[$fileName] = $className;
+        }
+        asort ( $classes );
+
+        $html = '<H4>Below are a list of classes, Click on class to view source</h4>' .
+                Tag::form ( array ( 'method' => 'get' ) ) .
+                  MenuUtils::responseObject()->action ( __CLASS__ . '->' . __FUNCTION__ . '()' )->toHidden ( false ) .
+                  Lists::select ( 'fldFileName',
+                                  $classes,
+                                  array ( 'size' => '7','onClick' => 'submit();' ) ) .
+                Tag::_form ();
+
+
+        return $html .
+               $this->sourceCode();
+    }
+    public function sourceCode (  ) {
+        $fileName = Request::get( 'fldFileName', __FILE__ );
+        $code = strtr( file_get_contents( $fileName ), array( '&' => '&amp;','<' => '&lt;' ) );
+        // http://sunlightjs.com/
+        $html = <<<HTML
+            <link rel="stylesheet" type="text/css" href="http://www.brettdutton.com/prism/themes/sunlight.default.css" />
+            <script type="text/javascript" src="http://www.brettdutton.com/prism/sunlight-min.js"></script>
+            <script type="text/javascript" src="http://www.brettdutton.com/prism/lang/sunlight.php-min.js"></script>
+            <pre class="sunlight-highlight-php">$code</pre>
+            <script type="text/javascript">Sunlight.highlightAll( );</script>
 HTML;
         return $html;
     }

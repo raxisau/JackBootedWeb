@@ -2,7 +2,6 @@
 // This file contains application specific
 $config['menu'] = [ 'Main'   => '\App\Controllers\JackMain',
                     'Config' => '\App\Controllers\JackConfig',
-                    'Browser' => '\App\Controllers\JackBrowser',
                   ];
 
 $config['modules']   = [ '\App\Jack' ];
