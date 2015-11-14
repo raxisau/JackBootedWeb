@@ -1,0 +1,3 @@
+
+# Update the software on the 37th minute of the hour
+37 * * * * cd /Users/brett.dutton/Sites/ONEDCAppliance; ./scripts/update_codebase.sh >> /var/log/ODCA.log 2>&1

@@ -1,0 +1,71 @@
+<?php
+namespace Jackbooted\Forms;
+
+use \Jackbooted\Html\Tag;
+/**
+ * @copyright Confidential and copyright (c) 2015 Jackbooted Software. All rights reserved.
+ *
+ * Written by Brett Dutton of Jackbooted Software
+ * brett at brettdutton dot com
+ *
+ * This software is written and distributed under the GNU General Public
+ * License which means that its source code is freely-distributed and
+ * available to the general public.
+ */
+
+abstract class Navigator extends \Jackbooted\Util\JB {
+    protected $attribs;
+    protected $formVars;
+    protected $respVars;
+    protected $navVar;
+
+    /**
+     * @param  $key
+     * @param  $value
+     * @return Navigator
+     */
+    public function set ( $key, $value ) {
+        $this->formVars[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * @param  $key
+     * @return Response
+     */
+    public function get ( $key ) {
+        return $this->formVars[$key];
+    }
+
+    /**
+     * @return
+     */
+    public function getResponse () {
+        return $this->respVars;
+    }
+
+    /**
+     * @param  $startingRow
+     * @return string
+     */
+    protected function toUrl ( ) {
+        $this->respVars->set ( $this->navVar, $this->formVars );
+        return '?' . $this->respVars->toUrl ();
+    }
+
+    protected function toHidden ( $exemptVars ) {
+        $hiddenVars = $this->respVars->del ( $this->navVar )->toHidden ( false );
+
+        foreach ( $this->formVars as $key => $val ) {
+            if ( ! in_array ( $key, $exemptVars ) ) {
+                $hiddenVars .= Tag::hidden ( $this->toFormName ( $key ), $val );
+            }
+        }
+
+        return $hiddenVars;
+    }
+
+    protected function toFormName ( $key ) {
+        return $this->navVar . '[' . $key . ']';
+    }
+}
