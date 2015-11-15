@@ -28,6 +28,9 @@ class AlertsDAO extends DAO  {
             );
 SQL;
 
+        /* This is the mapping between the object names and the column names
+         * Please note that you can access data as different names
+         */
         $this->orm = [ 0             => $this->primaryKey,
                        1             => 'fldErrorID',
                        2             => 'fldType',

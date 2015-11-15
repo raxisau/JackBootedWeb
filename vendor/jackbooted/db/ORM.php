@@ -71,7 +71,7 @@ abstract class ORM extends \Jackbooted\Util\JB {
     protected  $data;
     private    $dao;
 
-    public function __construct ( $dao, $data ) {
+    public function __construct ( DAO $dao, $data ) {
         parent::__construct();
         $this->dao = $dao;
         $this->data = $this->dao->objToRel ( $data );
