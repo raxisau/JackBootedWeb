@@ -31,8 +31,8 @@ class Grid extends CRUD {
         $this->countSql = ( isset( $extraArgs['countSql'] ) && $extraArgs['countSql'] != false ) ? $extraArgs['countSql'] : 'SELECT COUNT(*) FROM (' . $query . ') AS TMP' . time();
 
         $props = array_merge ( $extraArgs,  [ 'canDelete' => false,
-                                                   'canUpdate' => false,
-                                                   'canInsert' => false ] );
+                                              'canUpdate' => false,
+                                              'canInsert' => false ] );
         if ( isset ( $extraArgs['tableName'] ) ) {
             $tableName = $extraArgs['tableName'];
             unset ( $extraArgs['tableName'] );

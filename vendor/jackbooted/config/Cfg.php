@@ -110,8 +110,9 @@ HTML;
             }
         }
         else if ( ( $reqChk = Request::check () ) !== true ) {
+            $reqChk = str_replace ( '%' , '%%' , $reqChk );
             $message = <<<HTML
-                Invalid Request (URL Tampering Error - $reqChk)<br/>
+                Invalid or expired request (URL Error - $reqChk)<br/>
                 %s has detected changes in the URL.<br/>
                 Please do not manually edit URL (support %s).<br/>
                 You will be <a href="%s">redirected</a> in %s seconds

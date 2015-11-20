@@ -13,6 +13,7 @@ use \Jackbooted\Html\Lists;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\Validator;
 use \Jackbooted\Html\WebPage;
+use \Jackbooted\Html\JS;
 use \Jackbooted\Security\Privileges;
 /**
  * @copyright Confidential and copyright (c) 2015 Jackbooted Software. All rights reserved.
@@ -83,7 +84,7 @@ class Admin extends WebPage  {
 
         return Tag::hTag ( 'h4' ) . 'Editing Priviliages: ' . Tag::_hTag ( 'h4' ) .
                CRUD::factory ( 'tblSecPrivileges',  [ 'topPager' => false,
-                                                      'userCols' => $extraColumns ] )
+                                                           'userCols' => $extraColumns ] )
                    ->index ();
     }
     public function managePrivilegesCallBack ( $id, $key ) {
@@ -173,7 +174,7 @@ SQL;
 
         return Tag::hRef ( '?' . $this->resp->toUrl (),
                            $userList,
-                           [ 'title' => 'Click here to edit the users in this group' ] );
+                            [ 'title' => 'Click here to edit the users in this group' ] );
     }
 
     public function manageUsersToGroups ( ) {
@@ -183,12 +184,11 @@ SQL;
         $userSql = ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) ? self::USER_SQL_MYSQL : self::USER_SQL_SQLITE;
 
         $row = DB::oneRow ( DB::DEF, 'SELECT * FROM tblGroup WHERE fldGroupID=?', $key );
-
         return Tag::hTag ( 'h4' ) .
                  Tag::e ( 'Editing Users in ' . $row['fldName'] . '(' . $row['fldLongName'] . ')' ) .
                Tag::_hTag ( 'h4' ) .
                CRUD::factory ( 'tblUserGroupMap',  [ 'topPager' => false,
-                                                      'where'   => [ 'fldGroupID' => $key ] ] )
+                                                      'where'    =>  [ 'fldGroupID' => $key ] ] )
                    ->setColDisplay ( 'fldUserID',   [ CRUD::SELECT, $userSql, true ] )
                    ->setColDisplay ( 'fldGroupID',  CRUD::DISPLAY )
                    ->copyVarsFromRequest( 'KEY' )
@@ -200,6 +200,16 @@ SQL;
         $uid = G::get ( 'fldUserID' );
         $html = '';
         $props =  [];
+
+        $jsUrl = Cfg::get ( 'js_url');
+        $jQuery = <<<JS
+            $().ready(function() {
+                $('a.facebox').facebox({closeImage:   '$jsUrl/images/closelabel.png',
+                                        loadingImage: '$jsUrl/images/loading.gif'
+
+                });
+            });
+JS;
 
         $userSql = ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) ? self::USER_SQL_MYSQL : self::USER_SQL_SQLITE;
 
@@ -305,9 +315,9 @@ SQL;
         if ( G::accessLevel ( Privileges::getSecurityLevel ( 'SITE ADMIN' ) ) ) {
             $html .=       Tag::tr () .
                              Tag::td (  [ 'colspan' => 2 ] ) .
-                               Tag::linkButton( '?' . $resp->action ( __CLASS__ . '->newUser()' )->toUrl(),
-                                                'New User',
-                                                [ 'title' => "Creates a new user" ] ) .
+                               Tag::hRef ( 'ajax.php?' . $resp->action ( __CLASS__ . '->newUser()' )->toUrl (),
+                                           'Create New User',
+                                           [ 'class' => 'facebox' ] ) .
                              Tag::_td () .
                            Tag::_tr ();
         }
@@ -346,8 +356,51 @@ SQL;
                    Tag::_table () .
                  Tag::_form ();
 
+        return JS::library( JS::JQUERY ) .
+               JS::libraryWithDependancies ( JS::FACEBOX ) .
+               JS::javaScript( $jQuery ) .
+               $html;
+    }
+
+    public function newUser  () {
+        $formName = 'Admin_newUser';
+
+        $valid = Validator::factory ( $formName )
+                          ->addExists ( 'fldEmail',     'Email field is empty. Please insert valid email and resubmit')
+                          ->addEmail  ( 'fldEmail',     'Email needs to exist and be correct format' )
+                          ->addExists ( 'fldFirstName', 'First Name must exist')
+                          ->addExists ( 'fldCaptcha',   'You must enter Captcha Code')
+                          ->addExists ( 'fldLastName' , 'Last Name must exist');
+
+        $html = $valid->toHtml () .
+                Tag::form (  [ 'id' => $formName, 'name' => $formName, 'onSubmit' => $valid->onSubmit() ] ) .
+                  Response::factory()
+                          ->action (  __CLASS__ . '->newUserSave()' )
+                          ->toHidden() .
+                  Tag::table( ) .
+                    Tag::tr () .
+                      Tag::td () . 'Email:'. Tag::_td () .
+                      Tag::td () . Tag::text ( 'fldEmail', Request::get ( 'fldEmail' ) ) . Tag::_td () .
+                    Tag::_tr () .
+                    Tag::tr () .
+                      Tag::td () . 'First&nbsp;Name:' . Tag::_td () .
+                      Tag::td () . Tag::text ( 'fldFirstName', Request::get ( 'fldFirstName' ) ) . Tag::_td () .
+                    Tag::_tr () .
+                    Tag::tr () .
+                      Tag::td () . 'Last&nbsp;Name:' . Tag::_td () .
+                      Tag::td () . Tag::text ( 'fldLastName', Request::get ( 'fldLastName' ) ) . Tag::_td () .
+                    Tag::_tr () .
+                    Tag::tr () .
+                      Tag::td (  [ 'colspan' => 2 ] ) .
+                        Tag::submit ( 'Create Account' ) .
+                      Tag::_td () .
+                    Tag::_tr () .
+                  Tag::_table () .
+                Tag::_form();
+
         return $html;
     }
+
     public function loginAs  () {
         Login::loadPreferences ( Request::get ( 'fldUser' ) );
         Login::home ();
