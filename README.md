@@ -17,9 +17,9 @@ JackBooted is yet another framework.
 * It is MC. So you have models and controllers (WebPage class) that generates HTML. There is a templating, but I rarely need it
 * It has Object Relational Mapping that makes sense. Use it or access the database directly
 * It has Helper objects for all common web development operations.
-* It has Protection from URL/Form Tampering. CSRF protection, Time based tampering.
-* It has an autoloader that makes sense. Implements Static initialisation that makes sense.
-* It has a CRUD that works with a single statement (CRUD::factory('tblName')->index())
+* It has Protection from URL/Form Tampering. CSRF protection, Time based tampering. Everything that [OWASP](https://www.owasp.org/index.php/Main_Page) teaches us to fear.
+* It has an autoloader that makes sense. Implements Static initialisation that makes sense. (Called in Autoloader)
+* It has a CRUD that works with a single statement (CRUD::factory('tblName')->index()). Crud handles Pagination, Sorting
 * It does migrations.
 * It deploys easily to cPanel web hosting
 * It has built in scheduling
