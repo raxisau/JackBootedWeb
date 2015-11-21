@@ -4,6 +4,7 @@ use \Jackbooted\Html\WebPage;
 use \Jackbooted\Util\MenuUtils;
 use \Jackbooted\Forms\Request;
 use \Jackbooted\Config\Config;
+use \Jackbooted\Config\Cfg;
 use \Jackbooted\Html\Widget;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\JS;
@@ -18,17 +19,51 @@ class JackConfig extends WebPage {
 
         return [ [ 'name'    => 'Edit Configuration',
                    'url'     => '?' . $resp->action ( __CLASS__ . '->index()' ),
-                   'attribs' =>  [ 'title' => 'Edits configuration that controls this Appliance.' ] ],
+                   'attribs' =>  [ 'title' => 'Edits configuration that controls this Appliance' ] ],
                  [ 'name'    => 'Reset',
                    'url'     => '?' . $resp->action ( __CLASS__ . '->reset()' ),
-                   'attribs' =>  [ 'title'   => 'Reset all the configuration.',
-                                   'onClick' => "return confirm('***WARNING*** This will erase all configuration')" ] ],
+                   'attribs' =>  [ 'title' => 'Reset', 'onClick' => "return confirm('Are you sure you wish to reset?')" ] ],
                ];
     }
     public function reset ( ) {
-        DB::exec( DB::DEF, 'DELETE FROM tblConfig' );
-        return Widget::popupWrapper( 'All configuration data has been erased' ) .
+        $resp = MenuUtils::responseObject ();
+        $html = '';
+        $html .= '<H4>***WARNING*** You are about to reset configuration</h4>' .
+                 Tag::form ( ) .
+                   $resp->action ( sprintf ( '%s->%sSave()', __CLASS__, __FUNCTION__ ) )->toHidden () .
+                   Tag::table ( ) .
+                     Tag::tr ( ) .
+                       Tag::td () . 'Please type "RESET CONFIG" without the quotes for finalise reset.' . Tag::_td () .
+                       Tag::td () . Tag::text ( 'fldConfirm' ) . Tag::_td () .
+                     Tag::_tr () .
+                     Tag::tr ( ) .
+                       Tag::td ( ['colspan' => 2 ]) .
+                         Tag::submit( 'Confirm Reset' ) .
+                         Tag::linkButton('?' . $resp->action( __CLASS__ . '->resetCancelled()' ), 'Cancel Reset' ) .
+                       Tag::_td () .
+                     Tag::_tr () .
+                   Tag::_table () .
+                 Tag::_form ();
+
+        return $html;
+    }
+
+    public function resetCancelled ( ) {
+        return Widget::popupWrapper( 'Device Reset Cancelled', -1, 'Action Cancelled' ) .
                $this->index();
+    }
+
+    public function resetSave ( ) {
+        if ( ( $confirm = Request::get ( 'fldConfirm' ) ) == '' ||
+             $confirm != 'RESET CONFIG' ) {
+            return Widget::popupWrapper( 'Invalid response, Reset cancelled', -1, 'Action Cancelled' ) .
+                   $this->index();
+        }
+        else {
+            DB::exec( DB::DEF, 'DELETE FROM tblConfig' );
+            return Widget::popupWrapper( 'All configuration data has been erased', -1, 'Reset Complete' ) .
+                   $this->index();
+        }
     }
 
     public function index ( ) {
@@ -38,8 +73,8 @@ class JackConfig extends WebPage {
             $currentConfigKey = DB::oneValue(DB::DEF, 'SELECT fldKey FROM tblConfig ORDER BY 1 LIMIT 1' );
         }
         if ( $currentConfigKey === false || $currentConfigKey == '' ) {
-            return $html .
-                   'No Configuration available yet';
+            $currentConfigKey = 'build.version';
+            Config::put( $currentConfigKey, Cfg::get( 'build_version' ) );
         }
 
         $html .= Tag::table (  [ 'border' => '0', 'height' => '100%', 'width' => '100%']) .
@@ -62,7 +97,7 @@ class JackConfig extends WebPage {
                 Tag::hTag ( 'b' ) . 'Config Keys' . Tag::_hTag ( 'b' ) .
                 Tag::form (  [ 'method' => 'get' ] ) .
                   MenuUtils::responseObject ()
-                           ->action ( __CLASS__ . '->edit()' )
+                           ->action ( self::DEF )
                            ->toHidden ( false ) .
                   Lists::select ( 'fldCfgKey',
                                   'SELECT fldKey FROM tblConfig ORDER BY 1',
@@ -125,8 +160,6 @@ JS;
         Config::put( Request::get ( 'fldCfgKey' ), json_decode( Request::get ( 'fldCfgValue' ), true ) );
 
         return Widget::popupWrapper ( 'Saved Config Item: ' . Request::get ( 'fldCfgKey' ), 1000, 'Save Config Message' ) .
-               $this->edit ();
+               $this->index ();
     }
 }
-
-
