@@ -28,3 +28,37 @@ JackBooted is yet another framework.
 * It is easy to change and edit.
 
 if you have any interest in this contact me jack@brettdutton.com
+
+## Installation
+There is a file, scripts/deploy_maxOSX.sh, that will give you all the steps that you need to install the example application. Here are the main steps
+
+    WEB_DIR=/Library/WebServer/Documents
+    INSTALL_DIR=$WEB_DIR/jack
+    sudo git clone git@github.com:raxisau/JackBooted.git $INSTALL_DIR
+    sudo chown -R _www:_www $INSTALL_DIR
+    cd $INSTALL_DIR
+    sudo php ./jack.php DB:initialize
+    sudo php ./jack.php DB:migrate
+    sudo chmod -R a+w _private
+    sudo chmod -R g+w _private
+    php ./jack.php JACK:version
+
+You will also need to make sure that you have your httpd.conf correctly set up.
+
+Search for the line
+
+    DocumentRoot "/Library/WebServer/Documents"
+
+Replace with
+
+    LoadModule php5_module libexec/apache2/libphp5.so
+    LoadModule rewrite_module libexec/apache2/mod_rewrite.so
+    DocumentRoot "/Library/WebServer/Documents/jack"
+    <Directory "/Library/WebServer/Documents/jack">
+        Options FollowSymLinks Multiviews
+        MultiviewsMatch Any
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+

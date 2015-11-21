@@ -14,7 +14,8 @@ PHPVER=`$PHP -version`
 if [ "$MCRYPT" == "" ]; then
     echo "$(date) $0 ******************** Cannot Continue ***********************"
     echo "$(date) $0 Checked PHP and it looks like mcrypt has not been installed"
-    echo "$(date) $0 This is really hard to do with scripts, so I need you to do it manually"
+    echo "$(date) $0 mcrypt is not needed for the application, but it will make system less secure"
+    echo "$(date) $0 Installing mcrypt is really hard to do with scripts, so I need you to do it manually, or comment out this code"
     echo "$(date) $0 Please check http://coolestguidesontheplanet.com they have step by step guides for installation of mcrypt"
     echo "$(date) $0 use the search string to find your version of OSX and PHP"
     echo "$(date) $0 Your PHP Version is: $PHPVER"
@@ -25,10 +26,6 @@ if [ "$MCRYPT" == "" ]; then
     echo "$(date) $0 ************************************************************"
     exit 1
 fi
-
-echo "$(date) $0 getting your IP"
-IP=`ifconfig -a | grep inet | grep -v inet6 | grep -v 127.0.0.1 | awk '/inet/{print $2}'`
-echo "$(date) $0 Looks like your IP is $IP"
 
 #**************************** Do you need beanstalkd? **************
 # http://kr.github.io/beanstalkd/download.html
@@ -80,13 +77,13 @@ if [ -e $INSTALL_DIR ]; then
 else
     echo "$(date) $0 First Time checkout of code"
     sudo git clone git@github.com:raxisau/JackBooted.git $INSTALL_DIR
-    sudo /usr/sbin/chown -R _www:_www $INSTALL_DIR
+    sudo chown -R _www:_www $INSTALL_DIR
     cd $INSTALL_DIR
     sudo $PHP ./jack.php DB:initialize
     sudo $PHP ./jack.php DB:migrate
-    sudo /bin/chmod -R a+w _private
-    sudo /bin/chmod -R g+w _private
-    NEWVERSION=`$PHP ./jack.php Jack:version`
+    sudo chmod -R a+w _private
+    sudo chmod -R g+w _private
+    NEWVERSION=`$PHP ./jack.php JACK:version`
     echo "$(date) $0 Updated code base and migrated database to $NEWVERSION"
 fi
 
