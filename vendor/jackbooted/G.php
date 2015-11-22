@@ -11,8 +11,8 @@ namespace Jackbooted;
  */
 
 class G extends \Jackbooted\Util\JB {
-    const SESS   = 'JACKBOOTWEB';
-    const PREFS  = 'PREFS';
+    const SESS   = 'JACKBOOTWEB12';
+    const PREFS  = 'PREFS12';
     const LOGIN  = 'loggedIn';
     const CRYPTO = 'CRYPTO_KEY';
     const IV     = 'PredefinedJackbootedEncryptionKey12345678901234567';
