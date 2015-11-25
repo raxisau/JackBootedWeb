@@ -16,5 +16,6 @@ class Module extends \Jackbooted\Util\JB {
     const CRUD_MOD = 'crud';
 
     public static function crud ( \Jackbooted\Forms\CRUD &$crud ) {
+        return $crud;
     }
 }

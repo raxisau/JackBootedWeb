@@ -40,12 +40,14 @@ class SuperAdmin extends WebPage  {
                                  'Schedule Manager'     => '\Jackbooted\Cron\SchedulerManager->index()',
                 ];
         self::$userMenu =  [];
-        foreach ( self::$completeMenu as $title => $action ) {
-            if ( Privileges::access ( $action ) === true ) self::$userMenu[$title] = $action;
-        }
     }
 
     public static function getMenu () {
+        if ( count ( self::$userMenu ) == 0 ) {
+            foreach ( self::$completeMenu as $title => $action ) {
+                if ( Privileges::access ( $action ) === true ) self::$userMenu[$title] = $action;
+            }
+        }
         return self::$userMenu;
     }
 

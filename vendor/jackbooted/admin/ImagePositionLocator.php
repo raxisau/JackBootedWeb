@@ -56,10 +56,10 @@ JS;
         $html .= JS::javaScript( $jQuery );
 
         $html .= Tag::img ( $siteUrl . $url,
-                            [ 'title' => 'Click on this image to move the Pin',
-                              'id' => 'baseImage',
-                              'onClick' => 'movePinToCursor();',
-                              'name' => 'voodoo_image' ] );
+                                [ 'title' => 'Click on this image to move the Pin',
+                                  'id' => 'baseImage',
+                                  'onClick' => 'movePinToCursor();',
+                                  'name' => 'voodoo_image' ] );
         $html .= '<br>X' . Tag::text ( 'PinLeft', '',  [ 'size' => 4, 'id' => 'PinLeft' ] );
         $html .= '<br>Y' . Tag::text ( 'PinTop', '',  [ 'size' => 4, 'id' => 'PinTop'  ] );
 

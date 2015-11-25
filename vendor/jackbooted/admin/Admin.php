@@ -42,12 +42,14 @@ class Admin extends WebPage  {
                                  'Manage Groups'     => __CLASS__ . '->manageGroups()',
                                  'User Accounts'     => __CLASS__ . '->editAccount()' ];
         self::$userMenu =  [];
-        foreach ( self::$completeMenu as $title => $action ) {
-            if ( Privileges::access ( $action ) === true ) self::$userMenu[$title] = $action;
-        }
     }
 
     public static function getMenu () {
+        if ( count ( self::$userMenu ) == 0 ) {
+            foreach ( self::$completeMenu as $title => $action ) {
+                if ( Privileges::access ( $action ) === true ) self::$userMenu[$title] = $action;
+            }
+        }
         return self::$userMenu;
     }
 

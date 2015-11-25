@@ -128,11 +128,6 @@ class Cryptography extends \Jackbooted\Util\JB {
         return $cypherText;
     }
 
-    /**
-     * decrypt passed string
-     * @param string $input
-     * @return string
-     */
     public function decrypt ( $cypherText ) {
         if ( strpos ( $cypherText, self::META ) !==  0 ) return $cypherText;
         $plainText = trim ( mdecrypt_generic ( $this->td, base64_decode ( substr ( $cypherText, self::META_LEN ) ) ) );

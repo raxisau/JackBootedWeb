@@ -178,7 +178,7 @@ JS;
         $this->formAction  = ( isset ( $extraArgs['formAction'] ) )  ? $extraArgs['formAction'] : '?';
         $this->insDefaults = ( isset ( $extraArgs['insDefaults'] ) ) ? $extraArgs['insDefaults'] :  [];
         $this->nullsEmpty  = ( isset ( $extraArgs['nullsEmpty'] ) )  ? $extraArgs['nullsEmpty'] : false;
-        $this->dbType     =  ( isset ( $extraArgs['dbType'] ) )     ? $extraArgs['dbType'] : strtoupper( Cfg::get ( $this->db . '-driver' ) );
+        $this->dbType      = ( isset ( $extraArgs['dbType'] ) )      ? $extraArgs['dbType'] : strtoupper( Cfg::get ( $this->db . '-driver' ) );
 
         $this->action      = self::ACTION . $this->suffix;
         $this->delTag      = 'D' . $this->suffix;

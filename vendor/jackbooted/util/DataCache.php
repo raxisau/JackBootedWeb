@@ -37,7 +37,7 @@ class DataCache extends \Jackbooted\Util\JB {
 
     public function __destruct() {
         $msg = "Cache[{$this->name}][CacheHits]={$this->cacheHits} [CacheMisses]={$this->cacheMisses}";
-        self::$log->debug ( $msg );
+        self::$log->trace ( $msg );
 
         // I have commented this out incase you are interested in statistics
         //echo $msg . "<br/>\n";
