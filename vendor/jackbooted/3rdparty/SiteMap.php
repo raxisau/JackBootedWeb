@@ -2,7 +2,7 @@
 
 class SiteMap {
 
-    private $pages = array ( );
+    private $pages =  [ ];
     private $file;
 
     public function __construct ( $file=null ) {

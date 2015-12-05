@@ -152,7 +152,7 @@ JS;
      *                                        // inserts a row then you can list them here
      *                  'displayRows' =>10,   // Optional. Sets the number of rows that can be displayed
      *                  'nullsEmpty'  =>false,  // Optional. If this is true then it will put in nulls if the variable is empty
-     *                  'dbType'      =>'MYSQL',// Optional. Tels the system if this is oracle or mysql database
+     *                  'dbType'      =>'mysql',// Optional. Tels the system if this is oracle, sqlite or mysql database
      *
      *                  Sort column
      *                  'colSort'      =>'fldStartTime',// Optional. Sets an initial sort column
@@ -178,7 +178,7 @@ JS;
         $this->formAction  = ( isset ( $extraArgs['formAction'] ) )  ? $extraArgs['formAction'] : '?';
         $this->insDefaults = ( isset ( $extraArgs['insDefaults'] ) ) ? $extraArgs['insDefaults'] :  [];
         $this->nullsEmpty  = ( isset ( $extraArgs['nullsEmpty'] ) )  ? $extraArgs['nullsEmpty'] : false;
-        $this->dbType      = ( isset ( $extraArgs['dbType'] ) )      ? $extraArgs['dbType'] : strtoupper( Cfg::get ( $this->db . '-driver' ) );
+        $this->dbType      = ( isset ( $extraArgs['dbType'] ) )      ? $extraArgs['dbType'] : DB::driver( $this->db );
 
         $this->action      = self::ACTION . $this->suffix;
         $this->delTag      = 'D' . $this->suffix;
@@ -234,7 +234,7 @@ JS;
                          Tag::br() .
                          Tag::checkBox ( '_dcheck', 'Y', false,
                                           [ 'onClick' => "toggleAll(this,'{$this->delTag}','{$this->submitId}')",
-                                                 'title'   => 'Toggle all the Delete checkboxes.' ] ) .
+                                            'title'   => 'Toggle all the Delete checkboxes.' ] ) .
                        Tag::_th ();
         }
         if ( $this->canUpdate ) {
@@ -246,7 +246,7 @@ JS;
                          Tag::br() .
                          Tag::checkBox ( '_ucheck', 'Y', false,
                                           [ 'onClick' => "toggleAll(this,'{$this->updTag}','{$this->submitId}')",
-                                                 'title'   => 'Toggle all the Update checkboxes.'] ) .
+                                            'title'   => 'Toggle all the Update checkboxes.'] ) .
                        Tag::_th ();
         }
         foreach ( $this->columnTitles as $colName => $title ) {
@@ -290,16 +290,16 @@ JS;
                 $html.=Tag::td (  [ 'align' => 'center' ] ) .
                          Tag::checkBox ( "{$this->delTag}[$idx]", $row[$this->primaryKey], false,
                                           [ 'id' => "{$this->delTag}_$idx",
-                                                 'onClick' => "showSubmit('{$this->submitId}')",
-                                                 'title'   => 'Toggle to delete this row.'] ) .
+                                            'onClick' => "showSubmit('{$this->submitId}')",
+                                            'title'   => 'Toggle to delete this row.'] ) .
                        Tag::_td ();
             }
             if ( $this->canUpdate ) {
                 $html.=Tag::td (  [ 'align' => 'center' ] ) .
                          Tag::checkBox ( "{$this->updTag}[$idx]", $row[$this->primaryKey], false,
                                           [ 'id' => "{$this->updTag}_$idx",
-                                                 'onClick' => "showSubmit('{$this->submitId}')",
-                                                 'title'   => 'Toggle to update this row.' ] ) .
+                                            'onClick' => "showSubmit('{$this->submitId}')",
+                                            'title'   => 'Toggle to update this row.' ] ) .
                        Tag::_td ();
             }
             foreach ( $row as $key => $value ) {
@@ -319,8 +319,8 @@ JS;
                    $this->resp->toHidden () .
                    Tag::submit ( 'Apply Changes',
                                   [ 'style' => 'display: none',
-                                         'id' => $this->submitId,
-                                         'title' => 'Click here to apply the changes to this table' ] ) .
+                                    'id' => $this->submitId,
+                                    'title' => 'Click here to apply the changes to this table' ] ) .
                  Tag::_form ();
 
         return self::header () .
@@ -562,7 +562,7 @@ JS;
 
     protected function getTableMetaData() {
         switch ( $this->dbType ) {
-            case 'MYSQL':
+            case DB::MYSQL:
                 $result = $this->query( 'DESCRIBE ' . $this->tableName );
                 if ( ! $result->ok () ) {
                     return false;
@@ -593,7 +593,7 @@ JS;
                 }
 
                 return true;
-            case 'SQLITE':
+            case DB::SQLITE:
                 $result = $this->query( "PRAGMA table_info([{$this->tableName}])" );
                 if ( ! $result->ok () ) {
                     return false;
@@ -624,7 +624,7 @@ JS;
                 }
 
                 return true;
-            case 'ORACLE':
+            case DB::ORACLE:
                 $result = $this->query( 'SELECT * FROM user_tab_columns WHERE table_name=UPPER(?)', $this->tableName );
                 if ( ! $result->ok () ) return false;
 

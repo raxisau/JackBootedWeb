@@ -59,7 +59,7 @@ class DBManager extends WebPage  {
                 break;
 
             case 'tblSecPrivUserMap':
-                $userSql = ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) ? Admin::USER_SQL_MYSQL: Admin::USER_SQL_MYSQL;
+                $userSql = ( DB::driver() == DB::MYSQL ) ? Admin::USER_SQL_MYSQL: Admin::USER_SQL_MYSQL;
                 $crud->setColDisplay ( 'fldUserID',       [ CRUD::SELECT, $userSql, true ] );
                 $crud->setColDisplay ( 'fldGroupID',      [ CRUD::SELECT, Admin::GROUP_SQL, true ] );
                 $crud->setColDisplay ( 'fldPrivilegeID',  [ CRUD::SELECT, Admin::PRIV_SQL, true ] );
@@ -67,7 +67,7 @@ class DBManager extends WebPage  {
                 break;
 
             case 'tblUserGroupMap':
-                $userSql =  ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) ? Admin::USER_SQL_MYSQL : Admin::USER_SQL_SQLITE;
+                $userSql =  ( DB::driver() == DB::MYSQL ) ? Admin::USER_SQL_MYSQL : Admin::USER_SQL_SQLITE;
                 $crud->setColDisplay ( 'fldUserID',   [ CRUD::SELECT, $userSql, true ] );
                 $crud->setColDisplay ( 'fldGroupID',  [ CRUD::SELECT, Admin::GROUP_SQL, true ] );
                 break;

@@ -64,7 +64,7 @@ class G extends \Jackbooted\Util\JB {
      * @param boolean $flag true if user is logged in
      */
     public static function setLoggedIn ( $flag ) {
-        if ( ! isset ( $_SESSION[self::SESS] ) ) $_SESSION[self::SESS] = array ();
+        if ( ! isset ( $_SESSION[self::SESS] ) ) $_SESSION[self::SESS] =  [];
         $_SESSION[self::SESS][self::LOGIN] = $flag;
     }
 

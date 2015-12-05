@@ -5,6 +5,7 @@ use \Jackbooted\Html\JS;
 use \Jackbooted\Html\Lists;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Util\Invocation;
+use \Jackbooted\DB\DB;
 /**
  * @copyright Confidential and copyright (c) 2015 Jackbooted Software. All rights reserved.
  *
@@ -165,10 +166,10 @@ class Paginator extends Navigator {
     public function getLimits( $dbType='MYSQL', $sql='' ) {
         $this->auditStartRow ();
 
-        if ( $dbType == 'MYSQL' || $dbType == 'SQLITE' ) {
+        if ( $dbType == DB::MYSQL || $dbType == DB::SQLITE ) {
             return $sql . ' LIMIT ' . $this->getStart () . ',' . $this->getPageSize ();
         }
-        else if ( $dbType == 'ORACLE' ) {
+        else if ( $dbType == DB::ORACLE ) {
             $lowLim = $this->getStart ();
             $upLim  = $this->getStart () + $this->getPageSize ();
             if ( $sql == '' ) $sql = '%s';

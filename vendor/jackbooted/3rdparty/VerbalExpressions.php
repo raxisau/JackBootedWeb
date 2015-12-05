@@ -356,8 +356,8 @@ class VerEx {
     /**
      * deletes the current regex for a fresh start
      */
-    function clean ( $options = array ( ) ) {
-        $options = array_merge ( array ( "prefixes" => "", "source" => "", "suffixes" => "", "modifiers" => "gm", "replaceLimit" => "1" ), $options );
+    function clean ( $options =  [ ] ) {
+        $options = array_merge (  [ "prefixes" => "", "source" => "", "suffixes" => "", "modifiers" => "gm", "replaceLimit" => "1" ], $options );
         $this->prefixes = $options['prefixes'];
         $this->source = $options['source'];
         $this->suffixes = $options['suffixes'];

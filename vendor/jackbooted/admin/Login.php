@@ -139,7 +139,7 @@ class Login extends WebPage  {
             $sucessfulLogin = false;
         }
         else {
-            if ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) {
+            if ( DB::driver() == DB::MYSQL ) {
                 $sql = <<<SQL
                     SELECT COUNT(*)
                     FROM   tblUser
@@ -339,7 +339,7 @@ SQL;
 
         $pw = Password::passGen ( 10, Password::MEDIUM );
 
-        if ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) {
+        if ( DB::driver() == DB::MYSQL ) {
             $sql = 'UPDATE tblUser SET fldPassword=PASSWORD(?) WHERE fldUserID=?';
             DB::exec ( DB::DEF, $sql,  [ $pw, $id ] );
         }

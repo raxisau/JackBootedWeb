@@ -90,7 +90,7 @@ class Admin extends WebPage  {
                    ->index ();
     }
     public function managePrivilegesCallBack ( $id, $key ) {
-        $concat =  ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) ? "CONCAT(fldFirstName,' ',fldLastName)" : "fldFirstName || ' ' || fldLastName";
+        $concat =  ( DB::driver() == DB::MYSQL ) ? "CONCAT(fldFirstName,' ',fldLastName)" : "fldFirstName || ' ' || fldLastName";
 
         $sql = <<<SQL
 SELECT $concat Name
@@ -128,7 +128,7 @@ SQL;
         $key = Request::get ( 'KEY' );
         if ( $key == '' ) return 'KEY missing';
 
-        $userSql = ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) ? self::USER_SQL_MYSQL : self::USER_SQL_SQLITE;
+        $userSql = ( DB::driver() == DB::MYSQL ) ? self::USER_SQL_MYSQL : self::USER_SQL_SQLITE;
 
         $crud = CRUD::factory ( 'tblSecPrivUserMap',  [ 'topPager' => false,
                                                         'where'    =>  [ 'fldPrivilegeID' => $key ] ] )
@@ -157,7 +157,7 @@ SQL;
     }
 
     public function manageGroupsCallBack ( $id, $key ) {
-        $concat = ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) ? "CONCAT(fldFirstName,' ',fldLastName)" : "fldFirstName || ' ' || fldLastName";
+        $concat = ( DB::driver() == DB::MYSQL ) ? "CONCAT(fldFirstName,' ',fldLastName)" : "fldFirstName || ' ' || fldLastName";
 
         $sql = <<<SQL
 SELECT $concat
@@ -183,7 +183,7 @@ SQL;
         $key = Request::get ( 'KEY' );
         if ( $key == '' ) return 'KEY missing';
 
-        $userSql = ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) ? self::USER_SQL_MYSQL : self::USER_SQL_SQLITE;
+        $userSql = ( DB::driver() == DB::MYSQL ) ? self::USER_SQL_MYSQL : self::USER_SQL_SQLITE;
 
         $row = DB::oneRow ( DB::DEF, 'SELECT * FROM tblGroup WHERE fldGroupID=?', $key );
         return Tag::hTag ( 'h4' ) .
@@ -213,7 +213,7 @@ SQL;
             });
 JS;
 
-        $userSql = ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) ? self::USER_SQL_MYSQL : self::USER_SQL_SQLITE;
+        $userSql = ( DB::driver() == DB::MYSQL ) ? self::USER_SQL_MYSQL : self::USER_SQL_SQLITE;
 
         if ( G::accessLevel ( Privileges::getSecurityLevel ( 'SITE ADMIN' ) ) ) {
             $uid = Request::get ( 'fldUserID', G::get ( 'fldUserID' ) );
@@ -409,7 +409,7 @@ JS;
     }
 
     public function checkOldPassword  ( $uid, $pw ) {
-        if ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) {
+        if ( DB::driver() == DB::MYSQL ) {
             return 1 == DB::oneValue ( DB::DEF,
                                        'SELECT COUNT(*) FROM tblUser WHERE fldPassword=PASSWORD(?) AND fldUserID=?',
                                         [  $pw, $uid ] );
@@ -442,7 +442,7 @@ JS;
                 $messages[] = '<font color=red>No Change, old and new passwords same<font>';
             }
             else {
-                if ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) {
+                if ( DB::driver() == DB::MYSQL ) {
                     $sqls[] = 'UPDATE tblUser SET fldPassword=PASSWORD(?),fldModified=UNIX_TIMESTAMP() WHERE fldUserID=?';
                     $params[] =  [ $pw, $uid ];
                 }

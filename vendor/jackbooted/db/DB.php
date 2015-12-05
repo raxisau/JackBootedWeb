@@ -51,6 +51,11 @@ class DB extends \Jackbooted\Util\JB {
      */
     const SQL_CHARSET = 'utf8';
 
+    const SQLITE    = 'sqlite';
+    const MYSQL     = 'mysql';
+    const SQLSERVER = 'dblib';
+    const ORACLE    = 'oracle';
+
     // Keep a cache of the connections
     private static $connections = [];
 
@@ -198,13 +203,13 @@ class DB extends \Jackbooted\Util\JB {
 
     private static function connectionFactoryFromArray ( $db, $key=null ) {
         if ( ! isset ( $db['driver'] ) ) {
-            $db['driver'] = 'mysql';
+            $db['driver'] = self::MYSQL;
         }
 
         if ( preg_match ( '/^java:comp\/env\/jdbc\/.*$/', $db['dbname'] ) ) {
             $connectionString = $db['dbname'];
         }
-        else if ( $db['driver'] == 'sqlite' ) {
+        else if ( $db['driver'] == self::SQLITE ) {
             $connectionString = $db['driver'] . ':' . $db['hostname'];
         }
         else {
@@ -218,7 +223,7 @@ class DB extends \Jackbooted\Util\JB {
         if ( ! isset ( self::$connections[$key] ) ) {
             self::dbg ( 'Setting up new DB conn: ' . $connectionString . ' - ' . $db['username'] );
             try {
-                if ( $db['driver'] == 'sqlite' ) {
+                if ( $db['driver'] == self::SQLITE ) {
                     self::$connections[$key] = new \PDO ( $connectionString );
                 }
                 else {
@@ -432,12 +437,12 @@ class DB extends \Jackbooted\Util\JB {
             if ( $params == null ) {
                 // turn on emulating prepared statements because mysql gets confused on some statements
                 if ( ! Cfg::get ( 'quercus', false ) &&
-                     ! in_array ( Cfg::get ( $dbh . '-driver' ), [ 'dblib', 'sqlite' ] ) ) {
+                     ! in_array ( self::driver( $dbh ), [ self::SQLSERVER, self::SQLITE ] ) ) {
                     $dbResource->setAttribute( \PDO::ATTR_EMULATE_PREPARES, true );
                 }
                 $result = $dbResource->query ( $qry );
                 if ( ! Cfg::get ( 'quercus', false ) &&
-                     ! in_array ( Cfg::get ( $dbh . '-driver' ), [ 'dblib', 'sqlite' ] ) ) {
+                     ! in_array ( self::driver( $dbh ), [ self::SQLSERVER, self::SQLITE ] ) ) {
                     $dbResource->setAttribute( \PDO::ATTR_EMULATE_PREPARES, false );
                 }
                 return ( $result === FALSE ) ? self::logError ( $qry, $dbResource ) : $result;
@@ -446,7 +451,7 @@ class DB extends \Jackbooted\Util\JB {
                 $prepareParams = [];
                 if ( self::$directQuery === true &&
                      ! Cfg::get ( 'quercus', false ) &&
-                     ! in_array ( Cfg::get ( $dbh . '-driver' ), [ 'dblib', 'sqlite' ] ) ) {
+                     ! in_array ( self::driver( $dbh ), [ self::SQLSERVER, self::SQLITE ] ) ) {
                     $prepareParams[\PDO::MYSQL_ATTR_DIRECT_QUERY] = true;
                 }
                 if ( ( $dbResource = $dbResource->prepare ( $qry, $prepareParams ) ) === false ) {
@@ -556,8 +561,8 @@ class DB extends \Jackbooted\Util\JB {
      **/
     private static function doReplacements( $query ) {
         return strtr ( $query,  [ '%%PRE%%'        => Cfg::get( 'prefix', 'w_' ),
-                                       '%%SQLENGINE%%'  => Cfg::get( 'sql_tabletype', self::SQL_ENGINE ),
-                                       '%%SQLCHARSET%%' => Cfg::get( 'sql_charset', self::SQL_CHARSET ) ] );
+                                  '%%SQLENGINE%%'  => Cfg::get( 'sql_tabletype', self::SQL_ENGINE ),
+                                  '%%SQLCHARSET%%' => Cfg::get( 'sql_charset', self::SQL_CHARSET ) ] );
     }
 
     private static function logError( $qry, $resource ) {
@@ -632,5 +637,9 @@ class DB extends \Jackbooted\Util\JB {
         else {
             self::$connections = [];
         }
+    }
+
+    public static function driver ( $dbh=self::DEF ) {
+        return Cfg::get ( $dbh . '-driver' );
     }
 }

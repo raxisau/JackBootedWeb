@@ -264,7 +264,7 @@ JS;
 
             // Add the User to the Database
             $now = time();
-            if ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) {
+            if ( DB::driver() == DB::MYSQL ) {
                 $sql =<<<SQL
 INSERT INTO tblUser
        (fldUserID,fldUser,fldFirstName,fldLastName,fldPassword,fldDomain,fldCreated,      fldLevel)
@@ -342,7 +342,7 @@ TXT;
         else {
             $pw = Password::passGen ( 10, Password::MEDIUM );
 
-            if ( Cfg::get( DB::DEF . '-driver' ) == 'mysql' ) {
+            if ( DB::driver() == DB::MYSQL ) {
                 $sql = 'UPDATE tblUser SET fldPassword=PASSWORD(?) WHERE fldUserID=?';
                 DB::exec ( DB::DEF, $sql,  [ $pw, $id ] );
             }

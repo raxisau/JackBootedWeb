@@ -1,8 +1,6 @@
 <?php
 namespace Jackbooted\DB;
 
-use \Jackbooted\Config\Cfg;
-
 /**
  * @copyright Confidential and copyright (c) 2015 Jackbooted Software. All rights reserved.
  *
@@ -41,7 +39,8 @@ class DBMaintenance extends \Jackbooted\Util\JB {
     }
 
     public static function getTableList() {
-        $qry =  ( Cfg::get( DB::DEF . '-driver' ) == 'sqlite' ) ? "SELECT name FROM sqlite_master WHERE type='table'" : 'SHOW TABLES';
+
+        $qry =  ( DB::driver( ) == DB::SQLITE ) ? "SELECT name FROM sqlite_master WHERE type='table'" : 'SHOW TABLES';
         return DBTable::factory ( DB::DEF, $qry, null, DB::FETCH_NUM )->getColumn ( 0 );
     }
 
@@ -96,7 +95,7 @@ class DBMaintenance extends \Jackbooted\Util\JB {
     }
 
     private static function getTableSyntax ( $tableName ) {
-        if ( Cfg::get( DB::DEF . '-driver' ) == 'sqlite' ) {
+        if ( DB::driver() == DB::SQLITE ) {
             return DB::oneValue( DB::DEF, "SELECT sql FROM sqlite_master where type='table' and tbl_name='$tableName'" );
         }
         else {

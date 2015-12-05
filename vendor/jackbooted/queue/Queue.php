@@ -4,7 +4,7 @@ namespace Jackbooted\Queue;
 class Queue extends \Jackbooted\Util\JB {
     const DEF_PRIORITY = 10;
     const DEF_TIME_TO_RUN = 21600; // 6 hrs
-    
+
     private static $resources = [];
     private static $log = null;
 
@@ -16,7 +16,7 @@ class Queue extends \Jackbooted\Util\JB {
         if ( ! isset ( self::$resources[$queueName] ) ) {
             self::$resources[$queueName] = [ 'in', 'out' ];
         }
-        
+
         if ( ! isset ( self::$resources[$queueName]['in'] ) ) {
             self::$resources[$queueName]['in'] = new \Beanstalk\Client();
             self::$resources[$queueName]['in']->connect();
@@ -29,19 +29,19 @@ class Queue extends \Jackbooted\Util\JB {
         if ( ! isset ( self::$resources[$queueName] ) ) {
             self::$resources[$queueName] = [ 'in', 'out' ];
         }
-        
+
         if ( ! isset ( self::$resources[$queueName]['out'] ) ) {
             self::$resources[$queueName]['out'] = new \Beanstalk\Client();
             self::$resources[$queueName]['out']->connect();
-            self::$resources[$queueName]['out']->watch( $queueName );        
+            self::$resources[$queueName]['out']->watch( $queueName );
         }
-        
+
         if ( ( $job = self::$resources[$queueName]['out']->reserve( 0 ) ) === false ) return false;
-        
+
         self::$resources[$queueName]['out']->delete( $job['id'] );
         return $job['body'];
     }
-    
+
     public static function disconnect ( $queueName ) {
         if ( isset ( self::$resources[$queueName]['in'] ) ) {
             self::$resources[$queueName]['in']->disconnect();
@@ -50,5 +50,12 @@ class Queue extends \Jackbooted\Util\JB {
             self::$resources[$queueName]['out']->disconnect();
         }
         unset( self::$resources[$queueName] );
-    }        
+    }
+
+    public function __destruct()
+    {
+        foreach ( array_keys( self::$resources ) as $queueName ) {
+            self::disconnect( $queueName );
+        }
+    }
 }
