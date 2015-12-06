@@ -39,6 +39,9 @@ abstract class DAO extends \Jackbooted\Util\JB {
      */
     public function __construct() {
         parent::__construct();
+        if ( ! isset ( $this->orm[0] ) )    $this->orm[0]    = $this->primaryKey;
+        if ( ! isset ( $this->orm['id'] ) ) $this->orm['id'] = $this->primaryKey;
+
         if ( Cfg::get( 'jb_audit_tables', true ) ) {
             $this->auditTable ();
         }

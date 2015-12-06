@@ -6,7 +6,6 @@ $config['menu'] = [ 'Main'   => '\App\Controllers\JackMain',
 
 $config['modules']   = [ '\App\Jack' ];
 
-$config['migration'] = [ '\App\Commands\InstallationCLI',
-                         '\App\Commands\MigrationsCLI' ];
+$config['migration'] = [ '\App\Commands\MigrationsCLI' ];
 
 $config['build_version'] = 'JackBooted Framework 1.0.0 (built: 2015-11-15 17:00:00)';

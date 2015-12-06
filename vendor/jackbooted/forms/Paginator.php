@@ -163,7 +163,7 @@ class Paginator extends Navigator {
     /**
      * @return string
      */
-    public function getLimits( $dbType='MYSQL', $sql='' ) {
+    public function getLimits( $dbType=DB::MYSQL, $sql='' ) {
         $this->auditStartRow ();
 
         if ( $dbType == DB::MYSQL || $dbType == DB::SQLITE ) {

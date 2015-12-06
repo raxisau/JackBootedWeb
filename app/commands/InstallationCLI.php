@@ -15,7 +15,7 @@ class InstallationCLI extends \Jackbooted\Html\WebPage {
         $dbType     = Cfg::get( 'local-driver' );
 
         switch ( $dbType ) {
-            case 'sqlite':
+            case DB::SQLITE:
                 $dbFileName = Cfg::get( 'local-host' );
                 echo "Checking that the file $dbFileName exists\n";
 
@@ -28,7 +28,7 @@ class InstallationCLI extends \Jackbooted\Html\WebPage {
                 }
                 break;
 
-            case 'mysql':
+            case DB::MYSQL:
                 $fldHostName = Cfg::get( 'local-host' );
                 $fldDBName   = Cfg::get( 'local-db' );
                 $fldUsername = Cfg::get( 'local-user' );
@@ -46,27 +46,26 @@ class InstallationCLI extends \Jackbooted\Html\WebPage {
                 die( "Unsupported DB Type: $dbType" );
         }
 
-        if ( count ( \Jackbooted\DB\DBMaintenance::getTableList() ) != 0 ) {
-            die( "Database already seems to be set up." );
-        }
-
-        // Put in the base data
-        $sqlFileName = Cfg::get ( 'tmp_path' ) . '/base_database.sql';
-        if ( file_exists( $sqlFileName ) ) {
-            echo "Running the commands in $sqlFileName against the database\n";
-            foreach ( explode( ';', file_get_contents( $sqlFileName ) ) as $statement ) {
-                DB::exec( DB::DEF, $statement );
+        if ( count ( \Jackbooted\DB\DBMaintenance::getTableList() ) == 0 ) {
+            // Put in the base data
+            $sqlFileName = Cfg::get ( 'tmp_path' ) . '/base_database.sql';
+            if ( file_exists( $sqlFileName ) ) {
+                echo "Running the commands in $sqlFileName against the database\n";
+                foreach ( explode( ';', file_get_contents( $sqlFileName ) ) as $statement ) {
+                    DB::exec( DB::DEF, $statement );
+                }
+            }
+            else {
+                die( "Base Database file does not exists ($sqlFileName) aborting\n" );
             }
         }
         else {
-            echo "Base Database file does not exists ($sqlFileName) aborting\n";
+            die( "Database already seems to be set up." );
         }
-        return '';
-    }
 
-    public static function migrate2015_10_02_00_00()
-    {
+
         echo "audititing Table - AlertsDAO\n";
         ( new \App\Models\AlertsDAO )->auditTable();
+        return '';
     }
 }
