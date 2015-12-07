@@ -22,10 +22,10 @@ abstract class DAO extends \Jackbooted\Util\JB {
     public    $primaryKey     = null;
     public    $tableName      = null;
     protected $tableStructure = null;
-    public    $orm            = null;
-    public    $titles         = null;
-    public    $keyFormat      = null;
-    public    $ignoreCols     = null;
+    public    $orm            = []; // Mapping of the variable to the column name. automatically adds 0 and 'id' => primaryKey
+    public    $titles         = []; // Array of all the column titles Automatically replaces ID for primary key
+    public    $keyFormat      = 'XX000000';
+    public    $ignoreCols     = [];
 
     /**
      * @return void
@@ -39,12 +39,17 @@ abstract class DAO extends \Jackbooted\Util\JB {
      */
     public function __construct() {
         parent::__construct();
-        if ( ! isset ( $this->orm[0] ) )    $this->orm[0]    = $this->primaryKey;
-        if ( ! isset ( $this->orm['id'] ) ) $this->orm['id'] = $this->primaryKey;
-
         if ( Cfg::get( 'jb_audit_tables', true ) ) {
             $this->auditTable ();
         }
+
+        if ( ! isset( $this->orm[0] ) )    $this->orm[0]    = $this->primaryKey;
+        if ( ! isset( $this->orm['id'] ) ) $this->orm['id'] = $this->primaryKey;
+
+        if ( ! isset( $this->titles[$this->primaryKey] ) ) $this->titles[$this->primaryKey] = 'ID';
+
+        // Could automatically populate the titles based on the column names
+        // But at this stage it is "YAGNI" reference CRUD::jbCol2Title
     }
 
     /**

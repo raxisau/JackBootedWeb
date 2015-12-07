@@ -43,7 +43,7 @@ $pageTimer = new \Jackbooted\Time\Stopwatch ( "Page Load" );
                                 <?= ( \Jackbooted\G::isLoggedIn () ) ? \Jackbooted\Util\MenuUtils::display () : '&nbsp;'; ?>
                             </td>
                             <td align="left" valign="top" width="100%">
-                                <?= \Jackbooted\Html\WebPage::controller ( \App\Controllers\JackMain::DEF ); ?>
+                                <?= \Jackbooted\Html\WebPage::controller ( Cfg::get( 'def_display' ) ); ?>
                             </td>
                         </tr>
                     </table>
