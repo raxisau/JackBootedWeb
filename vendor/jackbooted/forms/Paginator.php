@@ -100,6 +100,7 @@ class Paginator extends Navigator {
             $this->setStart ( 0 );
         }
     }
+
     /**
      * @param  $rows
      * @return Navigator

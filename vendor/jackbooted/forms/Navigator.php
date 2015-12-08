@@ -44,6 +44,11 @@ abstract class Navigator extends \Jackbooted\Util\JB {
         return $this->respVars;
     }
 
+    public function copyVarsFromRequest ( $v ) {
+        $this->respVars->copyVarsFromRequest ( $v );
+        return $this;
+    }
+
     /**
      * @param  $startingRow
      * @return string

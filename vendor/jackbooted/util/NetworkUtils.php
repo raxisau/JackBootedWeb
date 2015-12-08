@@ -18,7 +18,11 @@ class NetworkUtils extends JB {
         /* ICMP ping packet with a pre-calculated checksum */
         $package = "\x08\x00\x7d\x4b\x00\x00\x00\x00PingHost";
         $ts = microtime( true );
-        $socket  = socket_create( AF_INET, SOCK_RAW, 1 );
+
+        if ( ( $socket = @socket_create( AF_INET, SOCK_RAW, 1 ) ) === false ) {
+            die( __METHOD__ . ' Can only be called if you are root' );
+        }
+
         socket_set_option( $socket, SOL_SOCKET, SO_RCVTIMEO, [ 'sec' => $timeout, 'usec' => 0 ] );
         socket_connect( $socket, $host, null );
         socket_send( $socket, $package, strLen($package), 0 );
