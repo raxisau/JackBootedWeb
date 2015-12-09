@@ -3,6 +3,7 @@ namespace Jackbooted\Html;
 
 use \Jackbooted\Forms\Request;
 use \Jackbooted\Util\Log4PHP;
+use \Jackbooted\Util\Invocation;
 /** Utilities.php - Utility functions
  *
  * @copyright Confidential and copyright (c) 2015 Jackbooted Software. All rights reserved.
@@ -424,6 +425,27 @@ class Tag extends \Jackbooted\Util\JB {
 
         return self::input (  [ 'type' => 'submit', 'name' => $name, 'value' => $value ], $attribs );
     }
+
+    /**
+     * Generates the submit tag
+     * @param array $attribs array of attributes to output
+     * @returns string The resulting HTML
+     */
+    public static function submitUI ( $name, $value='', $attribs=[] ) {
+        if ( is_array ( $value ) ) {
+            $attribs = $value;
+            $value   = $name;
+        }
+        else if ( ( ! isset( $value ) || $value == false ) ) {
+            $value = $name;
+        }
+        if ( ! isset( $attribs['id'] ) ) {
+            $attribs['id'] = 'linkButton_' . Invocation::next();
+        }
+
+        return Widget::button( "#{$attribs['id']}" ) .
+               self::input (  [ 'type' => 'submit', 'name' => $name, 'value' => $value ], $attribs );
+    }
     /**
      * Generates HTML for checkbox
      * @param string $name
@@ -458,6 +480,18 @@ class Tag extends \Jackbooted\Util\JB {
         $extraAttribs =  [ 'onClick' => "if($xtraJS){location.href='$url';return true;}else{return false;}" ];
         return self::button ( $name,  array_merge ( $extraAttribs, $attribs ) );
     }
+
+    public static function hRefButton ( $url, $name, $attribs=[] ) {
+        if ( is_string ( $attribs ) ) $attribs =  [ $attribs ];
+        if ( ! isset( $attribs['id'] ) ) {
+            $attribs['id'] = 'linkButton_' . Invocation::next();
+        }
+
+        return Widget::button( "#{$attribs['id']}" ) .
+               self::hRef( $url, $name, $attribs );
+    }
+
+
 
     /**
      * Generates the select tag

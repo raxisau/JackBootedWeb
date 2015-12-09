@@ -7,6 +7,23 @@ use \Jackbooted\Util\Invocation;
 
 class Widget extends \Jackbooted\Util\JB {
 
+    private static $buttonDomSelectorList = [];
+    public static function button ( $domSelector ) {
+
+        // If we have done this selector, then nothing to do
+        if ( in_array( $domSelector, self::$buttonDomSelectorList ) ) return '';
+
+        self::$buttonDomSelectorList[] = $domSelector;
+
+        $js = <<<JS
+            $().ready ( function () {
+                $("$domSelector").button();
+            });
+JS;
+        return JS::libraryWithDependancies ( JS::JQUERY_UI ) .
+               JS::javaScript ( $js );
+    }
+
     private static $styleComboInvocations = 0;
     public static function comboBoxJS ( $tag, $pickList ) {
 
