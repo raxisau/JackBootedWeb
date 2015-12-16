@@ -11,7 +11,7 @@
  **/
 
 // Create the $config array
-$config = array();
+$config = [];
 require_once dirname ( __FILE__ ) . '/config.default.php';
 require_once dirname ( __FILE__ ) . '/config.local.php';
 

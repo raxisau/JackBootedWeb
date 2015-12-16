@@ -26,6 +26,10 @@ JS;
 
     private static $styleComboInvocations = 0;
     public static function comboBoxJS ( $tag, $pickList ) {
+        if ( ! isset( $pickList ) ||
+             $pickList === false ||
+             ! is_array( $pickList ) ||
+             count( $pickList ) <= 0 ) return '';
 
         $html = '';
         if ( self::$styleComboInvocations == 0 ) {

@@ -12,7 +12,7 @@ $config['LF']           = "\r\n";
 // Pick up the current server config
 $config['site_path']    = dirname ( __FILE__ );
 $config['tmp_path']     = $config['site_path'] . '/_private';
-$config['class_path']   = array ( $config['site_path'] . '/vendor', $config['site_path'] . '/app' );
+$config['class_path']   =  [ $config['site_path'] . '/vendor', $config['site_path'] . '/app' ];
 
 $config['server']       = ( isset ( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : 'cli.local';
 $config['site_url']     = 'http://' . $config['server'];
@@ -46,7 +46,12 @@ $config['timezone']          = 'UTC';
 $config['known']             = [ ]; //TamperGuard Variables. Variables that add to Tamperguard that are not checked
 $config['exempt']            = [ 'cron.php', 'menu.php' ]; // List of files that are not checked
 
-$config['crypto_key']        = 'PredefinedEncryptionKey67534gf234fg43gg1'; // This key is shuffled around and put into the session
+// Jackbooted checks for Timeout of URL, also checks for tampering. These variables must
+// exist in the url or form variables
+// The list below are the scripts that are exempt from checking.
+$config['exempt']            = [ 'cron.php', 'router.php' ]; // List of files that are not checked
+
+$config['crypto_key']        = 'PredefinedEncryptionKeyhgfqf786w7676wedw'; // This key is shuffled around and put into the session
                                                                            // Which is then used for encrypting form variables
                                                                            // You probably should not use this in your app as changing it
                                                                            // will break anything that uses it. eg save encryption to DB
