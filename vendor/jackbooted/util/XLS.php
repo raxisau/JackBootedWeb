@@ -4,7 +4,7 @@ namespace Jackbooted\Util;
 use \Jackbooted\DB\DB;
 use \Jackbooted\DB\DBTable;
 /**
- * @copyright Confidential and copyright (c) 2015 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2016 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com

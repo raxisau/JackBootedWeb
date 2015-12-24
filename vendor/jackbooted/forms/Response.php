@@ -7,7 +7,7 @@ use \Jackbooted\Security\Cryptography;
 use \Jackbooted\Security\CSRFGuard;
 use \Jackbooted\Security\TamperGuard;
 /**
- * @copyright Confidential and copyright (c) 2015 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2016 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
