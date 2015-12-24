@@ -3,6 +3,15 @@ namespace Jackbooted\Html;
 
 use \Jackbooted\Util\Invocation;
 /**
+ * @copyright Confidential and copyright (c) 2016 Jackbooted Software. All rights reserved.
+ *
+ * Written by Brett Dutton of Jackbooted Software
+ * brett at brettdutton dot com
+ *
+ * This software is written and distributed under the GNU General Public
+ * License which means that its source code is freely-distributed and
+ * available to the general public.
+ *
  */
 
 class Widget extends \Jackbooted\Util\JB {
