@@ -3,6 +3,7 @@ namespace Jackbooted\Util;
 
 use \Jackbooted\Config\Cfg;
 /**
+ * @copyright Confidential and copyright (c) 2016 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -11,10 +12,8 @@ use \Jackbooted\Config\Cfg;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  *
- *** Revision History
- * 10-Jun-2009 B.Dutton    Initial coding
- *
  */
+
 
 /**
  * The day of require_once is now over for classes. This class will automatically set itself up to load any class from
