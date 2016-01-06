@@ -9,7 +9,6 @@ namespace Jackbooted\Queue;
  * This software is written and distributed under the GNU General Public
  * License which means that its source code is freely-distributed and
  * available to the general public.
- *
  */
 
 class Queue extends \Jackbooted\Util\JB {

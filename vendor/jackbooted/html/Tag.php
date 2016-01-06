@@ -95,7 +95,7 @@ class Tag extends \Jackbooted\Util\JB {
         $html = '';
 
         if ( $doubleClickProtection ) {
-            $killDblClk = "$('#{$attribs['id']} input[type=submit]').val('{$submitMsg}').attr('disabled','disabled');";
+            $killDblClk = "$('#{$attribs['id']} input[type=submit]').val('{$submitMsg}').attr('disabled',true);";
 
             if ( isset ( $attribs['onSubmit'] ) ) {
                 if ( preg_match ( '/^(.*)(return true;)$/', $attribs['onSubmit'], $matches ) ) {

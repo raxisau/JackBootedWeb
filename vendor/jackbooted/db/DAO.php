@@ -204,6 +204,8 @@ abstract class DAO extends \Jackbooted\Util\JB {
      */
     public function delete ( $row ) {
         $sql = 'DELETE FROM ' . $this->tableName . $this->toWhere ( $row, $params );
+        //echo $sql . "\n";
+        //print_r ( $params );
         return DB::exec ( $this->db, $sql, $params );
     }
 

@@ -81,7 +81,7 @@ class Config extends \Jackbooted\Util\JB {
             self::$configItemsObjects[$key] = json_decode( $serializedValue, true );
         }
         else if ( $uid !== self::GLOBAL_SCOPE ) {
-            if ( ( $serializedValue = DB::oneValue( DB::DEF, self::SELECT_SQL,  [ $key, $uid ] ) ) !== false ) {
+            if ( ( $serializedValue = DB::oneValue( DB::DEF, self::SELECT_SQL,  [ $key, self::GLOBAL_SCOPE ] ) ) !== false ) {
                 self::$configItemsObjects[$key] = json_decode( $serializedValue, true );
             }
         }

@@ -109,6 +109,11 @@ abstract class ORM extends \Jackbooted\Util\JB {
         }
     }
     public function delete () {
-        $this->dao->delete ( $this->data );
+        if ( isset ( $this->data[$this->dao->primaryKey] ) ) {
+            return $this->dao->delete ( [ $this->dao->primaryKey => $this->data[$this->dao->primaryKey] ] );
+        }
+        else {
+            return $this->dao->delete ( $this->data );
+        }
     }
 }
