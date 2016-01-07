@@ -22,4 +22,6 @@ if ( file_exists( dirname ( __FILE__ ) . '/config.env.php' ) ) {
 
 require_once  $config['site_path'] . '/vendor/jackbooted/config/Cfg.php';
 \Jackbooted\Config\Cfg::init ( $config );
-\Jackbooted\Config\Config::setOverrideScope( \Jackbooted\Config\Config::GLOBAL_SCOPE );
+
+// If you want to set everything as global scope then uncheck this
+// \Jackbooted\Config\Config::setOverrideScope( \Jackbooted\Config\Config::GLOBAL_SCOPE );

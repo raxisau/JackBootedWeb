@@ -1,7 +1,6 @@
 <?php
 namespace Jackbooted\Forms;
 
-use \Jackbooted\Html\JS;
 use \Jackbooted\Html\Lists;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Util\Invocation;
@@ -249,195 +248,105 @@ SQL;
             $numberOfPages ++;
         }
 
-        $previousPage = $nextPage = null;
+        $previousPage = '';
+        $nextPage     = '';
+        $firstPage    = '';
+        $lastPage     = '';
+        $pageSizeHtml = '';
         $html =  [  [],  [] ];
-        $pLoc = 0;
 
+        // This is the navigation from the current page forward
         for ( $currentPage=$pageContainingStartRow+1,$incr=1; $currentPage<$numberOfPages-1; $currentPage+=$incr ) {
             $startingRowForThisPage = $currentPage * $rowsPerPage;
             $currentPageDisplay     = $currentPage + 1;
             $this->set ( self::STARTING_ROW, $startingRowForThisPage );
-            $html[1][] = Tag::hRef ( $this->toUrl ( ), number_format ( $currentPageDisplay ),
-                                      [ 'title' => 'Go to Page ' . $currentPageDisplay,
-                                        'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
+            $html[1][] = Tag::hRef ( $this->toUrl ( ),
+                                     number_format ( $currentPageDisplay ),
+                                     [ 'title' => 'Go to Page ' . $currentPageDisplay,
+                                       'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
             $incr *= count ( $html[1] );
         }
 
+        // This is the navigation for next and last page
         if ( $pageContainingStartRow + 1 <  $numberOfPages ) {
             $this->setStart ( $rowsPerPage * ( $numberOfPages - 1 ) );
-            $html[1][] = Tag::hRef ( $this->toUrl ( ), number_format ( $numberOfPages ),
-                                      [ 'title' => 'Go to Page ' . $numberOfPages,
-                                        'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
+            $lastPage = Tag::button ( '>> ' . number_format ( $numberOfPages ),
+                                       [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                         'title' => 'Go to Last Page - ' . $numberOfPages,
+                                         'class' => $this->styles[self::PAGE_BUTTON_CLASS] ] );
 
             $this->setStart ( $rowsPerPage * ( $pageContainingStartRow + 1 ) );
-            $url = $this->toUrl ( );
-            $nextPage = Tag::button ( '>',  [ 'onclick' => "location.href='$url';return true;",
-                                              'title' => 'Go to Next Page - ' . $pageContainingStartRow + 2,
+            $nextPage = Tag::button ( '>',  [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                              'title' => 'Go to Next Page - ' . ( $pageContainingStartRow + 2 ),
                                               'class' => $this->styles[self::PAGE_BUTTON_CLASS] ] );
-            $this->setStart ( $rowsPerPage * ( $numberOfPages - 1 ) );
-            $url = $this->toUrl ( );
         }
 
+        // Navigation for the current page nackwards
         for ( $currentPage=$pageContainingStartRow-1,$incr=1; $currentPage>0; $currentPage-=$incr ) {
             $startingRowForThisPage = $currentPage * $rowsPerPage;
             $currentPageDisplay     = $currentPage + 1;
             $this->setStart ( $startingRowForThisPage );
-            $html[0][] = Tag::hRef ( $this->toUrl ( ), number_format ( $currentPageDisplay ),
+            $html[0][] = Tag::hRef ( $this->toUrl ( ),
+                                      number_format ( $currentPageDisplay ),
                                       [ 'title' => 'Go to Page ' . $currentPageDisplay,
                                         'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
             $incr *= count ( $html[0] );
         }
-
-        if ( $pageContainingStartRow != 0 ) {
-            $this->setStart ( 0 );
-            $html[0][] = Tag::hRef ( $this->toUrl ( ), 1,
-                                      [ 'title' => 'Go to Page ' . 1,
-                                        'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
-
-            $this->setStart ( $rowsPerPage * ( $pageContainingStartRow - 1 ) );
-            $url = $this->toUrl (  );
-            $previousPage = Tag::button ( '<',  [ 'onclick' => "location.href='$url';return true;",
-                                                  'title' => 'Go to Previous Page - ' . $pageContainingStartRow - 2,
-                                                  'class' => $this->styles[self::PAGE_BUTTON_CLASS] ] );
-            $this->setStart ( 0 );
-            $url = $this->toUrl ( );
-        }
+        // Reverse the array so that it appears in correct order for pagination
         $html[0] = array_reverse ( $html[0] );
+
+        // Navigation for previous and first pages
+        if ( $pageContainingStartRow != 0 ) {
+            // Calculate navigation for first page
+            $this->setStart ( 0 );
+            $firstPage = Tag::button ( '<< 1',
+                                       [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                         'title' => 'Go to First Page - 1',
+                                         'class' => $this->styles[self::PAGE_BUTTON_CLASS] ] );
+
+            // Calculate navigation for previous page
+            $this->setStart ( $rowsPerPage * ( $pageContainingStartRow - 1 ) );
+            $previousPage = Tag::button ( '< ',
+                                          [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                            'title' => 'Go to Previous Page - ' . ( $pageContainingStartRow - 1 ),
+                                            'class' => $this->styles[self::PAGE_BUTTON_CLASS] ] );
+        }
+
+
         $this->setStart ( $saveStartingRow );
         $curPage = (string)($pageContainingStartRow + 1);
-
         $exemptVars =  [ self::STARTING_PAGE ];
+
+        // Create the drop down to set the number of rows displayed per page
         if ( $this->dispPageSize ) {
             $exemptVars[] = self::ROWS_PER_PAGE;
-            $pageSizeHtml = '&nbsp;Max Rows:&nbsp;' .
+            $pageSizeHtml = '&nbsp;Rows:&nbsp;' .
                             Lists::select ( $this->toFormName ( self::ROWS_PER_PAGE ),
                                             self::$itemsPerPageList,
-                                             [ 'default' => $rowsPerPage, 'onChange' => 'submit();' ] );
-        }
-        else {
-            $pageSizeHtml = '';
+                                             [ 'default'  => $rowsPerPage,
+                                               'title'    => 'This changes the number of rows to display',
+                                               'onChange' => 'submit();' ] );
         }
 
         return Tag::div ( $this->attribs ) .
                  Tag::form (  [ 'method' => 'get' ] ) .
                    $this->toHidden ( $exemptVars ) .
+                   $firstPage .
                    $previousPage .
                    '&nbsp;' . join ( '&nbsp;&#183;&nbsp;', $html[0] ) .
                    '&nbsp;' . Tag::text ( $this->toFormName ( self::STARTING_PAGE ),
                                            [ 'value' => $curPage,
-                                             'size' => max ( 1, strlen ( $curPage ) - 1 ),
+                                             'align' => 'middle',
+                                             'size'  => 1 + max ( 1, strlen ( $curPage ) - 1 ),
+                                             'title' => 'Manually enter the page number that you want and press enter',
                                              'style' => 'font-weight:bold;' ] ) .
                    '&nbsp;' . join ( '&nbsp;&#183;&nbsp;', $html[1] ) .
-                   '&nbsp;' . $nextPage .
+                   '&nbsp;' .
+                   $nextPage .
+                   $lastPage .
                    $pageSizeHtml .
                  Tag::_form () .
                Tag::_div ();
 
-    }
-    public function toSlider () {
-        $this->auditStartRow ();
-
-        $rowsPerPage      = intval ( $this->getPageSize () );
-        $startingRow      = intval ( $this->getStart () );
-        $startingPage     = intval ( $this->get ( self::STARTING_PAGE ) );
-        $totalRows        = intval ( $this->getRows () );
-        $formId           = 'F' . self::PAGE_VAR . '_' . $divTag;
-        $saveStartingRow  = intval ( $this->getStart () );
-
-        if ( $rowsPerPage <= 0 ) {
-            $rowsPerPage = self::$pagination[self::ROWS_PER_PAGE];
-        }
-
-        // Not enough rows for pagination
-        if ( $totalRows <= $rowsPerPage ) {
-            return Tag::div ( $this->attribs ) .
-                     Tag::form (  [ 'method' => 'get' ] ) .
-                       $this->toHidden (  [ self::ROWS_PER_PAGE ] ) .
-                       'Display:&nbsp;' .
-                       Lists::select ( $this->toFormName ( self::ROWS_PER_PAGE ),
-                                       self::$itemsPerPageList,
-                                        [ 'default' => $rowsPerPage, 'onChange' => 'submit();' ] ) .
-                     Tag::_form () .
-                   Tag::_div ();
-        }
-
-        if ( $startingPage > 0 ) {
-            $startingRow = ( $startingPage - 1 ) *  $rowsPerPage;
-            $this->set ( self::STARTING_PAGE, 0 );
-        }
-
-        if ( $startingRow >= $totalRows ) $startingRow = $totalRows - 1;
-
-        $pageContainingStartRow = intval ( $startingRow / $rowsPerPage );
-        $this->set ( self::SQL_START, $rowsPerPage * $pageContainingStartRow );
-
-        // Get number of pages
-        $numberOfPages = intval ( $totalRows / $rowsPerPage );
-        if ( ( $totalRows % $rowsPerPage ) != 0 ) {
-            $numberOfPages ++;
-        }
-
-        $js = <<<JS
-        $().ready ( function () {
-            $('#slider{$divTag}').slider ({
-                value: $startingPage,
-                min: 1,
-                max: $numberOfPages,
-                slide: function ( event, ui ) {
-                    $('#slider-page{$divTag}').val( ui.value );
-                },
-                change: function ( event, ui ) {
-                    $('#slider-page{$divTag}').val( ui.value );
-                    $('#{$formId}').submit ();
-                }
-            });
-            $('#slider-page{$divTag}').val( $( '#slider{$divTag}' ).slider( 'value' ) );
-            $('#slider-left{$divTag}').button()
-                                      .click ( function () {
-                                           var val = $( '#slider{$divTag}' ).slider( 'value' );
-                                           $( '#slider{$divTag}' ).slider( 'value', val - 1 );
-                                       });
-            $('#slider-right{$divTag}').button()
-                                       .click ( function () {
-                                            var val = $( '#slider{$divTag}' ).slider( 'value' );
-                                            $( '#slider{$divTag}' ).slider( 'value', val + 1 );
-                                        });
-        });
-JS;
-
-        $formHtml = Tag::form (  [ 'method' => 'get', 'id' => $formId ] ) .
-                      $this->toHidden (  [ self::STARTING_PAGE, self::ROWS_PER_PAGE ] ) .
-                      Tag::text ( $this->toFormName ( self::STARTING_PAGE ),
-                                   [ 'value' => $startingPage,
-                                     'size'  => max ( 1, strlen ( $startingPage ) - 1 ),
-                                     'id'    => 'slider-page' . $divTag,
-                                     'style' => 'font-weight:bold;' ] ) .
-                      Lists::select ( $this->toFormName ( self::ROWS_PER_PAGE ),
-                                      self::$itemsPerPageList,
-                                      [ 'default' => $rowsPerPage, 'onChange' => 'submit();' ] ) .
-                 Tag::_form ();
-
-        $html = <<<HTML
-    <table>
-        <tr>
-            <td width="10" align="center" valign="middle">
-                <a href="javascript:void(0)" id="slider-left{$divTag}" style="font-size: 0.7em;">&lt;</a>
-            </td>
-            <td width="500"  align="center" valign="middle">
-                <div id="slider{$divTag}"></div>
-            </td>
-            <td width="10" align="center" valign="middle">
-                <a href="javascript:void(0)" id="slider-right{$divTag}" style="font-size: 0.7em;">&gt;</a>
-            </td>
-            <td align="center" valign="middle">
-                $formHtml
-            </td>
-        </tr>
-    </table>
-HTML;
-
-        return JS::libraryWithDependancies ( JS::JQUERY_UI ) .
-               JS::javaScript ( $js ) .
-               $html;
     }
 }
