@@ -45,18 +45,11 @@ class SchedulerDAO extends DAO  {
             );
 SQL;
 
-        $this->orm =  [ 0                 => $this->primaryKey,
-                        'id'              => $this->primaryKey,
-                        1                 => 'fldCommand',
-                        'command'         => 'fldCommand',
+        $this->orm =  [ 'command'         => 'fldCommand',
                         'cmd'             => 'fldCommand',
-                        2                 => 'fldActive',
                         'active'          => 'fldActive',
-                        3                 => 'fldStartTime',
                         'start'           => 'fldStartTime',
-                        4                 => 'fldCron',
                         'cron'            => 'fldCron',
-                        5                 => 'fldLastRun',
                         'lastRun'         => 'fldLastRun',
                 ];
 

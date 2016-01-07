@@ -50,22 +50,13 @@ class CronDAO extends DAO  {
             );
 SQL;
 
-        $this->orm =  [ 0                 => $this->primaryKey,
-                        'id'              => $this->primaryKey,
-                        1                 => 'fldRef',
-                        'ref'             => 'fldref',
-                        2                 => 'fldCommand',
+        $this->orm =  [ 'ref'             => 'fldref',
                         'command'         => 'fldCommand',
                         'cmd'             => 'fldCommand',
-                        3                 => 'fldPriority',
                         'priority'        => 'fldPriority',
-                        4                 => 'fldStatus',
                         'status'          => 'fldStatus',
-                        5                 => 'fldRunTime',
                         'runTime'         => 'fldRunTime',
-                        6                 => 'fldReturnValue',
                         'result'          => 'fldReturnValue',
-                        7                 => 'fldReturnOutput',
                         'message'         => 'fldReturnOutput',
                 ];
 
