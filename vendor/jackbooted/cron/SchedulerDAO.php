@@ -50,8 +50,7 @@ SQL;
                         'active'          => 'fldActive',
                         'start'           => 'fldStartTime',
                         'cron'            => 'fldCron',
-                        'lastRun'         => 'fldLastRun',
-                ];
+                        'lastRun'         => 'fldLastRun' ];
 
         parent::__construct();
     }

@@ -57,8 +57,7 @@ SQL;
                         'status'          => 'fldStatus',
                         'runTime'         => 'fldRunTime',
                         'result'          => 'fldReturnValue',
-                        'message'         => 'fldReturnOutput',
-                ];
+                        'message'         => 'fldReturnOutput' ];
 
         parent::__construct();
     }

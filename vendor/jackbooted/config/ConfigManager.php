@@ -96,7 +96,7 @@ class ConfigManager extends WebPage {
             });
 
             function submitClicked () {
-                $('#editJSONEditForm input[type=submit]').attr('disabled',true);
+                var button = $('#editJSONEditFormButton').attr('disabled',true);
 
                 var orig = $('#fldCfgValue').val();
                 var ed   = editor.get();    // JSON Editor, RHS fields labels
@@ -105,7 +105,7 @@ class ConfigManager extends WebPage {
                 if ( orig == ed && orig == form ) {
                     pageDirty = false;
                     alert( 'No changes, nothing to save' );
-                    $('#editJSONEditForm input[type=submit]').attr('disabled',false );
+                    button.attr('disabled',false );
                     return false;
                 }
                 else if ( orig != ed && orig == form ) {
@@ -116,7 +116,7 @@ class ConfigManager extends WebPage {
                         return true;
                     }
                     else {
-                        $('#editJSONEditForm input[type=submit]').attr('disabled',false );
+                        button.attr('disabled',false );
                         return false;
                     }
                 }
@@ -128,7 +128,7 @@ class ConfigManager extends WebPage {
                         return true;
                     }
                     else {
-                        $('#editJSONEditForm input[type=submit]').attr('disabled',false );
+                        button.attr('disabled',false );
                         return false;
                     }
                 }
@@ -142,7 +142,7 @@ class ConfigManager extends WebPage {
                     else {
                         alert( 'You have changed both the JSON Editor on right pane and the Formatted Text Editor on left pane and they are inconsistent. ' +
                                'Please press one of the arrow buttons to fix and re-submit' );
-                        $('#editJSONEditForm input[type=submit]').attr('disabled',false );
+                        button.attr('disabled',false );
                         return false;
                     }
                 }
@@ -194,7 +194,7 @@ JS;
                           ->toHidden () .
                  Tag::textArea( 'fldCfgValue', '',  [ 'id' => 'fldCfgValue', 'style' => 'display: none;' ] ) .
                  '<b>Currently editing : <i>' . $currentConfigKey . '</i></b> ' .
-                 Tag::submit( 'Save',  [ 'onClick' => "return submitClicked();" ] ) .
+                 Tag::button( 'Save',  [ 'onClick' => 'submitClicked();', 'id' => 'editJSONEditFormButton' ] ) .
                Tag::_form() .
                JS::javaScript( $js );
     }
