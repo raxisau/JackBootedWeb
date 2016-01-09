@@ -18,7 +18,7 @@ function _runner () {
     $numberOfItemsProcessed = 0;
 
     while ( $pageTimer->getTime () < 60 ) {
-        $cronJobList = Cron::getList ( 1 );
+        $cronJobList = Cron::getList ();
         if ( count ( $cronJobList ) <= 0 ) break;
 
         foreach ( $cronJobList as $cronJob ) {
@@ -27,6 +27,7 @@ function _runner () {
 
             _runnerLog ( 'Changing the status to RUNNING for JobID: ' . $cronJob->id );
             $cronJob->status = CronDAO::STATUS_RUNNING;
+            $cronJob->runTime = time();
             $cronJob->save ();
             flush();
 
@@ -35,7 +36,7 @@ function _runner () {
 
             _runnerLog ( 'Running command: ' . $cronJob->command . ' ID:' . $cronJob->id );
             unset ( $result );
-            @eval ( '$result = ' . $cronJob->command );
+            eval ( '$result = ' . $cronJob->command );
 
             if ( isset ( $result ) && is_array ( $result ) ) {
                 $cronJob->result  = $result[0];
