@@ -59,18 +59,18 @@ class Scheduler extends ORM {
 
         foreach ( self::getList () as $sheduleItem ) {
 
-            if ( $sheduleItem->lastRun == null || $sheduleItem->lastRun == false ) {
-                $lastRunTime = strtotime( $sheduleItem->start );
-            }
-            else {
-                $lastRunTime = strtotime( $sheduleItem->lastRun );
-            }
+            $storedLastRunTime = strtotime( ( $sheduleItem->lastRun == '' ) ? $sheduleItem->start : $sheduleItem->lastRun );
+            $previousCalculatedRunTime = CronParser::lastRun( $sheduleItem->cron );
 
-            $thisRunTime = CronParser::lastRun( $sheduleItem->cron );
-            if ( $thisRunTime > $lastRunTime ) {
-                $sheduleItem->lastRun = strftime ( '%Y-%m-%d %H:%M', $thisRunTime );
+            // This looks at when the item had run. If the stored value is less than
+            // the calculated value means that we have past a run period. So need to run
+            if ( $storedLastRunTime <  $previousCalculatedRunTime ) {
+
+                // Update the run time to now
+                $sheduleItem->lastRun = strftime ( '%Y-%m-%d %H:%M', $previousCalculatedRunTime );
                 $sheduleItem->save ();
 
+                // Enqueue a new item to run
                 $job = new Cron (  [ 'ref' => $sheduleItem->id,
                                      'cmd' => $sheduleItem->cmd, ] );
                 $job->save ();

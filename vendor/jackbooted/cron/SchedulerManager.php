@@ -74,12 +74,7 @@ JS;
                         timeFormat: 'HH:mm'
                     });
 JS;
-                if ( $schedulerItem->lastRun == null || $lastRun == false ) {
-                    $lastRun = '*Never*';
-                }
-                else {
-                    $lastRun = $schedulerItem->lastRun;
-                }
+                $lastRun = ( $schedulerItem->lastRun == '' ) ? '*Never*' : $schedulerItem->lastRun;
 
                 $html .= Tag::tr () .
                            Tag::td () .
@@ -136,10 +131,10 @@ JS;
 
     public function save () {
         foreach ( Request::get ( 'fldUpd',  [] ) as $id ) {
-            $data =  [ 'id' => $id,
-                       'cmd' => Request::get ( 'fldCommand_' . $id ),
-                       'start' => Request::get ( 'fldStartDate_' . $id ),
-                       'cron' => Request::get ( 'fldCron_' . $id ),
+            $data =  [ 'id'     => $id,
+                       'cmd'    => Request::get ( 'fldCommand_' . $id ),
+                       'start'  => Request::get ( 'fldStartDate_' . $id ),
+                       'cron'   => Request::get ( 'fldCron_' . $id ),
                        'active' => Request::get ( 'fldActive_' . $id ) ];
             Scheduler::factory ( $data )->save ();
         }
@@ -156,9 +151,10 @@ JS;
 
     public function newItem () {
         $defaults =  [ 'cmd'      => __CLASS__ . '::hello();',
-                       'start'    => date ( 'Y-m-d H:i' ),
+                       'start'    => strftime ( '%Y-%m-%d %H:%M' ),
                        'cron'     => '* * * * *',
-                       'active'   => 'No' ];
+                       'active'   => 'No',
+                       'lastRun'  => '' ];
         Scheduler::factory ( $defaults )->save ();
         return Widget::popupWrapper ( 'New Item Created' ) .
                $this->index ();
