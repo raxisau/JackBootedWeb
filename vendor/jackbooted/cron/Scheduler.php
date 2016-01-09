@@ -57,7 +57,7 @@ class Scheduler extends ORM {
     public static function check () {
         $numAdded = 0;
 
-        foreach ( self::getList ( true ) as $sheduleItem ) {
+        foreach ( self::getList () as $sheduleItem ) {
 
             if ( ! isset( $sheduleItem->lastRun ) || $sheduleItem->lastRun == false ) {
                 $lastRunTime = strtotime( $sheduleItem->start );

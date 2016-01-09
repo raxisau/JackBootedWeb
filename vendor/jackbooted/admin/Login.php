@@ -187,10 +187,13 @@ SQL;
     }
 
     public static function incrementFails ( $username ) {
-        $sql = 'UPDATE tblUser SET fldFails=fldFails+1 WHERE fldUser=?';
-        DB::exec ( DB::DEF, $sql, $username );
-        $sql = 'SELECT fldFails FROM tblUser WHERE fldUser=?';
-        return DB::oneValue ( DB::DEF, $sql,  [ $username ] );
+        DB::exec ( DB::DEF, 'UPDATE tblUser SET fldFails=fldFails+1 WHERE fldUser=?', $username );
+        return DB::oneValue ( DB::DEF, 'SELECT fldFails FROM tblUser WHERE fldUser=?', $username );
+    }
+
+    public static function clearFails () {
+        $up = DB::exec ( DB::DEF, 'UPDATE tblUser SET fldFails=0' );
+        return  [ 0, "Cleared: $up " ];
     }
 
     public static function loadPreferences ( $user ) {
@@ -340,11 +343,11 @@ SQL;
         $pw = Password::passGen ( 10, Password::MEDIUM );
 
         if ( DB::driver() == DB::MYSQL ) {
-            $sql = 'UPDATE tblUser SET fldPassword=PASSWORD(?) WHERE fldUserID=?';
+            $sql = 'UPDATE tblUser SET fldPassword=PASSWORD(?),fldFails=0 WHERE fldUserID=?';
             DB::exec ( DB::DEF, $sql,  [ $pw, $id ] );
         }
         else {
-            $sql = 'UPDATE tblUser SET fldPassword=? WHERE fldUserID=?';
+            $sql = 'UPDATE tblUser SET fldPassword=?,fldFails=0 WHERE fldUserID=?';
             DB::exec ( DB::DEF, $sql,  [ hash( 'md5', $pw ), $id ] );
         }
         // Update the Database with the new Password combo

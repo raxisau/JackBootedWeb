@@ -36,6 +36,7 @@ class CronDAO extends DAO  {
         $this->db = 'local';
         $this->primaryKey = 'fldCronQueueID';
         $this->tableName = 'tblCronQueue';
+        $this->keyFormat = 'CQ0000000';
         $this->tableStructure = <<<SQL
             CREATE TABLE IF NOT EXISTS {$this->tableName} (
               {$this->primaryKey} varchar(11)    NOT NULL default '',
@@ -47,7 +48,7 @@ class CronDAO extends DAO  {
               fldReturnValue char(3) DEFAULT NULL,
               fldReturnOutput varchar(255) DEFAULT NULL,
               PRIMARY KEY ({$this->primaryKey})
-            );
+            )
 SQL;
 
         $this->orm =  [ 'ref'             => 'fldref',

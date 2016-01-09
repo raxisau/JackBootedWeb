@@ -34,12 +34,12 @@ class Stopwatch extends \Jackbooted\Util\JB {
     }
     private function start ( $displayStart ) {
         $this->startTime = self::begin();
-        if ( $displayStart ) self::$log->info ( $this->msg );
+        if ( $displayStart ) self::$log->debug ( $this->msg );
         return $this->startTime;
     }
     public function stop () {
         $delta = self::end ( $this->startTime );
-        self::$log->info ( $this->msg . ':' . $this->msToStr ( $delta ) );
+        self::$log->debug ( $this->msg . ':' . $this->msToStr ( $delta ) );
         return $this->msg . ':' . $this->msToStr ( $delta );
     }
     public function getTime () {

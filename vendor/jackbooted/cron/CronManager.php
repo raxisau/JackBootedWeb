@@ -3,6 +3,8 @@ namespace Jackbooted\Cron;
 
 use \Jackbooted\Forms\CRUD;
 use \Jackbooted\Html\WebPage;
+use \Jackbooted\DB\DB;
+
 /**
  * @copyright Confidential and copyright (c) 2016 Jackbooted Software. All rights reserved.
  *
@@ -28,5 +30,11 @@ class CronManager extends WebPage  {
         $crud->setColDisplay ( $cols[1],  [ CRUD::SELECT,  [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] ] );
         $crud->setColDisplay ( $cols[2], CRUD::DISPLAY );
         return $crud->index ();
+    }
+
+    public static function cleanup( $numDays=5 ) {
+        $keepSeconds = time() - ( $numDays * 24 * 60 * 60 );
+        $deletedRecords = DB::exec( DB::DEF, 'DELETE from tblCronQueue WHERE fldRunTime<?', $keepSeconds );
+        return [ 0, "Deleted: $deletedRecords" ];
     }
 }

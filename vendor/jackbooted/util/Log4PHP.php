@@ -178,6 +178,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      */
     public static function cleanup( $numDays=5 ) {
         $oneDay = 60 * 60 * 24;
+        $removedFiles = 0;
 
         // Loop for 10 times looking for old files
         for ( $i=0,$day=time()-($numDays*$oneDay); $i<10; $i++, $day-=$oneDay ) {
@@ -186,12 +187,14 @@ class Log4PHP extends \Jackbooted\Util\JB {
             // If the file exists then remove it
             if ( file_exists( $fileName ) ){
                 unlink( $fileName );
+                $removedFiles ++;
             }
             else {
                 // Stop the looping if the file does not exist
                 break;
             }
         }
+        return [ 0, "Removed: $removedFiles" ];
     }
 
     private $className = '';

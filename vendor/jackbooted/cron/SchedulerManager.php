@@ -25,19 +25,20 @@ class SchedulerManager extends WebPage  {
     /**
      * @return string
      */
-    public function hello () {
+    public static function hello () {
         return  [ 0, 'Hello World' ];
     }
 
     public function index () {
         $schedulerList = Scheduler::getList ( true );
         $formName = 'SchedulerManager_index';
+        $id = 'SchedulerManager_table';
 
         $js = "$().ready ( function () {\n";
 
         $valid = Validator::factory ( $formName );
 
-        $html = Tag::table ( ) .
+        $html = Tag::table ( [ 'id' => $id ] ) .
                   Tag::tr () .
                     Tag::td () . 'Upd' .       Tag::_td () .
                     Tag::td () . 'Del' .       Tag::_td () .
@@ -89,27 +90,27 @@ JS;
                                                'Delete',
                                                 [ 'onClick' => "confirm('Are you sure?')" ] ) .
                            Tag::_td () .
-                           Tag::td () .
+                           Tag::td ( ['width' => '100%', 'nowrap' => 'nowrap' ]) .
                              Tag::text ( 'fldCommand' . $row,   $schedulerItem->cmd,
-                                          [ 'size' => '34',
+                                          [ 'style' => 'width:100%;',
                                             'onChange' => "$('#U$rowIdx').attr('checked',true)" ] ) .
                            Tag::_td () .
-                           Tag::td () .
+                           Tag::td ( ['nowrap' => 'nowrap' ] ) .
                              Tag::text ( 'fldStartDate' . $row, $schedulerItem->start,
                                           [ 'id' => 'fldStartDate' . $row,
                                             'size' => '18',
                                             'onChange' => "$('#U$rowIdx').attr('checked',true)" ] ) .
                            Tag::_td () .
-                           Tag::td () .
+                           Tag::td ( ['nowrap' => 'nowrap' ] ) .
                              Tag::text ( 'fldCron' . $row,  $schedulerItem->cron,
                                           [ 'onChange' => "$('#U$rowIdx').attr('checked',true)" ]  ) .
                            Tag::_td () .
-                           Tag::td () .
+                           Tag::td ( ['nowrap' => 'nowrap' ] ) .
                              Lists::select ( 'fldActive' . $row,  [ 'Yes', 'No' ],
                                                [ 'default' => $schedulerItem->active,
                                                  'onChange' => "$('#U$rowIdx').attr('checked',true)" ] ) .
                            Tag::_td () .
-                           Tag::td () . $lastRun . Tag::_td () .
+                           Tag::td ( ['nowrap' => 'nowrap' ] ) . $lastRun . Tag::_td () .
                          Tag::_tr ();
                 $rowIdx ++;
             }
@@ -122,11 +123,12 @@ JS;
                JS::library ( 'jquery.shiftclick.js' ) .
                JS::javaScript( $js ) .
                $valid->toHtml() .
+               Widget::styleTable ( '#' . $id ) .
                Tag::form (  [ 'name' => $formName, 'onSubmit' => $valid->onSubmit() ] ) .
                  $html .
                  Response::factory()->action ( __CLASS__ . '->save()' )->toHidden() .
                  Tag::submit ( 'Save' ) .
-            Tag::linkButton ( '?' . Response::factory()->action ( __CLASS__ . '->newItem()' ), 'New Item' ) .
+                 Tag::linkButton ( '?' . Response::factory()->action ( __CLASS__ . '->newItem()' ), 'New Item' ) .
                Tag::_form ();
     }
 
@@ -151,7 +153,7 @@ JS;
     }
 
     public function newItem () {
-        $defaults =  [ 'cmd'      => __CLASS__ . '->hello()',
+        $defaults =  [ 'cmd'      => __CLASS__ . '::hello();',
                        'start'    => date ( 'Y-m-d H:i' ),
                        'cron'     => '* * * * *',
                        'active'   => 'No' ];
