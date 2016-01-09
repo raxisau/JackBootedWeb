@@ -23,12 +23,13 @@ class CronManager extends WebPage  {
      */
     public function index () {
         $dao = new CronDAO ();
-        $cols = array_flip ( $dao->objToRel (  [ 'command' => 0, 'priority' => 1, 'result' => 2 ] ) );
+        $cols = array_flip ( $dao->objToRel (  [ 'command' => 0, 'priority' => 1, 'result' => 2, 'runTime' => 3 ] ) );
 
         $crud = new CRUD ( $dao->tableName );
         $crud->setColDisplay ( $cols[0], CRUD::DISPLAY );
         $crud->setColDisplay ( $cols[1],  [ CRUD::SELECT,  [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] ] );
         $crud->setColDisplay ( $cols[2], CRUD::DISPLAY );
+        $crud->setColDisplay ( $cols[3], CRUD::TIMESTAMP );
         return $crud->index ();
     }
 

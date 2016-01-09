@@ -40,8 +40,8 @@ class SchedulerManager extends WebPage  {
 
         $html = Tag::table ( [ 'id' => $id ] ) .
                   Tag::tr () .
-                    Tag::td () . 'Upd' .       Tag::_td () .
-                    Tag::td () . 'Del' .       Tag::_td () .
+                    Tag::th () . 'Upd' .       Tag::_th () .
+                    Tag::th () . 'Del' .       Tag::_th () .
                     Tag::th () . 'Command' .   Tag::_th () .
                     Tag::th () . 'Start Date'. Tag::_th () .
                     Tag::th () . 'Cron'  .     Tag::_th () .
@@ -74,9 +74,11 @@ JS;
                         timeFormat: 'HH:mm'
                     });
 JS;
-                $lastRun = $schedulerItem->lastRun;
-                if ( ! isset( $lastRun ) || $lastRun == false ) {
+                if ( $schedulerItem->lastRun == null || $lastRun == false ) {
                     $lastRun = '*Never*';
+                }
+                else {
+                    $lastRun = $schedulerItem->lastRun;
                 }
 
                 $html .= Tag::tr () .

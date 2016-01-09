@@ -41,8 +41,8 @@ class Cron extends ORM {
 
     public static function getList ( $batchSize=self::BATCH_SIZE ) {
         $table = self::$dao->search (  [ 'where' =>  [ 'status' => CronDAO::STATUS_NEW ],
-                                              'limit' => $batchSize,
-                                              'order' =>  [ 'priority' ] ] );
+                                         'limit' => $batchSize,
+                                         'order' =>  [ 'priority' ] ] );
         return self::tableToObjectList ( $table );
     }
 

@@ -59,7 +59,7 @@ class Scheduler extends ORM {
 
         foreach ( self::getList () as $sheduleItem ) {
 
-            if ( ! isset( $sheduleItem->lastRun ) || $sheduleItem->lastRun == false ) {
+            if ( $sheduleItem->lastRun == null || $sheduleItem->lastRun == false ) {
                 $lastRunTime = strtotime( $sheduleItem->start );
             }
             else {
@@ -68,7 +68,7 @@ class Scheduler extends ORM {
 
             $thisRunTime = CronParser::lastRun( $sheduleItem->cron );
             if ( $thisRunTime > $lastRunTime ) {
-                $sheduleItem->lastRun = date ( 'Y-m-d H:i', $thisRunTime );
+                $sheduleItem->lastRun = strftime ( '%Y-%m-%d %H:%M', $thisRunTime );
                 $sheduleItem->save ();
 
                 $job = new Cron (  [ 'ref' => $sheduleItem->id,
@@ -79,5 +79,4 @@ class Scheduler extends ORM {
         }
         return $numAdded;
     }
-
 }

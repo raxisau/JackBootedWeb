@@ -94,10 +94,10 @@ class CronParser extends \Jackbooted\Util\JB {
         $cronParts[5] =  [ (int)date( 'Y' ) ]; // assume current year
 
         // Uncomment this code if you want to see the list of the evaluated segments
-        //echo '<br/>' . "\n" . 'Original: ' . $originalString . ' Optimised: ' . $cronString . '<br/>' . "\n";
-        //foreach ( $cronParts as $idx => $part ) {
-        //    echo $idx . '[' . join( ', ', $part ) . ']<br/>' . "\n";
-        //}
+//        echo '<br/>' . "\n" . 'Original: ' . $originalString . ' Optimised: ' . $cronString . '<br/>' . "\n";
+//        foreach ( $cronParts as $idx => $part ) {
+//            echo $idx . '[' . join( ', ', $part ) . ']<br/>' . "\n";
+//        }
 
         // Find the index for the last run based on current time
         $correctParts =  [ 0, 0, 0, 0, 0, 0 ];
@@ -231,6 +231,7 @@ class CronParser extends \Jackbooted\Util\JB {
     }
 }
 //
+//date_default_timezone_set ( 'Australia/Brisbane' );
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '5/15 0 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0/15 * * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 2 * * *' ) ) . '<br/>' . "\n";
@@ -245,3 +246,5 @@ class CronParser extends \Jackbooted\Util\JB {
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '* 22-23 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '1-2 22-23 * * Monday-Wednesday' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '1,2,3,4,10-20 11-20 * * *' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 */4 * * *' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 0/4 * * *' ) ) . '<br/>' . "\n";

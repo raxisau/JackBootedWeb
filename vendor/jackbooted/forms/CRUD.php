@@ -29,17 +29,18 @@ use \Jackbooted\Util\StringUtil;
  *
  */
 class CRUD extends \Jackbooted\Util\JB {
-    const TABLE_C  = 'TABLE_CLASS';
-    const SUFFIX   = '_C';
-    const ACTION   = '_CA';
-    const DISPLAY  = 'DISPLAY';
-    const HIDDEN   = 'HIDDEN';
-    const NONE     = 'NONE';
-    const SELECT   = 'SELECT';
-    const RADIO    = 'RADIO';
-    const ENCTEXT  = 'ENCTEXT';
-    const TEXT     = 'TEXT';
-    const CHECKBOX = 'CHECKBOX';
+    const TABLE_C   = 'TABLE_CLASS';
+    const SUFFIX    = '_C';
+    const ACTION    = '_CA';
+    const DISPLAY   = 'DISPLAY';
+    const HIDDEN    = 'HIDDEN';
+    const NONE      = 'NONE';
+    const SELECT    = 'SELECT';
+    const RADIO     = 'RADIO';
+    const ENCTEXT   = 'ENCTEXT';
+    const TEXT      = 'TEXT';
+    const CHECKBOX  = 'CHECKBOX';
+    const TIMESTAMP = 'TIMESTAMP';
 
     private static $headerDisplayed=false;
 
@@ -391,6 +392,11 @@ JS;
                     case self::ENCTEXT:
                         $params[] = Cryptography::en ( $value );
                         break;
+                    
+                    case self::TIMESTAMP:
+                        $params[] = strtotime( (int)$value );
+                        break;
+
                     default:
                         if ( $this->nullsEmpty && empty ( $value ) ) $value = null;
                         $params[] = $value;
@@ -485,6 +491,13 @@ JS;
             case self::CHECKBOX:
                 $checkValue = ( isset ( $this->displayType[$colName][1] ) ) ? $this->displayType[$colName][1] : 'YES';
                 $html .= Tag::checkBox ( $name, $checkValue, $value == $checkValue, $updClickAttrib );
+                break;
+
+            case self::TIMESTAMP:
+                $attribs = array_merge ( $updCheckAttrib, $this->cellAttributes[$colName] );
+                $attribs['value'] = strftime ( '%Y-%m-%d %H:%M:%S', (int)$value );
+                $attribs['size']  = strlen( $attribs['value'] )  + 1;
+                $html .= Tag::text ( $name, $attribs );
                 break;
 
             case self::ENCTEXT:

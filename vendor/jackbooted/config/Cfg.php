@@ -65,7 +65,7 @@ class Cfg {
 
         $timeStamp = time ();
         self::set ( 'local_timestamp',  $timeStamp );
-        self::set ( 'local_date_time',  strftime ( '%Y-%m-%d %H:%M', $timeStamp ) );
+        self::set ( 'local_date_time',  strftime ( '%Y-%m-%d %H:%M:%S', $timeStamp ) );
         self::set ( 'local_date',       strftime ( '%Y-%m-%d', $timeStamp ) );
         self::set ( 'local_time',       strftime ( '%H:%M', $timeStamp ) );
         self::set ( 'local_date_array', getdate ( $timeStamp ) );

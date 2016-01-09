@@ -42,7 +42,7 @@ class SchedulerDAO extends DAO  {
               fldCron varchar(100) NOT NULL DEFAULT '',
               fldLastRun varchar(40) NOT NULL DEFAULT '',
               PRIMARY KEY ({$this->primaryKey})
-            );
+            )
 SQL;
 
         $this->orm =  [ 'command'         => 'fldCommand',
