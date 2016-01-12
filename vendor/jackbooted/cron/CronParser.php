@@ -20,12 +20,23 @@ namespace Jackbooted\Cron;
  * For this to be useful need to keep track of the last time that the command was run.
  * This means that you can use a construct like this
  *
- *  $thisRunTime = CronParser::lastRun( $sheduleItem->cron );
- *  if ( $thisRunTime > $lastRunTime ) {
- *      // Run this command
- *      // Save the last run.
- *      ...
- *  }
+ *      foreach ( self::getCronTabList () as $sheduleItem ) {
+ *
+ *          $storedLastRunTime = strtotime( ( $sheduleItem->lastRun == '' ) ? $sheduleItem->start : $sheduleItem->lastRun );
+ *          $previousCalculatedRunTime = CronParser::lastRun( $sheduleItem->cron );
+ *
+ *          // This looks at when the item had run. If the stored value is less than
+ *          // the calculated value means that we have past a run period. So need to run
+ *          if ( $storedLastRunTime <  $previousCalculatedRunTime ) {
+ *
+ *              // Update the run time to now
+ *              $sheduleItem->lastRun = strftime ( '%Y-%m-%d %H:%M', $previousCalculatedRunTime );
+ *              $sheduleItem->save ();
+ *
+ *              // Do the work to run the cron job here
+ *              // ..................
+ *          }
+ *      }
  *
  * Cron Definition
  # * * * * *
@@ -91,13 +102,16 @@ class CronParser extends \Jackbooted\Util\JB {
         $cronParts[2] = self::cronPartToRange( $cronParts[2], range( 1, 31 ) ); // Day of Month
         $cronParts[3] = self::cronPartToRange( $cronParts[3], range( 1, 12 ) ); // Month of the year
         $cronParts[4] = self::cronPartToRange( $cronParts[4], range( 0, 6 ) );  // Day of the week
-        $cronParts[5] =  [ (int)date( 'Y' ) ]; // assume current year
+        $cronParts[5] =  [ (int)date( 'Y' ) - 2, (int)date( 'Y' ) - 1, (int)date( 'Y' ) ]; // only go back 2 years
 
-        // Uncomment this code if you want to see the list of the evaluated segments
-//        echo '<br/>' . "\n" . 'Original: ' . $originalString . ' Optimised: ' . $cronString . '<br/>' . "\n";
-//        foreach ( $cronParts as $idx => $part ) {
-//            echo $idx . '[' . join( ', ', $part ) . ']<br/>' . "\n";
-//        }
+        // ******* TODO ****************
+        // The code below is usually commented out.
+        // Do not need this in production. So when you are done, remove
+        echo '<br/>' . "\n" . 'Original: ' . $originalString . ' Optimised: ' . $cronString . '<br/>' . "\n";
+        $cols = [ 'min', 'hrs', 'day or month', 'month', 'day of week', 'year'];
+        foreach ( $cronParts as $idx => $part ) {
+            echo $idx . ' - ' . $cols[$idx] . ' - [' . join( ', ', $part ) . ']<br/>' . "\n";
+        }
 
         // Find the index for the last run based on current time
         $correctParts =  [ 0, 0, 0, 0, 0, 0 ];
@@ -105,20 +119,39 @@ class CronParser extends \Jackbooted\Util\JB {
         $now = time();
 
         // search down the to the last run
-        for ( $correctParts[3]=count( $cronParts[3] ) - 1; $correctParts[3]>=0; $correctParts[3]-- ) {
-            for ( $correctParts[2]=count( $cronParts[2] ) - 1; $correctParts[2]>=0; $correctParts[2]-- ) {
+        for ( $correctParts[5]=count( $cronParts[5] ) - 1; $correctParts[5]>=0; $correctParts[5]-- ) {
 
-                // If this is not a valid day then skip it
-                if ( $numDaysOfWeek != 7 && ! in_array ( self::getDayOfWeek( $cronParts, $correctParts ), $cronParts[4] ) ) {
-                    continue;
-                }
+            for ( $correctParts[3]=count( $cronParts[3] ) - 1; $correctParts[3]>=0; $correctParts[3]-- ) {
+                for ( $correctParts[2]=count( $cronParts[2] ) - 1; $correctParts[2]>=0; $correctParts[2]-- ) {
 
-                // Calc hour and minute
-                for ( $correctParts[1]=count( $cronParts[1] ) - 1; $correctParts[1]>=0; $correctParts[1]-- ) {
-                    for ( $correctParts[0]=count( $cronParts[0] ) - 1; $correctParts[0]>=0; $correctParts[0]-- ) {
-                        $calcTime = self::calcTime( $cronParts, $correctParts );
-                        if ( $calcTime < $now ) {
-                            return $calcTime;
+                    // Screen out date where date is > 29 for feb
+                    if ( $cronParts[3][$correctParts[3]] == 2 && $cronParts[2][$correctParts[2]] > 29 ) {
+                        // echo 'Skipping : Month: ' . $cronParts[3][$correctParts[3]] . ' Day: ' . $cronParts[2][$correctParts[2]] . '<br/>' . "\n";
+                        continue;
+                    }
+
+                    // If this is the 31 and month is Sep, Apr, Jun, Nov then skip
+                    if ( $cronParts[2][$correctParts[2]] == 31 && in_array ( $cronParts[3][$correctParts[3]], [ 9, 4, 6, 11] ) ) {
+                        // echo 'Skipping : Month: ' . $cronParts[3][$correctParts[3]] . ' Day: ' . $cronParts[2][$correctParts[2]] . '<br/>' . "\n";
+                        continue;
+                    }
+
+                    // If this is not a valid day then skip it
+                    if ( $numDaysOfWeek != 7 ) {
+                        $dow = self::getDayOfWeek( $cronParts, $correctParts );
+                        if ( ! in_array ( $dow, $cronParts[4] ) ) {
+                            // echo 'Skipping : Day of Week: ' . $dow . '<br/>' . "\n";
+                            continue;
+                        }
+                    }
+
+                    // Calc hour and minute
+                    for ( $correctParts[1]=count( $cronParts[1] ) - 1; $correctParts[1]>=0; $correctParts[1]-- ) {
+                        for ( $correctParts[0]=count( $cronParts[0] ) - 1; $correctParts[0]>=0; $correctParts[0]-- ) {
+                            $calcTime = self::calcTime( $cronParts, $correctParts );
+                            if ( $calcTime < $now ) {
+                                return $calcTime;
+                            }
                         }
                     }
                 }
@@ -130,7 +163,8 @@ class CronParser extends \Jackbooted\Util\JB {
     }
 
     /**
-     * Calculates the time based on the pointers into the valid range of array
+     * Calculates the time based on the pointers into the valid range of array.
+     *
      * @param array $cronParts array of arrays containing the valid ranges based on cron string
      * @param array $correctParts pointers into the array that we are testing
      * @return number The time based on the valid cron pieces
@@ -142,6 +176,9 @@ class CronParser extends \Jackbooted\Util\JB {
                         $cronParts[3][$correctParts[3]],
                         $cronParts[2][$correctParts[2]],
                         $cronParts[5][$correctParts[5]] );
+        //echo '$cronParts  - [' . join( ', ', $cronParts  ) . ']<br/>' . "\n";
+        //echo '$correctParts  - [' . join( ', ', $correctParts  ) . ']<br/>' . "\n";
+        //echo date ( 'Y-m-d H:i', $tim ) . '<br/>' . "\n";
         return $tim;
     }
     /**
@@ -161,10 +198,13 @@ class CronParser extends \Jackbooted\Util\JB {
     }
 
     /**
-     * Takes the cron component and the range of valid numbers and reduces the list
-     * @param unknown $part the part of the cron string
-     * @param unknown $fullRange valid range
-     * @return multitype:number |multitype:|Ambigous <multitype:, multitype:Ambigous <unknown, multitype:number , multitype:, multitype:Ambigous <unknown, multitype:number , multitype:> > >|unknown
+     * Takes the cron component and the range of valid numbers and reduces the list.
+     * This method calls itself recursively until all the elements are evaluated
+     *
+     * @param type $part
+     * @param type $fullRange. For the position the $fullRange variable contains all the elements that would be valid.
+     *                         e.g. minutes would be range( 0, 59 )
+     * @return type
      */
     private static function cronPartToRange ( $part, $fullRange ) {
 
@@ -185,7 +225,10 @@ class CronParser extends \Jackbooted\Util\JB {
             return $validValues;
         }
 
-        // This is the starting point and the divisor
+        // This is the starting point and the divisor e.g.
+        // */5 = start at 0 and select every 5th element so 0, 5, 10 ....
+        // or 2/3 = start at second element and then every 3rd element so 2, 5,
+        // LHS could be a range like 30-50
         else if ( strpos( $part, '/' ) !== false ) {
             //Split to LHS and RHS
             $bits = explode( '/', $part );
@@ -210,7 +253,8 @@ class CronParser extends \Jackbooted\Util\JB {
 
             $rhsElement = (int)$bits[1];
 
-            // Identify the positions that match the RHS
+            // Identify the positions that match the RHS. Step through the array and see if the indexes
+            // modulus rhs is 0
             $validValues =  [];
             foreach ( $lhsRange as $idx => $num ) {
                 if ( ( $idx % $rhsElement ) == 0 ) $validValues[] = $num;
@@ -230,14 +274,15 @@ class CronParser extends \Jackbooted\Util\JB {
         }
     }
 }
-//
+// The code below is usually commented out.
+// Do not need this in production. So when you are done, remove
 //date_default_timezone_set ( 'Australia/Brisbane' );
+//echo 'Simple case - no calcs (* * * * *) - LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '* * * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '5/15 0 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0/15 * * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 2 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '* 11-20 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0/15 * * * *' ) ) . '<br/>' . "\n";
-//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '* * * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '* 12-21 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 2 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '1-59/2 14-23 * * *' ) ) . '<br/>' . "\n";
@@ -248,3 +293,7 @@ class CronParser extends \Jackbooted\Util\JB {
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '1,2,3,4,10-20 11-20 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 */4 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 0/4 * * *' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 2/3 * * *' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '30-50/3 * * * *' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 0 31 * *' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', YACronParser::lastRun( '0 0 31 * Monday,Wednesday,Friday' ) ) . '<br/>' . "\n";
