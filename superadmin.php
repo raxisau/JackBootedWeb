@@ -26,7 +26,7 @@ $pageTimer = new \Jackbooted\Time\Stopwatch ( 'Page Load' );
                     <table width="100%" cellpadding="0" cellspacing="0">
                         <tr>
                             <td width="100" nowrap="nowrap" valign="top" height="50">
-                                <a href="?"><img alt="Logo" src="<?= \App\Jack::logo (); ?>" border=0 height="90"/>
+                                <a href="?"><img alt="Logo" src="<?= \App\Jack::logo (); ?>" border=0 height="90"/></a>
                             </td>
                             <td width="100%" nowrap="nowrap" valign="top" align="left">
                                 <h1>Super Administration</h1>
