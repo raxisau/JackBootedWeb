@@ -115,8 +115,12 @@ class Request extends PipeLine {
         // if no key then give them the lot
         if ( $key === null ) return $this->formVars;
 
-        if ( isset ( $this->formVars[$key] ) ) return $this->formVars[$key];
-        else if ( $def === null ) return '';
+        if ( isset ( $this->formVars[$key] ) ) {
+            return $this->formVars[$key];
+        }
+        else if ( $def === null ) {
+            return '';
+        }
         else {
             $this->setVar ( $key, $def );
             return $def;

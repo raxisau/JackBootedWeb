@@ -67,7 +67,7 @@ class WebPage extends \Jackbooted\Util\JB {
         if ( ! Cfg::get ( 'check_priviliages', false ) ) return $action;
 
         if ( ( $loginAction = Privileges::access ( $action ) ) === false ) return false;
-        if ( is_string ( $loginAction ) ) {
+        if ( is_string ( $loginAction ) && isset ( $_SERVER["REQUEST_URI"] ) ) {
             Request::set ( self::SAVE_URL, $_SERVER["REQUEST_URI"] );
             $action = $loginAction;
         }

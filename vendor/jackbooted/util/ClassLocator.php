@@ -101,10 +101,21 @@ class ClassLocator extends \Jackbooted\Util\JB {
     public function getClassLocation ( $className ) {
         if ( ! isset( $this->locationArray ) ) $this->loadArrayFromDisk ();
 
+        //echo '<pre>';
+        //print_r ( $this->locationArray );
+        //echo '<pre>';
+        
         // If the class location exists then send it back
         if ( isset ( $this->locationArray[$className] ) &&
              file_exists ( $this->locationArray[$className] ) ) {
             return $this->locationArray[$className];
+        }
+        else if ( substr( $className, 0, 1 ) == '\\' ) {
+            $relativeClassName = substr( $className, 1 );
+            if ( isset ( $this->locationArray[$relativeClassName] ) &&
+                 file_exists ( $this->locationArray[$relativeClassName] ) ) {
+                return $this->locationArray[$relativeClassName];
+            }
         }
 
         // If made it to here then regenerate the array

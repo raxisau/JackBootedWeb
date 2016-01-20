@@ -10,7 +10,7 @@ namespace Jackbooted;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
+/*
 use \Jackbooted\Admin\Admin;
 use \Jackbooted\Admin\FancyLogin;
 use \Jackbooted\Admin\ImagePositionLocator;
@@ -81,3 +81,4 @@ use \Jackbooted\Util\PHPExt;
 use \Jackbooted\Util\Sess;
 use \Jackbooted\Util\StringUtil;
 use \Jackbooted\Util\XLS;
+*/
