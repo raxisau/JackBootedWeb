@@ -44,9 +44,36 @@ class ConfigManager extends WebPage {
                        $this->editJSONEditForm ( $currentConfigKey ) .
                      Tag::_td () .
                    Tag::_tr () .
+                   Tag::tr( ) .
+                     Tag::td( [ 'nowrap' => 'nowrap', 'valign' => 'top', 'colspan' => 2 ] ) .
+                       $this->addForm ( ) .
+                     Tag::_td () .
                  Tag::_table ();
 
         return $html;
+    }
+
+    public function addForm () {
+        $resp = MenuUtils::responseObject ();
+        $html = Tag::form ( ) .
+                  $resp->action ( __CLASS__ . '->addFormSave()' )->toHidden() .
+                  Tag::table ( ) .
+                    Tag::tr ( ) .
+                      Tag::td ( ) . 'New Key' . Tag::_td ( ) .
+                      Tag::td ( ) . Tag::text ( 'fldCfgKey' ) . Tag::_td ( ) .
+                      Tag::td ( ) . Tag::submit ( 'Add New Key' ) . Tag::_td ( ) .
+                    Tag::_tr ( ) .
+                  Tag::_table ( ) .
+                Tag::_form ( );
+        return $html;
+    }
+
+    public function addFormSave () {
+        Config::put( Request::get ( 'fldCfgKey' ), true );
+
+        return Widget::popupWrapper ( 'Saved Config Item: ' . Request::get ( 'fldCfgKey' ), 1000, 'Save Config Message' ) .
+               $this->index ();
+
     }
 
     public function editConfigForm ( $currentConfigKey ) {
@@ -200,7 +227,7 @@ JS;
     }
 
     public function saveConfig ( ) {
-        Config::put( Request::get ( 'fldCfgKey' ), json_decode( Request::get ( 'fldCfgValue' ), true ) );
+        Config::put( Request::get ( 'fldCfgKey' ), Request::get ( 'fldCfgValue' ) );
 
         return Widget::popupWrapper ( 'Saved Config Item: ' . Request::get ( 'fldCfgKey' ), 1000, 'Save Config Message' ) .
                $this->index ();

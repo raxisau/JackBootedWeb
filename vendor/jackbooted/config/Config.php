@@ -26,7 +26,7 @@ class Config extends \Jackbooted\Util\JB {
     private static $configItemsObjects = [];
     private static $overrideScope = false;
 
-    const INSERT_SQL = "REPLACE INTO tblConfig VALUES(?,?,?)";
+    const INSERT_SQL = "REPLACE INTO tblConfig (fldUserID,fldKey,fldValue) VALUES(?,?,?)";
     const SELECT_SQL = "SELECT fldValue FROM tblConfig WHERE fldKey=? AND fldUserID=?";
     const GLOBAL_SCOPE = 'GLOBAL';
     const USER_SCOPE   = 'USER';
@@ -46,7 +46,9 @@ class Config extends \Jackbooted\Util\JB {
             }
             else {
                 self::$configItemsObjects[$key] = $def;
-                self::putIntoDB( $key, $def, $scope );
+                if ( $def != '' ) {
+                    self::putIntoDB( $key, $def, $scope );
+                }
                 return $def;
             }
         }
