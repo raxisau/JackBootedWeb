@@ -30,6 +30,7 @@ class AdminConfig extends WebPage {
         $crud = new CRUD( 'tblConfig',  [ 'insDefaults' =>  [ 'fldUserID' => G::getUserID() ],
                                           'primaryKey'  => 'fldKey' ] );
         $crud->setColDisplay ( 'fldUserID', CRUD::HIDDEN );
+        $crud->columnAttrib ( 'fldValue', [ 'size' => 60 ] );
 
         return $crud->index();
     }
