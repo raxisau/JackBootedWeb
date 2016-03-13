@@ -392,7 +392,7 @@ JS;
                     case self::ENCTEXT:
                         $params[] = Cryptography::en ( $value );
                         break;
-                    
+
                     case self::TIMESTAMP:
                         $params[] = strtotime( (int)$value );
                         break;
@@ -676,7 +676,8 @@ JS;
         foreach ( $this->columnTitles as $colName => $title ) {
             if ( isset ( $this->cellAttributes[$colName]['size'] ) ) continue;
             $width = $this->arrayMaxStringLength ( $tab->getColumn ( $colName ) );
-            if ( $width >= 0 && $width < 40 ) {
+            if ( $width > 40 ) $width = 40;
+            if ( $width >= 0 && $width <= 40 ) {
                 $this->cellAttributes[$colName]['size'] = $width;
             }
         }
