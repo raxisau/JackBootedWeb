@@ -73,20 +73,30 @@ class Paginator extends Navigator {
      *                  'rows'             => 100,  // Optional. Number of rows that the Paginator has to deal with
      *                                        // Based on this number and the number of rows per page, the number of
      *                                        // pages are calculated
+     *                  'def_num_rows'     => 15,  // Optional. Number of rows default on this pagination
      *                );
      * </pre>
      */
     public function __construct ( $props=[] ) {
-        $this->attribs      = ( isset ( $props['attribs'] ) ) ? $props['attribs'] :  [];
-        $suffix             = ( isset ( $props['suffix'] ) )  ? $props['suffix']  : Invocation::next();
-        $this->navVar       = self::navVar ( $suffix );
-        $initPattern        = ( isset ( $props['request_vars'] ) ) ? $props['request_vars'] : '';
-        $this->respVars     = new Response ( $initPattern );
-        $this->dispPageSize = ( isset ( $props['display_pagesize'] ) ) ? $props['display_pagesize'] : true;
+        parent::__construct();
+
+        $this->attribs       = ( isset ( $props['attribs'] ) ) ? $props['attribs'] :  [];
+        $suffix              = ( isset ( $props['suffix'] ) )  ? $props['suffix']  : Invocation::next();
+        $this->navVar        = self::navVar ( $suffix );
+        $initPattern         = ( isset ( $props['request_vars'] ) ) ? $props['request_vars'] : '';
+        $this->respVars      = new Response ( $initPattern );
+        $this->dispPageSize  = ( isset ( $props['display_pagesize'] ) ) ? $props['display_pagesize'] : true;
+
+        $defPagination = array_merge( self::$pagination );
+        if ( isset ( $props['def_num_rows'] ) ) $defPagination[self::ROWS_PER_PAGE] = $props['def_num_rows'];
+        if ( ! in_array( $defPagination[self::ROWS_PER_PAGE], self::$itemsPerPageList ) ) {
+            self::$itemsPerPageList[] = $defPagination[self::ROWS_PER_PAGE];
+            sort( self::$itemsPerPageList );
+        }
 
         // ensure that they have been set
         $requestPageVars = Request::get ( $this->navVar,  [] );
-        foreach ( self::$pagination as $key => $val ) {
+        foreach ( $defPagination as $key => $val ) {
             $this->set ( $key, ( ( isset ( $requestPageVars[$key] ) ) ? $requestPageVars[$key] : $val ) );
         }
 

@@ -17,10 +17,14 @@ abstract class Navigator extends \Jackbooted\Util\JB {
     // This needs to be public because it is set directly in the sub classes
     // Quercus will create a new object if it is not public
     public $respVars;
-    
+
     protected $attribs;
     protected $formVars;
     protected $navVar;
+
+    public function __construct () {
+        parent::__construct();
+    }
 
     /**
      * @param  $key
