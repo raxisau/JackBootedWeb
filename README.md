@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/raxisau/JackBooted.png?label=ready&title=Ready)](https://waffle.io/raxisau/JackBooted)
 ## Welcome to JackBooted PHP Framework
 
 I have given up on MVC!
