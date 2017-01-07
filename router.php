@@ -7,14 +7,14 @@ $requestMethod = $_SERVER['REQUEST_METHOD'];
 switch ( $requestMethod ) {
     case 'GET':
         if ( $requestURI == '/api/Ping' ) {
-            echo \App\Mocks\APIPing::index();
+            echo \App\API\APIPing::index();
             exit;
         }
 
     case 'POST':
         switch ( $requestURI ) {
             case '/api/Ping':
-                echo \App\Mocks\APIPing::index();
+                echo \App\API\APIPing::index();
                 exit;
         }
 }
