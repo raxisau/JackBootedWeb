@@ -46,7 +46,7 @@ class GMailSender extends \PHPMailer {
         $this->Username = Config::get( 'gmail.smtp.username', 'brettcraigdutton@gmail.com' );
 
         //Password to use for SMTP authentication
-        $enPassword = Config::get( 'gmail.smtp.password', ':e:sWQlpSVotD8PGXxS5kAuHlq0gMH522qtQkCYCQ0DVBI=' );
+        $enPassword = Config::get( 'gmail.smtp.password', ':e:tal4ci5KDsGTUXrz+asHGO3Cmp99BGYOZ0pncoeMaa4=' );
 
         $cr = new Cryptography( Cryptography::RAND_KEY );
         $this->Password = $cr->decrypt( $enPassword );
