@@ -6,7 +6,8 @@ $config['menu'] = [ 'Main'   => '\App\Controllers\JackMain',
 
 $config['modules']   = [ '\App\Jack' ];
 
-$config['migration'] = [ '\App\Commands\MigrationsCLI' ];
+$config['migration'] = [ '\App\Commands\InstallationCLI',
+                         '\App\Commands\MigrationsCLI' ];
 
 $config['def_display'] = '\App\Controllers\JackMain->index()';
 

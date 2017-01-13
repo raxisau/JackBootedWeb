@@ -1,5 +1,5 @@
 <?php
-namespace App\Mocks;
+namespace App\API;
 
 class APIPing {
     public static function index () {

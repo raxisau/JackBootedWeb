@@ -12,7 +12,7 @@ $config['LF']           = "\r\n";
 // Pick up the current server config
 $config['site_path']    = dirname ( __FILE__ );
 $config['tmp_path']     = $config['site_path'] . '/_private';
-$config['class_path']   =  [ $config['site_path'] . '/vendor', $config['site_path'] . '/app' ];
+$config['class_path']   = [ $config['site_path'] . '/vendor', $config['site_path'] . '/app' ];
 
 $config['server']       = ( isset ( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : 'cli.local';
 $config['site_url']     = 'http://' . $config['server'];
@@ -44,7 +44,6 @@ $config['jb_db']             = true;   // If this is standard Jackbooted databas
 
 $config['timezone']          = 'UTC';
 $config['known']             = [ ]; //TamperGuard Variables. Variables that add to Tamperguard that are not checked
-$config['exempt']            = [ 'cron.php', 'menu.php' ]; // List of files that are not checked
 
 // Jackbooted checks for Timeout of URL, also checks for tampering. These variables must
 // exist in the url or form variables
