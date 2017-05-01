@@ -52,6 +52,7 @@ class ClassLocator extends \Jackbooted\Util\JB {
      */
     private static $regexClassSearch     = '/^\s*\b(interface|trait|class|abstract\s*class|final\s*class)\b/';
     private static $regexNameSpaceSearch = '/namespace\s*([\\\\[:alnum:]]*)\s*/';
+    private static $regexPHPFiles        = '/^.*\.(php|class)$/';
     private static $defaultInstance;
     private static $log = null;
 
@@ -195,7 +196,9 @@ class ClassLocator extends \Jackbooted\Util\JB {
         if ( ! file_exists( $fullPathName ) ) return;
 
         // Do not bother with this file
+        $fileNameMatches = null;
         if ( $fullPathName == __FILE__ ) return;
+        if ( ! preg_match ( self::$regexPHPFiles, $fullPathName, $fileNameMatches ) ) return;
 
         $namespace = '';
         $nameSpaceMatches = null;
