@@ -48,7 +48,7 @@ $config['known']             = [ ]; //TamperGuard Variables. Variables that add 
 // Jackbooted checks for Timeout of URL, also checks for tampering. These variables must
 // exist in the url or form variables
 // The list below are the scripts that are exempt from checking.
-$config['exempt']            = [ 'cron.php', 'router.php' ]; // List of files that are not checked
+$config['exempt']            = [ 'cron.php', 'router.php', 'menu.php' ]; // List of files that are not checked
 
 $config['crypto_key']        = 'PredefinedEncryptionKeyhgfqf786w7676wedw'; // This key is shuffled around and put into the session
                                                                            // Which is then used for encrypting form variables
