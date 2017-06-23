@@ -107,11 +107,11 @@ class CronParser extends \Jackbooted\Util\JB {
         // ******* TODO ****************
         // The code below is usually commented out.
         // Do not need this in production. So when you are done, remove
-        echo '<br/>' . "\n" . 'Original: ' . $originalString . ' Optimised: ' . $cronString . '<br/>' . "\n";
-        $cols = [ 'min', 'hrs', 'day or month', 'month', 'day of week', 'year'];
-        foreach ( $cronParts as $idx => $part ) {
-            echo $idx . ' - ' . $cols[$idx] . ' - [' . join( ', ', $part ) . ']<br/>' . "\n";
-        }
+        //echo '<br/>' . "\n" . 'Original: ' . $originalString . ' Optimised: ' . $cronString . '<br/>' . "\n";
+        //$cols = [ 'min', 'hrs', 'day or month', 'month', 'day of week', 'year'];
+        //foreach ( $cronParts as $idx => $part ) {
+        //    echo $idx . ' - ' . $cols[$idx] . ' - [' . join( ', ', $part ) . ']<br/>' . "\n";
+        //}
 
         // Find the index for the last run based on current time
         $correctParts =  [ 0, 0, 0, 0, 0, 0 ];
