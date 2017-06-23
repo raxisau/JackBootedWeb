@@ -66,6 +66,11 @@ class Stopwatch extends \Jackbooted\Util\JB {
         return date ( 'Y-m-d H:i:s', $time );
     }
 
+    public static function dateToDB ( $time=false ) {
+        if ( $time === false ) $time = time();
+        return date ( 'Y-m-d', $time );
+    }
+
     public static function msToStr ( $delta ) {
         $ms = $delta * 1000;
         $sec = intval ( $ms / 1000 ); $ms %= 1000;
