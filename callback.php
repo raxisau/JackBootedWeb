@@ -16,4 +16,4 @@ $mail_body = $_SERVER['HTTP_X_HUB_SIGNATURE'] . "\n" .
 $subject   = "Jack Commit " . date( "Y-m-d H:i:s" ); //subject 
 $header    = "From: ". $Name . " <" . $email . ">\r\n"; //optional headerfields 
 
-mail($recipient, $subject, $mail_body, $header); //mail command :) 
+mail($recipient, $subject, $mail_body, $header);
