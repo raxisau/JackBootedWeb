@@ -1,6 +1,6 @@
 <?php
 
-$Name      = "Commit Callback"; //senders name 
+$Name      = "Push Callback"; //senders name 
 $email     = "github@brettdutton.com"; //senders e-mail adress 
 $recipient = "brett@brettdutton.com"; //recipient 
 $mail_body = system( 'cd ' . dirname( __FILE__ ) . '; /usr/bin/git pull' ); //mail body 
