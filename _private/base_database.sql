@@ -11,7 +11,7 @@ CREATE TABLE tblLoginAttempt ( fldLoginAttemptID varchar(12) NOT NULL DEFAULT ''
 CREATE TABLE tblTimeZone ( fldTimeZoneID char(4) NOT NULL, fldDescription char(50) NOT NULL DEFAULT '', fldTime char(20) NOT NULL DEFAULT '', fldCode char(10) NOT NULL DEFAULT '', PRIMARY KEY (fldTimeZoneID));
 CREATE TABLE tblUserGroupMap ( fldUserGroupMapID char(10) NOT NULL DEFAULT '', fldUserID char(10) NOT NULL DEFAULT '', fldGroupID char(10) NOT NULL DEFAULT '', PRIMARY KEY (fldUserGroupMapID));
 CREATE TABLE tblSecPrivUserMap ( fldSecPrivUserMapID char(10) NOT NULL DEFAULT '', fldUserID char(10) NOT NULL DEFAULT '', fldGroupID char(10) NOT NULL DEFAULT '', fldLevelID char(10) NOT NULL DEFAULT '', fldPrivilegeID char(10) NOT NULL DEFAULT '', fldStartDate int(25) DEFAULT '0', fldEndDate int(25) DEFAULT '0', fldLoginAction varchar(100) NOT NULL DEFAULT '', PRIMARY KEY (fldSecPrivUserMapID));
-CREATE TABLE tblConfig (fldUserID varchar (11) NOT NULL, fldKey varchar (100) NOT NULL, fldValue varchar (1000) DEFAULT NULL, PRIMARY KEY (fldUserID, fldKey));
+CREATE TABLE tblConfig (fldConfigID varchar(11) NOT NULL,fldUserID varchar (11) NOT NULL, fldKey varchar (100) NOT NULL, fldValue varchar (1000) DEFAULT NULL, PRIMARY KEY (fldConfigID));
 CREATE TABLE tblMigration (fldMigrationID varchar (11) NOT NULL, fldRun char (5) NOT NULL, fldClass varchar (200) NOT NULL, fldMethod varchar (50) NOT NULL, fldReadTime datetime NOT NULL DEFAULT current_timestamp, PRIMARY KEY (fldMigrationID));
 
 

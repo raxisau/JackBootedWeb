@@ -27,8 +27,7 @@ class AdminConfig extends WebPage {
             return Login::controller( Login::DEF );
         }
 
-        $crud = new CRUD( 'tblConfig',  [ 'insDefaults' =>  [ 'fldUserID' => G::getUserID() ],
-                                          'primaryKey'  => 'fldKey' ] );
+        $crud = new CRUD( 'tblConfig',  [ 'insDefaults' =>  [ 'fldUserID' => G::getUserID() ] ] );
         $crud->setColDisplay ( 'fldUserID', CRUD::HIDDEN );
         $crud->columnAttrib ( 'fldValue', [ 'size' => 60 ] );
 
