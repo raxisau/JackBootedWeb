@@ -26,10 +26,11 @@ class Config extends \Jackbooted\Util\JB {
     private static $configItemsObjects = [];
     private static $overrideScope = false;
 
-    const INSERT_SQL = "REPLACE INTO tblConfig (fldUserID,fldKey,fldValue) VALUES(?,?,?)";
-    const SELECT_SQL = "SELECT fldValue FROM tblConfig WHERE fldKey=? AND fldUserID=?";
-    const GLOBAL_SCOPE = 'GLOBAL';
-    const USER_SCOPE   = 'USER';
+    const INSERT_SQL    = "REPLACE INTO tblConfig (fldConfigID,fldUserID,fldKey,fldValue) VALUES(?,?,?,?)";
+    const SELECT_SQL_ID = "SELECT fldConfigID FROM tblConfig WHERE fldKey=? AND fldUserID=?";
+    const SELECT_SQL    = "SELECT fldValue FROM tblConfig WHERE fldKey=? AND fldUserID=?";
+    const GLOBAL_SCOPE  = 'GLOBAL';
+    const USER_SCOPE    = 'USER';
 
     public static function setOverrideScope ( $scope=false ) {
         self::$overrideScope = $scope;
@@ -73,7 +74,16 @@ class Config extends \Jackbooted\Util\JB {
     }
 
     private static function putIntoDB ( $key, $value, $scope=self::USER_SCOPE ) {
-        DB::exec ( DB::DEF, self::INSERT_SQL,  [ self::getScope( $scope ), $key, json_encode( $value ) ] );
+        $uid = self::getScope( $scope );
+        
+        if ( ( $id = DB::oneValue( DB::DEF, self::SELECT_SQL_ID,  [ $key, $uid ] ) ) === false ) {
+            $id = DBMaintenance::dbNextNumber( DB::DEF, 'tblConfig' );
+        }
+        
+        DB::exec ( DB::DEF, self::INSERT_SQL,  [ DBMaintenance::dbNextNumber( DB::DEF, 'tblConfig' ),
+                                                  $uid, 
+                                                  $key, 
+                                                  json_encode( $value ) ] );
     }
 
     private static function getFromDB( $key, $scope=self::USER_SCOPE ) {
@@ -85,6 +95,7 @@ class Config extends \Jackbooted\Util\JB {
         else if ( $uid !== self::GLOBAL_SCOPE ) {
             if ( ( $serializedValue = DB::oneValue( DB::DEF, self::SELECT_SQL,  [ $key, self::GLOBAL_SCOPE ] ) ) !== false ) {
                 self::$configItemsObjects[$key] = json_decode( $serializedValue, true );
+                return true;
             }
         }
     }
