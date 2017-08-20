@@ -81,7 +81,7 @@ class Config extends \Jackbooted\Util\JB {
             $id = DBMaintenance::dbNextNumber( DB::DEF, 'tblConfig' );
         }
         
-        DB::exec ( DB::DEF, self::INSERT_SQL,  [ DBMaintenance::dbNextNumber( DB::DEF, 'tblConfig' ),
+        DB::exec ( DB::DEF, self::INSERT_SQL,  [ $id,
                                                   $uid, 
                                                   $key, 
                                                   json_encode( $value ) ] );
