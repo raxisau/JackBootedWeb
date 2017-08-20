@@ -2,6 +2,7 @@
 namespace Jackbooted\Config;
 
 use \Jackbooted\DB\DB;
+use \Jackbooted\DB\DBMaintenance;
 use \Jackbooted\G;
 
 /**
