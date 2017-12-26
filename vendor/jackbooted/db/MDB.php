@@ -4,7 +4,7 @@ namespace Jackbooted\DB;
 use \Jackbooted\Config\Cfg;
 use \Jackbooted\Util\Log4PHP;
 /**
- * @copyright Confidential and copyright (c) 2017 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2018 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
