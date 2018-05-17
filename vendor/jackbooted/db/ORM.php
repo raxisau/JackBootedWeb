@@ -69,12 +69,14 @@ abstract class ORM extends \Jackbooted\Util\JB {
     }
 
     protected  $data;
+    protected  $dirty;
     private    $dao;
 
     public function __construct ( DAO $dao, $data ) {
         parent::__construct();
         $this->dao = $dao;
-        $this->data = $this->dao->objToRel ( $data );
+        $this->data  = $this->dao->objToRel ( $data );
+        $this->dirty = array_fill_keys( array_keys( $this->data ), 0 ); // Keep a list of changed variables
     }
 
     public function __get ( $key ) {
@@ -88,7 +90,9 @@ abstract class ORM extends \Jackbooted\Util\JB {
         if ( isset ( $this->dao->orm[$key] ) ) {
             $key = $this->dao->orm[$key];
         }
-        $this->data[$key] = $value;
+
+        $this->dirty[$key] = 1; // Set this to be updated
+        $this->data[$key]  = $value;
     }
 
     public function getData ( ) {
@@ -99,7 +103,15 @@ abstract class ORM extends \Jackbooted\Util\JB {
         if ( isset ( $this->data[$this->dao->primaryKey] ) ) {
             $where =  [ $this->dao->primaryKey => $this->data[$this->dao->primaryKey] ];
             $data = array_merge ( $this->data );
+
+            // remove the primary key from the update
             unset ( $data[$this->dao->primaryKey] );
+
+            // Do not update any values that have not been changed
+            foreach ( $this->dirty as $key => $value ) {
+                if ( $value != 1 ) unset ( $data[$key] );
+            }
+
             $this->dao->update ( $data, $where );
             return self::UPDATE;
         }
