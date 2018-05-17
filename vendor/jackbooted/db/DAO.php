@@ -47,9 +47,14 @@ abstract class DAO extends \Jackbooted\Util\JB {
         if ( ! isset( $this->orm['id'] ) ) $this->orm['id'] = $this->primaryKey;
 
         if ( ! isset( $this->titles[$this->primaryKey] ) ) $this->titles[$this->primaryKey] = 'ID';
+    }
 
-        // Could automatically populate the titles based on the column names
-        // But at this stage it is "YAGNI" reference CRUD::jbCol2Title
+    public function defaultORM () {
+        if ( ( $row = DB::oneRow( $this->db, "SELECT * FROM " . $this->tableName . " LIMIT 1" ) ) !== FALSE ) {
+            foreach ( array_keys( $row ) as $colName ) {
+                $this->orm[$colName] = $colName;
+            }
+        }
     }
 
     /**
