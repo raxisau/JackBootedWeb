@@ -59,7 +59,6 @@ class Cfg {
     }
 
     public static function setUpDates ( ) {
-        echo "setUpDates Called: <br/>";
         if ( ( $tz = G::get( 'fldTimeZone', false ) ) !== false ) {
             date_default_timezone_set ( $tz );
         }
