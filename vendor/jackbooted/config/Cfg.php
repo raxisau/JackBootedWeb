@@ -60,6 +60,7 @@ class Cfg {
 
     public static function setUpDates ( ) {
         if ( ( $tz = self::get ( 'timezone', false ) ) !== false ) {
+            echo ('<b>Seeting timezone: ' . $tz . '</b><br/>' );
             date_default_timezone_set ( $tz );
         }
 
