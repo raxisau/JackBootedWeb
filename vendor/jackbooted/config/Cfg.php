@@ -149,7 +149,12 @@ HTML;
         Login::initSession ();
 
         // See if we can log the user in
-        if ( ! Login::loadPreferencesFromCookies () ) {
+        if ( Login::loadPreferencesFromCookies () ) {
+            if ( ( $tz = G::get( 'fldTimeZone', null ) ) !== null ) {
+                self::set( 'timezone', $tz );
+            }
+        }
+        else {
             if ( G::isLoggedIn () ) Login::logOut();
         }
     }

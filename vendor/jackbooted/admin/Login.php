@@ -159,7 +159,7 @@ SQL;
 SQL;
                 $numEntries = DB::oneValue ( DB::DEF, $sql,  [ hash( 'md5', $password ), $username ] );
             }
-            
+
             $sucessfulLogin = ( $numEntries == 1 );
 
             if ( ! $sucessfulLogin ) {
@@ -391,7 +391,7 @@ TXT;
     public function checkLogin () {
         $username = Request::get ( self::LOGIN_FNAME );
         $password = Request::get ( self::PASSW_FNAME );
-        
+
         if ( ! isset( $username ) || $username == false ||
              ! isset( $password ) || $password == false ) return false;
 
