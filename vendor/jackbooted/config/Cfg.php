@@ -59,7 +59,10 @@ class Cfg {
     }
 
     public static function setUpDates ( ) {
-        if ( ( $tz = self::get ( 'timezone', false ) ) !== false ) {
+        if ( ( $tz = G::get( 'fldTimeZone', false ) ) !== false ) {
+            date_default_timezone_set ( $tz );
+        }
+        else if ( ( $tz = self::get ( 'timezone', false ) ) !== false ) {
             date_default_timezone_set ( $tz );
         }
 

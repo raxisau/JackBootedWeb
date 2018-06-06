@@ -44,9 +44,6 @@ class FancyLogin extends Login {
 
     public function index ( ) {
         $html = ( G::isLoggedIn () ) ? $this->displayUserDetails() : $this->loginForm();
-
-        $html .= 'Timezone: ' . Cfg::get ( 'timezone', false ) . '<br/>';
-
         return $html;
     }
 

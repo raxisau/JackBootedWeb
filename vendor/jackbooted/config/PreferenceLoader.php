@@ -78,13 +78,6 @@ class PreferenceLoader extends \Jackbooted\Util\JB {
         foreach ( $tab as $row ) {
             foreach ( $row as $key => $val ) {
                 switch ( $key ) {
-                case 'fldTimeZone':
-                    if ( ! empty( $val ) ) {
-                        Cfg::set ( 'timezone', $val );
-                        Cfg::setUpDates ( );
-                    }
-                    break;
-
                 case 'fldPicture':
                 case 'fldPhoto'  : $typ = 'IMAGE'; break;
                 default:           $typ = 'DATA';  break;
