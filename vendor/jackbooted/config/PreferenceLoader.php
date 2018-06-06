@@ -79,7 +79,9 @@ class PreferenceLoader extends \Jackbooted\Util\JB {
             foreach ( $row as $key => $val ) {
                 switch ( $key ) {
                 case 'fldTimeZone':
-                    if ( ! empty( $val ) ) {
+                    echo 'Setting timezone: ' . $val;
+
+                    if ( $val != NULL ) {
                         Cfg::set ( 'timezone', $val );
                         Cfg::setUpDates ( );
                     }

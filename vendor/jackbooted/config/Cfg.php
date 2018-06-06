@@ -59,6 +59,7 @@ class Cfg {
     }
 
     public static function setUpDates ( ) {
+        echo "setUpDates Called: <br/>";
         if ( ( $tz = self::get ( 'timezone', false ) ) !== false ) {
             date_default_timezone_set ( $tz );
         }
