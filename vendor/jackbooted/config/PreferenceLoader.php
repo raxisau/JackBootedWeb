@@ -2,6 +2,7 @@
 namespace Jackbooted\Config;
 
 use \Jackbooted\DB\DB;
+use \Jackbooted\Config\Cfg;
 use \Jackbooted\DB\DBTable;
 /** LoadPrefs.php - Loads up User Preferences
  *
@@ -77,9 +78,16 @@ class PreferenceLoader extends \Jackbooted\Util\JB {
         foreach ( $tab as $row ) {
             foreach ( $row as $key => $val ) {
                 switch ( $key ) {
-                case "fldPicture":
-                case "fldPhoto"  : $typ = "IMAGE"; break;
-                default:           $typ = "DATA";  break;
+                case 'fldTimeZone':
+                    if ( ! empty( $val ) ) {
+                        Cfg::set ( 'timezone', $val );
+                        Cfg::setUpDates ( );
+                    }
+                    break;
+
+                case 'fldPicture':
+                case 'fldPhoto'  : $typ = 'IMAGE'; break;
+                default:           $typ = 'DATA';  break;
                 }
 
                 // Put the value and data type into the User Prefs/Types arrays
