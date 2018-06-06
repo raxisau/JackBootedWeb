@@ -60,7 +60,10 @@ class Cfg {
 
     public static function setUpDates ( ) {
         echo "setUpDates Called: <br/>";
-        if ( ( $tz = self::get ( 'timezone', false ) ) !== false ) {
+        if ( ( $tz = G::get( 'fldTimeZone', false ) ) !== false ) {
+            date_default_timezone_set ( $tz );
+        }
+        else if ( ( $tz = self::get ( 'timezone', false ) ) !== false ) {
             date_default_timezone_set ( $tz );
         }
 
@@ -149,12 +152,7 @@ HTML;
         Login::initSession ();
 
         // See if we can log the user in
-        if ( Login::loadPreferencesFromCookies () ) {
-            if ( ( $tz = G::get( 'fldTimeZone', null ) ) !== null ) {
-                self::set( 'timezone', $tz );
-            }
-        }
-        else {
+        if ( ! Login::loadPreferencesFromCookies () ) {
             if ( G::isLoggedIn () ) Login::logOut();
         }
     }
