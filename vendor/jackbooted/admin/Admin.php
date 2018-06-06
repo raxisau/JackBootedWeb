@@ -31,7 +31,7 @@ class Admin extends WebPage  {
     const USER_SQL_SQLITE  = "SELECT fldUserID,fldFirstName || ' ' || fldLastName FROM tblUser";
     const GROUP_SQL = 'SELECT fldGroupID,fldName FROM tblGroup';
     const LEVEL_SQL = 'SELECT fldUserTypeValue,UPPER(fldUserTypeName) FROM tblUserType';
-    const TZ_SQL    = 'SELECT fldCode,fldTime FROM tblTimeZone';
+    const TZ_SQL    = "SELECT fldCode,CONCAT(fldDescription,'(',fldTime,')'), FROM tblTimeZone";
     const PRIV_SQL  = 'SELECT fldSecPrivilegesID,fldName FROM tblSecPrivileges';
 
     private static $completeMenu;

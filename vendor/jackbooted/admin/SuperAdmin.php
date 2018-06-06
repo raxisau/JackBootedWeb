@@ -7,6 +7,7 @@ use \Jackbooted\DB\DBMaintenance;
 use \Jackbooted\DB\DBTable;
 use \Jackbooted\Forms\Request;
 use \Jackbooted\Forms\Response;
+use \Jackbooted\Forms\Grid;
 use \Jackbooted\G;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\WebPage;
@@ -35,6 +36,7 @@ class SuperAdmin extends WebPage  {
                                  'Update tblNextNumber' => __CLASS__ . '->updateNextNumber()',
                                  'Reload Preferences'   => __CLASS__ . '->reloadPreferences()',
                                  'File Checksum'        => __CLASS__ . '->fileChecksum()',
+                                 'Init Timezones'       => __CLASS__ . '->initTimeZone()',
                                  'Review Images'        => '\Jackbooted\Admin\ImagePositionLocator->index()',
                                  'CRON Manager'         => '\Jackbooted\Cron\CronManager->index()',
                                  'Schedule Manager'     => '\Jackbooted\Cron\SchedulerManager->index()',
@@ -144,6 +146,25 @@ class SuperAdmin extends WebPage  {
     protected function reloadPreferences () {
         Login::loadPreferences ( G::get ( 'fldUser' ) );
         return 'Reloaded Preferences';
+    }
+
+    public function initTimeZone () {
+        DB::exec ( DB::DEF, 'TRUNCATE tblTimeZone' );
+        DB::exec ( DB::DEF, "UPDATE tblNextNumber SET fldNext=1 WHERE fldTable='tblTimeZone'" );
+
+        foreach( timezone_abbreviations_list() as $abbr => $timezone ){
+            foreach( $timezone as $val ){
+                if( isset( $val['timezone_id'] ) ) {
+                    DB::exec ( DB::DEF,
+                               'INSERT INTO tblTimeZone VALUES(?,?,?,?)',
+                               [ DBMaintenance::dbNextNumber ( DB::DEF, 'tblTimeZone' ),
+                               $val['timezone_id'],
+                               'UTC ' . number_format( $val['offset'] / 60.0 / 60.0, 1 ) . ' hours',
+                               number_format( $val['offset'] / 60.0 / 60.0, 1 ) ] );
+                }
+            }
+        }
+        return Grid::factory( 'SELECT * FROM tblTimeZone' )->index();
     }
 
     public function fileChecksum () {
