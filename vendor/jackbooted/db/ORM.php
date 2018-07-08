@@ -76,7 +76,11 @@ abstract class ORM extends \Jackbooted\Util\JB {
         parent::__construct();
         $this->dao = $dao;
         $this->data  = $this->dao->objToRel ( $data );
-        $this->dirty = array_fill_keys( array_keys( $this->data ), 0 ); // Keep a list of changed variables
+        $this->clearDirty();
+    }
+
+    public function clearDirty() {
+        $this->dirty = array_fill_keys( array_keys( $this->data ), 0 );
     }
 
     public function __get ( $key ) {
@@ -113,10 +117,12 @@ abstract class ORM extends \Jackbooted\Util\JB {
             }
 
             $this->dao->update ( $data, $where );
+            $this->clearDirty();
             return self::UPDATE;
         }
         else {
             $this->data[$this->dao->primaryKey] = $this->dao->insert ( $this->data );
+            $this->clearDirty();
             return self::INSERT;
         }
     }
