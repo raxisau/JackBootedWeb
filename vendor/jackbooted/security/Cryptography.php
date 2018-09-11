@@ -4,6 +4,10 @@ namespace Jackbooted\Security;
 use \Jackbooted\Config\Cfg;
 use \Jackbooted\G;
 use \Jackbooted\Util\Log4PHP;
+
+use \Defuse\Crypto\Key;
+use \Defuse\Crypto\Crypto;
+
 /*
  * @copyright Confidential and copyright (c) 2018 Jackbooted Software. All rights reserved.
  *
@@ -25,37 +29,21 @@ class Cryptography extends \Jackbooted\Util\JB {
     //echo str_shuffle ( 'PredefinedEncryptionKey12345678901234567' );
     const RAND_KEY = '4n5d73rde315E486pe9t7oy2nirefcPKnie0y126';
 
-    const META = ':e:';
-    const META_LEN = 3;
-    const PADDING = '                                                  ';
+    const META      = ':e:';
+    const META_LEN  = 3;
+    const DMETA     = ':d:';
+    const DMETA_LEN = 3;
+    const PADDING   = '                                                  ';
 
-    private static $randKey;
     private static $instance = null;
     private static $log;
     private static $encryptionOff = false;
-    private static $algortithm;
+
 
     public static function init () {
         self::$log = Log4PHP::logFactory ( __CLASS__ );
         self::$encryptionOff = Cfg::get ( 'encrypt_override' );
-        if ( ! function_exists ( 'mcrypt_get_key_size' ) ) {
-            self::$encryptionOff = true;
-        }
-
-        // The IV is session specific. See if the key has been set in the session
-        if ( isset ( $_SESSION[G::SESS][G::CRYPTO] ) ) {
-            self::$randKey = md5 ( $_SESSION[G::SESS][G::CRYPTO] );
-        }
-        else {
-            self::$randKey = md5 ( self::RAND_KEY );
-            self::$log->warn ( 'Using the default key for crypto' );
-        }
-
-        if ( ! self::$encryptionOff ) {
-            self::$algortithm = ( Cfg::get ( 'quercus', false ) ) ? MCRYPT_TRIPLEDES : MCRYPT_RIJNDAEL_256;
-        }
-
-        self::$instance = new Cryptography ( self::$randKey );
+        self::$instance = new Cryptography ();
     }
 
     /**
@@ -80,8 +68,9 @@ class Cryptography extends \Jackbooted\Util\JB {
         return new Cryptography( $l_key );
     }
 
-    private $td;
-    private $blockLength;
+    private $randKey;
+    private $key;
+    private $encryptionKey = null;
 
     /**
      *
@@ -89,23 +78,34 @@ class Cryptography extends \Jackbooted\Util\JB {
      */
     public function __construct ( $l_key=null ) {
         parent::__construct();
+        if ( self::$encryptionOff ) return;
+        $this->encryptionKey = $l_key;
+        $this->randKey       = md5 ( ( isset ( $_SESSION[G::SESS][G::CRYPTO] ) ) ? $_SESSION[G::SESS][G::CRYPTO] : self::RAND_KEY );
+        $this->key           =  Key::createKey( ( $this->encryptionKey == null ) ? $this->randKey : $this->encryptionKey );
+    }
 
-        if ( self::$encryptionOff ) {
-            return;
+    private $td = null;
+    private $mcryptInit = false;
+
+    private function mcryptInit () {
+        if ( $this->mcryptInit ) return;
+        $this->mcryptInit = true;
+
+        if ( ! self::$encryptionOff ) {
+            $algortithm = ( Cfg::get ( 'quercus', false ) ) ? MCRYPT_TRIPLEDES : MCRYPT_RIJNDAEL_256;
         }
 
-        $plainTextKey = ( $l_key == null ) ? self::$randKey : $l_key;
+        $plainTextKey = ( $this->encryptionKey == null ) ? $this->randKey : $this->encryptionKey;
 
-        $keySize = mcrypt_get_key_size ( self::$algortithm, MCRYPT_MODE_ECB );
+        $keySize = \mcrypt_get_key_size ( $algortithm, MCRYPT_MODE_ECB );
         while ( strlen ( $plainTextKey ) < $keySize ) $plainTextKey .= $plainTextKey;
         $plainTextKey = substr ( $plainTextKey, 0, $keySize );
 
-        $this->blockLength = mcrypt_get_block_size ( self::$algortithm, MCRYPT_MODE_ECB );
-        $this->td = mcrypt_module_open ( self::$algortithm, '', MCRYPT_MODE_ECB, '' );
-
+        $this->td = mcrypt_module_open ( $algortithm, '', MCRYPT_MODE_ECB, '' );
         $iv = mcrypt_create_iv ( mcrypt_enc_get_iv_size ( $this->td ), MCRYPT_RAND );
-        mcrypt_generic_init ( $this->td, $plainTextKey, $iv );
+        mcrypt_generic_init ( $this-h>td, $plainTextKey, $iv );
     }
+
     /**
      * encrypt the passed string
      * @param string $input
@@ -117,20 +117,22 @@ class Cryptography extends \Jackbooted\Util\JB {
             return $plainText;
         }
 
-        $len = strlen ( $plainText ) % $this->blockLength;
-        if ( $len != 0 ) {
-            $charactersNeeded = $this->blockLength - $len;
-            $plainText .= substr ( self::PADDING, 0, $charactersNeeded );
-        }
-
-        $m = mcrypt_generic ( $this->td, $plainText );
-        $cypherText = self::META . base64_encode ( $m );
+        $cypherText = self::DMETA . base64_encode ( Crypto::encrypt( $plainText, $this->key, true ) );
         return $cypherText;
     }
 
     public function decrypt ( $cypherText ) {
-        if ( strpos ( $cypherText, self::META ) !==  0 ) return $cypherText;
-        $plainText = trim ( mdecrypt_generic ( $this->td, base64_decode ( substr ( $cypherText, self::META_LEN ) ) ) );
+        if ( strpos ( $cypherText, self::DMETA ) ===  0 ) {
+            $plainText = Crypto::decrypt( base64_decode ( substr ( $cypherText, self::DMETA_LEN ) ), $this->key, true );
+        }
+        else if ( strpos ( $cypherText, self::META ) ===  0 ) {
+            $this->mCryptInit();
+            $plainText = trim ( mdecrypt_generic ( $this->td, base64_decode ( substr ( $cypherText, self::META_LEN ) ) ) );
+        }
+        else {
+            $plainText = $cypherText;
+        }
+
         return $plainText;
     }
 
@@ -138,7 +140,8 @@ class Cryptography extends \Jackbooted\Util\JB {
      * Clean up the crypto resources when they go out of scope
      */
     public function __destruct() {
-        if ( function_exists ( 'mcrypt_generic_deinit' ) && $this->td != null ) mcrypt_generic_deinit ( $this->td );
-        if ( function_exists ( 'mcrypt_module_close' ) && $this->td != null ) mcrypt_module_close ( $this->td );
+        if ( ! $this->mcryptInit ) return;
+        if ( function_exists ( 'mcrypt_generic_deinit' ) && $this->td != null ) eval( 'mcrypt_generic_deinit ( $this->td );' );
+        if ( function_exists ( 'mcrypt_module_close' )   && $this->td != null ) eval( 'mcrypt_module_close ( $this->td );' );
     }
 }
