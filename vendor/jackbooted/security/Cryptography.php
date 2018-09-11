@@ -103,7 +103,7 @@ class Cryptography extends \Jackbooted\Util\JB {
 
         $this->td = mcrypt_module_open ( $algortithm, '', MCRYPT_MODE_ECB, '' );
         $iv = mcrypt_create_iv ( mcrypt_enc_get_iv_size ( $this->td ), MCRYPT_RAND );
-        mcrypt_generic_init ( $this-h>td, $plainTextKey, $iv );
+        mcrypt_generic_init ( $this->td, $plainTextKey, $iv );
     }
 
     /**
