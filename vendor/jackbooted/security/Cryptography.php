@@ -38,7 +38,7 @@ class Cryptography extends \Jackbooted\Util\JB {
     private static $instance = null;
     private static $log;
     private static $encryptionOff = false;
-
+    private static $old = true;
 
     public static function init () {
         self::$log = Log4PHP::logFactory ( __CLASS__ );
@@ -86,6 +86,7 @@ class Cryptography extends \Jackbooted\Util\JB {
 
     private $td = null;
     private $mcryptInit = false;
+    private $blockLength;
 
     private function mcryptInit () {
         if ( $this->mcryptInit ) return;
@@ -101,6 +102,7 @@ class Cryptography extends \Jackbooted\Util\JB {
         while ( strlen ( $plainTextKey ) < $keySize ) $plainTextKey .= $plainTextKey;
         $plainTextKey = substr ( $plainTextKey, 0, $keySize );
 
+        $this->blockLength = mcrypt_get_block_size ( $algortithm, MCRYPT_MODE_ECB );
         $this->td = mcrypt_module_open ( $algortithm, '', MCRYPT_MODE_ECB, '' );
         $iv = mcrypt_create_iv ( mcrypt_enc_get_iv_size ( $this->td ), MCRYPT_RAND );
         mcrypt_generic_init ( $this->td, $plainTextKey, $iv );
@@ -117,7 +119,19 @@ class Cryptography extends \Jackbooted\Util\JB {
             return $plainText;
         }
 
-        $cypherText = self::DMETA . base64_encode ( Crypto::encrypt( $plainText, $this->key, true ) );
+        if ( self::$old ) {
+            $this->mCryptInit();
+            $len = strlen ( $plainText ) % $this->blockLength;
+            if ( $len != 0 ) {
+                $charactersNeeded = $this->blockLength - $len;
+                $plainText .= substr ( self::PADDING, 0, $charactersNeeded );
+            }
+
+            $cypherText = self::META . base64_encode ( mcrypt_generic ( $this->td, $plainText ) );
+        }
+        else {
+            $cypherText = self::DMETA . base64_encode ( Crypto::encrypt( $plainText, $this->key, true ) );
+        }
         return $cypherText;
     }
 
