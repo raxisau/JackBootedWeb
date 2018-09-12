@@ -44,6 +44,9 @@ class Cfg {
         self::ensureNoForgery ();
         self::setErrorLevel ();
         self::setUpDates ();
+
+        //error_reporting ( -1 );
+        //ini_set ( 'display_errors', '1' );
     }
 
     public static function get ( $key=null, $def='' ) {

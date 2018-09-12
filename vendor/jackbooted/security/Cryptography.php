@@ -131,6 +131,7 @@ class Cryptography extends \Jackbooted\Util\JB {
             $cypherText = self::META . base64_encode ( mcrypt_generic ( $this->td, $plainText ) );
         }
         else {
+            if ( !is_string( $plainText ) ) $plainText = "{$plainText}";
             $cypherText = self::DMETA . base64_encode ( Crypto::encrypt( $plainText, $this->key, true ) );
         }
         return $cypherText;
