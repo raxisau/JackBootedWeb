@@ -52,7 +52,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * Suffix for classes that are auto loaded
      */
     const CLASS_SUFFIX = '.php';
-    const THIRD_PARTY_REGEX = '/^.*\/3rdparty\/.*$/';
+    const THIRD_PARTY_REGEX = '/^.*\/3rdparty.*$/';
     /**
      * initialization method
      */

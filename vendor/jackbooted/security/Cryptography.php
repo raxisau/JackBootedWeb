@@ -41,9 +41,10 @@ class Cryptography extends \Jackbooted\Util\JB {
     private static $old = true;
 
     public static function init () {
-        self::$log = Log4PHP::logFactory ( __CLASS__ );
+        self::$log           = Log4PHP::logFactory ( __CLASS__ );
         self::$encryptionOff = Cfg::get ( 'encrypt_override' );
-        self::$instance = new Cryptography ();
+        self::$old           = Cfg::get ( 'mcrypt', true );
+        self::$instance      = new Cryptography ();
     }
 
     /**
@@ -78,10 +79,10 @@ class Cryptography extends \Jackbooted\Util\JB {
      */
     public function __construct ( $l_key=null ) {
         parent::__construct();
-        if ( self::$encryptionOff ) return;
+
         $this->encryptionKey = $l_key;
         $this->randKey       = md5 ( ( isset ( $_SESSION[G::SESS][G::CRYPTO] ) ) ? $_SESSION[G::SESS][G::CRYPTO] : self::RAND_KEY );
-        $this->key           =  Key::createKey( ( $this->encryptionKey == null ) ? $this->randKey : $this->encryptionKey );
+        $this->key           = Key::createKey( ( $this->encryptionKey == null ) ? $this->randKey : $this->encryptionKey );
     }
 
     private $td = null;
@@ -98,7 +99,7 @@ class Cryptography extends \Jackbooted\Util\JB {
 
         $plainTextKey = ( $this->encryptionKey == null ) ? $this->randKey : $this->encryptionKey;
 
-        $keySize = \mcrypt_get_key_size ( $algortithm, MCRYPT_MODE_ECB );
+        $keySize = mcrypt_get_key_size ( $algortithm, MCRYPT_MODE_ECB );
         while ( strlen ( $plainTextKey ) < $keySize ) $plainTextKey .= $plainTextKey;
         $plainTextKey = substr ( $plainTextKey, 0, $keySize );
 
