@@ -116,9 +116,8 @@ class Cryptography extends \Jackbooted\Util\JB {
      */
     public function encrypt ( $plainText, $force=false ) {
         if ( self::$encryptionOff && ! $force ) return $plainText;
-        if ( ! isset ( $plainText ) || strlen ( $plainText ) == 0 ) {
-            return $plainText;
-        }
+        if ( !is_string( $plainText ) ) $plainText = "{$plainText}";
+        if ( ! isset ( $plainText ) || strlen ( $plainText ) == 0 ) return $plainText;
 
         if ( self::$old ) {
             $this->mCryptInit();
@@ -129,9 +128,20 @@ class Cryptography extends \Jackbooted\Util\JB {
             }
 
             $cypherText = self::META . base64_encode ( mcrypt_generic ( $this->td, $plainText ) );
+
+            // Checking that new system is consistant
+            $newCypherText = self::DMETA . base64_encode ( Crypto::encrypt( $plainText, $this->key, true ) );
+            $checkPlain    = $this->decrypt( $newCypherText );
+            if ( $checkPlain != $plainText ) {
+                echo "<pre>";
+                echo "Was unable to encrypt and decrypt the following\n";
+                echo "Original plainText ***$plainText*** => ***$newCypherText***\n";
+                echo "Decoded  ***$checkPlain*** \n";
+                echo "</pre>";
+                exit;
+            }
         }
         else {
-            if ( !is_string( $plainText ) ) $plainText = "{$plainText}";
             $cypherText = self::DMETA . base64_encode ( Crypto::encrypt( $plainText, $this->key, true ) );
         }
         return $cypherText;
