@@ -43,7 +43,7 @@ class Cryptography extends \Jackbooted\Util\JB {
     public static function init () {
         self::$log           = Log4PHP::logFactory ( __CLASS__ );
         self::$encryptionOff = Cfg::get ( 'encrypt_override' );
-        self::$old           = Cfg::get ( 'mcrypt', true );
+        self::$old           = Cfg::get ( 'mcrypt', false );
         self::$instance      = new Cryptography ();
     }
 
