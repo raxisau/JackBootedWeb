@@ -2,6 +2,7 @@
 namespace Jackbooted\Admin;
 
 use \Jackbooted\Config\Cfg;
+use \Jackbooted\Config\Config;
 use \Jackbooted\Config\PreferenceLoader;
 use \Jackbooted\DB\DB;
 use \Jackbooted\DB\DBMaintenance;
@@ -216,7 +217,7 @@ SQL;
         // If not then set it up
         if ( ! isset ( $_SESSION[G::SESS][G::CRYPTO] ) ) {
             $iv = str_shuffle ( Cfg::get ( 'crypto_key', G::IV ) );
-            $_SESSION[G::SESS][G::CRYPTO] = $iv;
+            $_SESSION[G::SESS][G::CRYPTO] = Config::get( 'session.crypto.key', $iv, Config::GLOBAL_SCOPE );
         }
     }
 
