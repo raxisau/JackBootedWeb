@@ -35,10 +35,10 @@ class Cryptography extends \Jackbooted\Util\JB {
     const DMETA_LEN = 3;
     const PADDING   = '                                                  ';
 
-    private static $instance = null;
+    private static $instance      = null;
     private static $log;
     private static $encryptionOff = false;
-    private static $old = true;
+    private static $old           = false;
 
     public static function init () {
         self::$log           = Log4PHP::logFactory ( __CLASS__ );
