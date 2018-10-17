@@ -1,6 +1,7 @@
 <?php
 namespace Jackbooted\Html;
 
+use \Jackbooted\Config\Cfg;
 use \Jackbooted\Util\Invocation;
 /**
  * @copyright Confidential and copyright (c) 2018 Jackbooted Software. All rights reserved.
@@ -203,6 +204,20 @@ JS;
 JS;
         return JS::libraryWithDependancies( JS::JQUERY_UI ) .
                JS::javaScript ( $js );
+    }
+
+    public static function facebox ( $selector='a.facebox') {
+        $jsUrl = Cfg::get ( 'js_url');
+        $js = <<<JS
+    $().ready(function() {
+        $('$selector').facebox({ closeImage:   '$jsUrl/images/closelabel.png',
+                                 loadingImage: '$jsUrl/images/loading.gif'
+
+        });
+    });
+JS;
+        return JS::libraryWithDependancies ( JS::FACEBOX ) .
+               JS::javaScript(  $js );
     }
 
     public static function reload ( $callBack, $url, $numOfSeconds=20, $css='ReloadWidget'  ) {
