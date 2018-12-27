@@ -7,7 +7,7 @@ use \Jackbooted\Forms\Response;
 use \Jackbooted\Html\WebPage;
 use \Jackbooted\Security\Password;
 /**
- * @copyright Confidential and copyright (c) 2018 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
