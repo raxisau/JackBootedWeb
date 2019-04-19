@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Config;
 
 use \Jackbooted\DB\DB;
@@ -20,24 +21,23 @@ use \Jackbooted\G;
  * $this->Username = Config::get( 'gmail.smtp.username', 'brettcraigdutton@gmail.com' );
  *
  */
-
 class Config extends \Jackbooted\Util\JB {
 
     // In memory cache of configuration items
     private static $configItemsObjects = [];
     private static $overrideScope = false;
 
-    const INSERT_SQL    = "REPLACE INTO tblConfig (fldConfigID,fldUserID,fldKey,fldValue) VALUES(?,?,?,?)";
+    const INSERT_SQL = "REPLACE INTO tblConfig (fldConfigID,fldUserID,fldKey,fldValue) VALUES(?,?,?,?)";
     const SELECT_SQL_ID = "SELECT fldConfigID FROM tblConfig WHERE fldKey=? AND fldUserID=?";
-    const SELECT_SQL    = "SELECT fldValue FROM tblConfig WHERE fldKey=? AND fldUserID=?";
-    const GLOBAL_SCOPE  = 'GLOBAL';
-    const USER_SCOPE    = 'USER';
+    const SELECT_SQL = "SELECT fldValue FROM tblConfig WHERE fldKey=? AND fldUserID=?";
+    const GLOBAL_SCOPE = 'GLOBAL';
+    const USER_SCOPE = 'USER';
 
-    public static function setOverrideScope ( $scope=false ) {
+    public static function setOverrideScope( $scope = false ) {
         self::$overrideScope = $scope;
     }
 
-    public static function get ( $key, $def='', $scope=self::USER_SCOPE ) {
+    public static function get( $key, $def = '', $scope = self::USER_SCOPE ) {
         if ( isset( self::$configItemsObjects[$key] ) ) {
             return self::$configItemsObjects[$key];
         }
@@ -56,12 +56,12 @@ class Config extends \Jackbooted\Util\JB {
         }
     }
 
-    public static function put ( $key, $value, $scope=self::USER_SCOPE ) {
+    public static function put( $key, $value, $scope = self::USER_SCOPE ) {
         self::$configItemsObjects[$key] = $value;
         self::putIntoDB( $key, $value, $scope );
     }
 
-    private static function getScope ( $scope=self::USER_SCOPE ) {
+    private static function getScope( $scope = self::USER_SCOPE ) {
         if ( self::$overrideScope ) {
             $uid = self::$overrideScope;
         }
@@ -74,34 +74,35 @@ class Config extends \Jackbooted\Util\JB {
         return $uid;
     }
 
-    private static function putIntoDB ( $key, $value, $scope=self::USER_SCOPE ) {
+    private static function putIntoDB( $key, $value, $scope = self::USER_SCOPE ) {
         $uid = self::getScope( $scope );
-        
-        if ( ( $id = DB::oneValue( DB::DEF, self::SELECT_SQL_ID,  [ $key, $uid ] ) ) === false ) {
+
+        if ( ( $id = DB::oneValue( DB::DEF, self::SELECT_SQL_ID, [ $key, $uid ] ) ) === false ) {
             $id = DBMaintenance::dbNextNumber( DB::DEF, 'tblConfig' );
         }
-        
-        DB::exec ( DB::DEF, self::INSERT_SQL,  [ $id,
-                                                  $uid, 
-                                                  $key, 
-                                                  json_encode( $value ) ] );
+
+        DB::exec( DB::DEF, self::INSERT_SQL, [ $id,
+            $uid,
+            $key,
+            json_encode( $value ) ] );
     }
 
-    private static function getFromDB( $key, $scope=self::USER_SCOPE ) {
+    private static function getFromDB( $key, $scope = self::USER_SCOPE ) {
         $uid = self::getScope( $scope );
 
-        if ( ( $serializedValue = DB::oneValue( DB::DEF, self::SELECT_SQL,  [ $key, $uid ] ) ) !== false ) {
+        if ( ( $serializedValue = DB::oneValue( DB::DEF, self::SELECT_SQL, [ $key, $uid ] ) ) !== false ) {
             self::$configItemsObjects[$key] = json_decode( $serializedValue, true );
         }
         else if ( $uid !== self::GLOBAL_SCOPE ) {
-            if ( ( $serializedValue = DB::oneValue( DB::DEF, self::SELECT_SQL,  [ $key, self::GLOBAL_SCOPE ] ) ) !== false ) {
+            if ( ( $serializedValue = DB::oneValue( DB::DEF, self::SELECT_SQL, [ $key, self::GLOBAL_SCOPE ] ) ) !== false ) {
                 self::$configItemsObjects[$key] = json_decode( $serializedValue, true );
                 return true;
             }
         }
     }
 
-    public static function clearCache(){
+    public static function clearCache() {
         self::$configItemsObjects = [];
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\DB;
 
 use \Jackbooted\Config\Cfg;
@@ -17,19 +18,19 @@ use \Jackbooted\DB\DB;
  */
 class Migrations extends \Jackbooted\Html\WebPage {
 
-    public static function init () {
-        self::$log = Log4PHP::logFactory ( __CLASS__ );
+    public static function init() {
+        self::$log = Log4PHP::logFactory( __CLASS__ );
     }
 
-    public static function migrate () {
+    public static function migrate() {
         $maxRun = 0;
         $runItems = [];
         foreach ( DBTable::factory( DB::DEF, 'SELECT * FROM tblMigration' ) as $row ) {
-            if ( (int)$row['fldRun'] > $maxRun ) {
-                $maxRun = (int)$row['fldRun'];
+            if ( (int) $row['fldRun'] > $maxRun ) {
+                $maxRun = (int) $row['fldRun'];
             }
 
-            if ( ! isset( $runItems[$row['fldClass']] ) ) {
+            if ( !isset( $runItems[$row['fldClass']] ) ) {
                 $runItems[$row['fldClass']] = [];
             }
 
@@ -44,15 +45,17 @@ class Migrations extends \Jackbooted\Html\WebPage {
             $clazz = new \ReflectionClass( $migrationClass );
 
             // If new class then just add empty list
-            if ( ! isset( $runItems[$migrationClass] ) ) {
+            if ( !isset( $runItems[$migrationClass] ) ) {
                 $runItems[$migrationClass] = [];
             }
 
             // get a list of methods to run
             $methodList = [];
             foreach ( $clazz->getMethods() as $method ) {
-                if ( in_array( $method->name, $runItems[$migrationClass] ) ) continue;
-                if ( strpos( $method->name, 'migrate' ) !== 0 ) continue;
+                if ( in_array( $method->name, $runItems[$migrationClass] ) )
+                    continue;
+                if ( strpos( $method->name, 'migrate' ) !== 0 )
+                    continue;
 
                 // Add the name to the list
                 $methodList[] = $method->name;
@@ -62,20 +65,19 @@ class Migrations extends \Jackbooted\Html\WebPage {
             sort( $methodList );
 
             foreach ( $methodList as $method ) {
-                if ( ( $result = call_user_func([ $migrationClass, $method ] ) ) === false ) {
+                if ( ( $result = call_user_func( [ $migrationClass, $method ] ) ) === false ) {
                     $html .= "There is a problem running {$migrationClass}::{$method}<br/>\n";
                 }
                 else {
                     $html .= $result;
-                    DB::exec( DB::DEF,
-                              'INSERT INTO tblMigration (fldMigrationID,fldRun,fldClass,fldMethod) VALUES (?,?,?,?)',
-                              [ DBMaintenance::dbNextNumber( DB::DEF, 'tblMigration' ),
-                                $maxRun,
-                                $migrationClass,
-                                $method ] );
+                    DB::exec( DB::DEF, 'INSERT INTO tblMigration (fldMigrationID,fldRun,fldClass,fldMethod) VALUES (?,?,?,?)', [ DBMaintenance::dbNextNumber( DB::DEF, 'tblMigration' ),
+                        $maxRun,
+                        $migrationClass,
+                        $method ] );
                 }
             }
         }
         return $html;
     }
+
 }

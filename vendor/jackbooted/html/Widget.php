@@ -1,8 +1,10 @@
 <?php
+
 namespace Jackbooted\Html;
 
 use \Jackbooted\Config\Cfg;
 use \Jackbooted\Util\Invocation;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -13,14 +15,15 @@ use \Jackbooted\Util\Invocation;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
 class Widget extends \Jackbooted\Util\JB {
 
     private static $buttonDomSelectorList = [];
-    public static function button ( $domSelector ) {
+
+    public static function button( $domSelector ) {
 
         // If we have done this selector, then nothing to do
-        if ( in_array( $domSelector, self::$buttonDomSelectorList ) ) return '';
+        if ( in_array( $domSelector, self::$buttonDomSelectorList ) )
+            return '';
 
         self::$buttonDomSelectorList[] = $domSelector;
 
@@ -29,16 +32,18 @@ class Widget extends \Jackbooted\Util\JB {
                 $("$domSelector").button();
             });
 JS;
-        return JS::libraryWithDependancies ( JS::JQUERY_UI ) .
-               JS::javaScript ( $js );
+        return JS::libraryWithDependancies( JS::JQUERY_UI ) .
+                JS::javaScript( $js );
     }
 
     private static $styleComboInvocations = 0;
-    public static function comboBoxJS ( $tag, $pickList ) {
-        if ( ! isset( $pickList ) ||
-             $pickList === false ||
-             ! is_array( $pickList ) ||
-             count( $pickList ) <= 0 ) return '';
+
+    public static function comboBoxJS( $tag, $pickList ) {
+        if ( !isset( $pickList ) ||
+                $pickList === false ||
+                !is_array( $pickList ) ||
+                count( $pickList ) <= 0 )
+            return '';
 
         $html = '';
         if ( self::$styleComboInvocations == 0 ) {
@@ -52,13 +57,14 @@ JS;
                     font-size: 1.0em;
                 }
 CSS;
-            $html .= JS::css ( $css );
+            $html .= JS::css( $css );
         }
 
         $maxLength = max( array_map( 'strlen', $pickList ) );
-        if ( $maxLength > 20 ) $maxLength = 20;
+        if ( $maxLength > 20 )
+            $maxLength = 20;
 
-        $pickListJSON = json_encode ( $pickList );
+        $pickListJSON = json_encode( $pickList );
         $js = <<<JS
             var isOpen = false;
             $().ready ( function () {
@@ -90,14 +96,15 @@ CSS;
                     });
             });
 JS;
-        return JS::libraryWithDependancies ( JS::JQUERY_UI ) .
-               $html .
-               JS::javaScript ( $js );
+        return JS::libraryWithDependancies( JS::JQUERY_UI ) .
+                $html .
+                JS::javaScript( $js );
     }
 
-    public static function popupWrapper ( $msg, $timeout=1500, $title='' ) {
+    public static function popupWrapper( $msg, $timeout = 1500, $title = '' ) {
         $id = Invocation::next();
-        if ( $title == '' ) $title = 'Message:';
+        if ( $title == '' )
+            $title = 'Message:';
 
         if ( $timeout < 0 ) {
             $timeoutJS = <<<JS
@@ -111,7 +118,6 @@ JS;
                 setTimeout ( "$('#popupWrapper_$id').dialog('close')", $timeout );
             },
 JS;
-
         }
 
         $js = <<<JS
@@ -125,12 +131,13 @@ JS;
     });
 JS;
 
-        return JS::libraryWithDependancies ( JS::JQUERY_UI ) .
-               JS::javaScript ( $js );
+        return JS::libraryWithDependancies( JS::JQUERY_UI ) .
+                JS::javaScript( $js );
     }
 
     private static $styleTableInvocations = 0;
-    public static function styleTable ( $selector ) {
+
+    public static function styleTable( $selector ) {
         if ( self::$styleTableInvocations == 0 ) {
             self::$styleTableInvocations ++;
             $js = <<<JS
@@ -172,9 +179,9 @@ JS;
                 .styleTable TD.first, .styleTable TH.first { border-left-width: 0px !important; }
 CSS;
             $html = JS::library( JS::JQUERY_UI_CSS ) .
-                    JS::css ( $css ) .
-                    JS::libraryWithDependancies ( JS::JQUERY ) .
-                    JS::javaScript ( $js );
+                    JS::css( $css ) .
+                    JS::libraryWithDependancies( JS::JQUERY ) .
+                    JS::javaScript( $js );
         }
         else {
             $html = '';
@@ -185,12 +192,14 @@ CSS;
             });
 JS;
         return $html .
-               JS::javaScript ( $js );
+                JS::javaScript( $js );
     }
 
     private static $datePickerJSDisplayed = false;
-    public static function datePickerJS ( $selector='input.datepicker') {
-        if ( self::$datePickerJSDisplayed ) return '';
+
+    public static function datePickerJS( $selector = 'input.datepicker' ) {
+        if ( self::$datePickerJSDisplayed )
+            return '';
         self::$datePickerJSDisplayed = true;
 
         $js = <<<JS
@@ -203,11 +212,11 @@ JS;
     });
 JS;
         return JS::libraryWithDependancies( JS::JQUERY_UI ) .
-               JS::javaScript ( $js );
+                JS::javaScript( $js );
     }
 
-    public static function facebox ( $selector='a.facebox') {
-        $jsUrl = Cfg::get ( 'js_url');
+    public static function facebox( $selector = 'a.facebox' ) {
+        $jsUrl = Cfg::get( 'js_url' );
         $js = <<<JS
     $().ready(function() {
         $('$selector').facebox({ closeImage:   '$jsUrl/images/closelabel.png',
@@ -216,11 +225,11 @@ JS;
         });
     });
 JS;
-        return JS::libraryWithDependancies ( JS::FACEBOX ) .
-               JS::javaScript(  $js );
+        return JS::libraryWithDependancies( JS::FACEBOX ) .
+                JS::javaScript( $js );
     }
 
-    public static function reload ( $callBack, $url, $numOfSeconds=20, $css='ReloadWidget'  ) {
+    public static function reload( $callBack, $url, $numOfSeconds = 20, $css = 'ReloadWidget' ) {
         $id = '_' . Invocation::next();
 
         $js = <<<JS
@@ -261,29 +270,30 @@ JS;
             });
 JS;
 
-        $html = 'Next '.
-                Tag::hRef("javascript:countDownTime{$id}=0", 'refresh',  [ 'title' => 'Click here to refresh now.',
-                                                                           'class'  => $css ] ) .
+        $html = 'Next ' .
+                Tag::hRef( "javascript:countDownTime{$id}=0", 'refresh', [ 'title' => 'Click here to refresh now.',
+                    'class' => $css ] ) .
                 ' in ' .
-                Tag::hTag( 'span',  [ 'id'   => "countDownText{$id}",
-                                           'class' => $css ] ) .
-                  $numOfSeconds .
+                Tag::hTag( 'span', [ 'id' => "countDownText{$id}",
+                    'class' => $css ] ) .
+                $numOfSeconds .
                 Tag::_hTag( 'span' ) .
                 ' seconds ' .
-                Tag::hRef("javascript:stopCount{$id}()", 'Stop',   [ 'id' => "stop{$id}",
-                                                                     'title' => 'Click here to stop the timer.',
-                                                                     'class'  => $css ] ) .
-                Tag::hRef("javascript:countDown{$id}()", 'Start',  [ 'id' => "start{$id}",
-                                                                     'title' => 'Click here to start the timer.',
-                                                                     'class'  => $css ] ) .
+                Tag::hRef( "javascript:stopCount{$id}()", 'Stop', [ 'id' => "stop{$id}",
+                    'title' => 'Click here to stop the timer.',
+                    'class' => $css ] ) .
+                Tag::hRef( "javascript:countDown{$id}()", 'Start', [ 'id' => "start{$id}",
+                    'title' => 'Click here to start the timer.',
+                    'class' => $css ] ) .
                 '<br/>' .
-                Tag::div(  [ 'id'    => "reload{$id}",
-                                  'class' => $css ] ) .
-                  call_user_func( $callBack ) .
+                Tag::div( [ 'id' => "reload{$id}",
+                    'class' => $css ] ) .
+                call_user_func( $callBack ) .
                 Tag::_div();
 
-        return JS::library ( JS::JQUERY ) .
-               JS::javaScript( $js ) .
-               $html;
+        return JS::library( JS::JQUERY ) .
+                JS::javaScript( $js ) .
+                $html;
     }
+
 }

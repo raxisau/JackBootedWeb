@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Util;
 
 /**
@@ -12,15 +13,18 @@ namespace Jackbooted\Util;
  * available to the general public.
  *
  */
-
 /*
  * Base class for all JackBooted classes.
  * This way the autoloader will work with no problems even in quercus
  */
 class JB {
-    public function __construct () {
+
+    public function __construct() {
+
     }
 
-    public static function init () {
+    public static function init() {
+
     }
+
 }

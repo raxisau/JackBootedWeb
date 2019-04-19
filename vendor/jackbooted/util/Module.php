@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Util;
 
 /**
@@ -11,11 +12,12 @@ namespace Jackbooted\Util;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
 class Module extends \Jackbooted\Util\JB {
+
     const CRUD_MOD = 'crud';
 
-    public static function crud ( \Jackbooted\Forms\CRUD &$crud ) {
+    public static function crud( \Jackbooted\Forms\CRUD &$crud ) {
         return $crud;
     }
+
 }

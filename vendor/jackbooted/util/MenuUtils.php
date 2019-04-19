@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Util;
 
 use \Jackbooted\Config\Cfg;
@@ -7,6 +8,7 @@ use \Jackbooted\Forms\Response;
 use \Jackbooted\Html\JS;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\WebPage;
+
 /*
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -17,12 +19,13 @@ use \Jackbooted\Html\WebPage;
 /**
  */
 class MenuUtils extends WebPage {
+
     const ACTIVE_MENU = 'ACTIVE_MENU';
 
-    public static function display ( $menuClasses=null ) {
+    public static function display( $menuClasses = null ) {
         $id = 'MenuUtils_display' . Invocation::next();
         $jsLibraries = JS::libraryWithDependancies( JS::JQUERY_UI );
-        $activeMenu = Request::get ( self::ACTIVE_MENU, 0 );
+        $activeMenu = Request::get( self::ACTIVE_MENU, 0 );
         $js = <<<JS
             $().ready ( function () {
                 $( '#$id' ).show()
@@ -34,11 +37,11 @@ class MenuUtils extends WebPage {
 JS;
 
         $html = '';
-        $html .= Tag::div (  [ 'id' => $id, 'style' => 'font-size: 0.8em; width:250px; text-align:left; display:none;' ] );
+        $html .= Tag::div( [ 'id' => $id, 'style' => 'font-size: 0.8em; width:250px; text-align:left; display:none;' ] );
         foreach ( self::getMenuItems( $menuClasses ) as $header => $menuList ) {
             $html .= Tag::hTag( 'h3' ) . Tag::hRef( '#', $header ) . Tag::_hTag( 'h3' ) .
-                     Tag::div() .
-                       Tag::ul();
+                    Tag::div() .
+                    Tag::ul();
             foreach ( $menuList as $row ) {
                 $html .= Tag::li();
                 if ( isset( $row['slug'] ) ) {
@@ -49,34 +52,33 @@ JS;
                 }
                 $html .= Tag::_li();
             }
-            $html .=   Tag::_ul() .
-                     Tag::_div();
-
+            $html .= Tag::_ul() .
+                    Tag::_div();
         }
-        $html .=  Tag::_div();
+        $html .= Tag::_div();
 
         return $jsLibraries .
-               JS::javaScript ( $js ) .
-               $html;
+                JS::javaScript( $js ) .
+                $html;
     }
 
-    public static function getMenuItems ( $menuClasses=null ) {
+    public static function getMenuItems( $menuClasses = null ) {
         if ( $menuClasses == null ) {
             $menuClasses = Cfg::get( 'menu' );
         }
 
         $menuBlock = 0;
-        $menuOptions =  [];
+        $menuOptions = [];
         $resp = Response::factory();
 
         foreach ( $menuClasses as $key => $val ) {
-            $resp->set ( self::ACTIVE_MENU, $menuBlock ++ );
+            $resp->set( self::ACTIVE_MENU, $menuBlock ++ );
             $menuOptions[$key] = $val::menu( $resp );
         }
         return $menuOptions;
     }
 
-    public static function slugRedirect ( $slug, $menuClasses=null ) {
+    public static function slugRedirect( $slug, $menuClasses = null ) {
         foreach ( self::getMenuItems( $menuClasses ) as $menuList ) {
             foreach ( $menuList as $row ) {
                 if ( isset( $row['slug'] ) && $row['slug'] == $slug ) {
@@ -91,7 +93,8 @@ JS;
         exit();
     }
 
-    public static function responseObject () {
-        return new Response ( self::ACTIVE_MENU );
+    public static function responseObject() {
+        return new Response( self::ACTIVE_MENU );
     }
+
 }

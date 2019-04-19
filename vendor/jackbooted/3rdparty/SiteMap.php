@@ -2,21 +2,21 @@
 
 class SiteMap {
 
-    private $pages =  [ ];
+    private $pages = [];
     private $file;
 
-    public function __construct ( $file=null ) {
+    public function __construct( $file = null ) {
         $this->file = $file;
     }
 
-    public function create () {
+    public function create() {
         $str = $this->xmlHeader();
         $str .= $this->getPages();
         $str .= $this->xmlFooter();
         $this->write2file( $this->file, $str );
     }
 
-    private function xmlHeader () {
+    private function xmlHeader() {
         $str = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
@@ -27,14 +27,14 @@ XML;
         return $str;
     }
 
-    private function xmlFooter () {
+    private function xmlFooter() {
         $str = '
         </urlset>
         ';
         return $str;
     }
 
-    private function getPages () {
+    private function getPages() {
         for ( $i = 0; $i < count( $this->pages['url'] ); $i++ ) {
             $str .= '
             <url>
@@ -48,13 +48,13 @@ XML;
         return $str;
     }
 
-    public function addPage ( $url, $frecvent = 'daily', $priority = 1.0 ) {
+    public function addPage( $url, $frecvent = 'daily', $priority = 1.0 ) {
         $this->pages['url'][] = $url;
         $this->pages['frecvent'][] = $frecvent;
         $this->pages['priority'][] = $priority;
     }
 
-    public function write2file ( $fname, $string ) {
+    public function write2file( $fname, $string ) {
         if ( $fname == null ) {
             echo $string;
         }
@@ -63,4 +63,5 @@ XML;
             @file_put_contents( $fname, $string );
         }
     }
+
 }

@@ -1,5 +1,7 @@
 <?php
+
 namespace Jackbooted;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *

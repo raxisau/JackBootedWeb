@@ -1,8 +1,10 @@
 <?php
+
 namespace Jackbooted\Cron;
 
 use \Jackbooted\DB\ORM;
 use \Jackbooted\Util\Log4PHP;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -13,7 +15,6 @@ use \Jackbooted\Util\Log4PHP;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
 class Scheduler extends ORM {
 
     private static $log = null;
@@ -22,25 +23,25 @@ class Scheduler extends ORM {
     /**
      * @return void
      */
-    public static function init () {
-        self::$log = Log4PHP::logFactory ( __CLASS__ );
+    public static function init() {
+        self::$log = Log4PHP::logFactory( __CLASS__ );
         self::$dao = new SchedulerDAO ();
     }
 
-    public static function load ( $id ) {
-        return new Scheduler ( self::$dao->oneRow ( $id ) );
+    public static function load( $id ) {
+        return new Scheduler( self::$dao->oneRow( $id ) );
     }
 
-    public static function getList ( $all=false ) {
+    public static function getList( $all = false ) {
         if ( $all ) {
-            $where =  [ 'where' =>  [ ] ];
+            $where = [ 'where' => [] ];
         }
         else {
-            $where =  [ 'where' =>  [ 'active' => SchedulerDAO::ACTIVE ] ];
+            $where = [ 'where' => [ 'active' => SchedulerDAO::ACTIVE ] ];
         }
 
-        $table = self::$dao->search ( $where );
-        return self::tableToObjectList ( $table );
+        $table = self::$dao->search( $where );
+        return self::tableToObjectList( $table );
     }
 
     /**
@@ -48,35 +49,36 @@ class Scheduler extends ORM {
      * @return void
      */
     public function __construct( $data ) {
-        parent::__construct ( self::$dao, $data );
+        parent::__construct( self::$dao, $data );
     }
 
     /**
      * Check if there are any upcoming schedules
      */
-    public static function check () {
+    public static function check() {
         $numAdded = 0;
 
-        foreach ( self::getList () as $sheduleItem ) {
+        foreach ( self::getList() as $sheduleItem ) {
 
             $storedLastRunTime = strtotime( ( $sheduleItem->lastRun == '' ) ? $sheduleItem->start : $sheduleItem->lastRun );
             $previousCalculatedRunTime = CronParser::lastRun( $sheduleItem->cron );
 
             // This looks at when the item had run. If the stored value is less than
             // the calculated value means that we have past a run period. So need to run
-            if ( $storedLastRunTime <  $previousCalculatedRunTime ) {
+            if ( $storedLastRunTime < $previousCalculatedRunTime ) {
 
                 // Update the run time to now
-                $sheduleItem->lastRun = strftime ( '%Y-%m-%d %H:%M', $previousCalculatedRunTime );
-                $sheduleItem->save ();
+                $sheduleItem->lastRun = strftime( '%Y-%m-%d %H:%M', $previousCalculatedRunTime );
+                $sheduleItem->save();
 
                 // Enqueue a new item to run
-                $job = new Cron (  [ 'ref' => $sheduleItem->id,
-                                     'cmd' => $sheduleItem->cmd, ] );
-                $job->save ();
+                $job = new Cron( [ 'ref' => $sheduleItem->id,
+                    'cmd' => $sheduleItem->cmd, ] );
+                $job->save();
                 $numAdded ++;
             }
         }
         return $numAdded;
     }
+
 }

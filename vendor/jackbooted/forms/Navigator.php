@@ -1,7 +1,9 @@
 <?php
+
 namespace Jackbooted\Forms;
 
 use \Jackbooted\Html\Tag;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -12,17 +14,16 @@ use \Jackbooted\Html\Tag;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
 abstract class Navigator extends \Jackbooted\Util\JB {
+
     // This needs to be public because it is set directly in the sub classes
     // Quercus will create a new object if it is not public
     public $respVars;
-
     protected $attribs;
     protected $formVars;
     protected $navVar;
 
-    public function __construct () {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -31,7 +32,7 @@ abstract class Navigator extends \Jackbooted\Util\JB {
      * @param  $value
      * @return Navigator
      */
-    public function set ( $key, $value ) {
+    public function set( $key, $value ) {
         $this->formVars[$key] = $value;
         return $this;
     }
@@ -40,19 +41,19 @@ abstract class Navigator extends \Jackbooted\Util\JB {
      * @param  $key
      * @return Response
      */
-    public function get ( $key ) {
+    public function get( $key ) {
         return $this->formVars[$key];
     }
 
     /**
      * @return
      */
-    public function getResponse () {
+    public function getResponse() {
         return $this->respVars;
     }
 
-    public function copyVarsFromRequest ( $v ) {
-        $this->respVars->copyVarsFromRequest ( $v );
+    public function copyVarsFromRequest( $v ) {
+        $this->respVars->copyVarsFromRequest( $v );
         return $this;
     }
 
@@ -60,24 +61,25 @@ abstract class Navigator extends \Jackbooted\Util\JB {
      * @param  $startingRow
      * @return string
      */
-    protected function toUrl ( ) {
-        $this->respVars->set ( $this->navVar, $this->formVars );
-        return '?' . $this->respVars->toUrl ();
+    protected function toUrl() {
+        $this->respVars->set( $this->navVar, $this->formVars );
+        return '?' . $this->respVars->toUrl();
     }
 
-    protected function toHidden ( $exemptVars ) {
-        $hiddenVars = $this->respVars->del ( $this->navVar )->toHidden ( false );
+    protected function toHidden( $exemptVars ) {
+        $hiddenVars = $this->respVars->del( $this->navVar )->toHidden( false );
 
         foreach ( $this->formVars as $key => $val ) {
-            if ( ! in_array ( $key, $exemptVars ) ) {
-                $hiddenVars .= Tag::hidden ( $this->toFormName ( $key ), $val );
+            if ( !in_array( $key, $exemptVars ) ) {
+                $hiddenVars .= Tag::hidden( $this->toFormName( $key ), $val );
             }
         }
 
         return $hiddenVars;
     }
 
-    protected function toFormName ( $key ) {
+    protected function toFormName( $key ) {
         return $this->navVar . '[' . $key . ']';
     }
+
 }

@@ -1,10 +1,12 @@
 <?php
+
 namespace Jackbooted\Config;
 
 use \Jackbooted\Admin\Login;
 use \Jackbooted\Forms\CRUD;
 use \Jackbooted\G;
 use \Jackbooted\Html\WebPage;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -20,17 +22,19 @@ use \Jackbooted\Html\WebPage;
  *
  */
 class AdminConfig extends WebPage {
+
     const DEF = '\Jackbooted\Config\AdminConfig->index()';
 
-    public function index () {
-        if ( ! G::isLoggedIn () ) {
+    public function index() {
+        if ( !G::isLoggedIn() ) {
             return Login::controller( Login::DEF );
         }
 
-        $crud = new CRUD( 'tblConfig',  [ 'insDefaults' =>  [ 'fldUserID' => G::getUserID() ] ] );
-        $crud->setColDisplay ( 'fldUserID', CRUD::HIDDEN );
-        $crud->columnAttrib ( 'fldValue', [ 'size' => 60 ] );
+        $crud = new CRUD( 'tblConfig', [ 'insDefaults' => [ 'fldUserID' => G::getUserID() ] ] );
+        $crud->setColDisplay( 'fldUserID', CRUD::HIDDEN );
+        $crud->columnAttrib( 'fldValue', [ 'size' => 60 ] );
 
         return $crud->index();
     }
+
 }

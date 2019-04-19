@@ -1,9 +1,11 @@
 <?php
+
 namespace Jackbooted\Mail;
 
 class SMTPSendMail extends \PHPMailer {
-    public function __construct ( $host='localhost', $exceptions = false ) {
-        parent::__construct ( $exceptions );
+
+    public function __construct( $host = 'localhost', $exceptions = false ) {
+        parent::__construct( $exceptions );
 
         $this->isSMTP();
         $this->SMTPDebug = 0;
@@ -20,4 +22,5 @@ class SMTPSendMail extends \PHPMailer {
         //Whether to use SMTP authentication
         $this->SMTPAuth = false;
     }
+
 }

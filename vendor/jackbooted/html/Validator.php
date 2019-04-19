@@ -1,7 +1,9 @@
 <?php
+
 namespace Jackbooted\Html;
 
 use \Jackbooted\Util\Invocation;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -48,7 +50,7 @@ use \Jackbooted\Util\Invocation;
  * $val-&gt;addExists( 'Length2', 'Length2 Description' );
  * $val-&gt;addLength( 'Length2', 'Length2 Description', 2, 6 );
  * $val-&gt;addExists( 'Length3', 'Length3 Description' );
-    * $val-&gt;addLength( 'Length3', 'Length3 Description', 2 );
+ * $val-&gt;addLength( 'Length3', 'Length3 Description', 2 );
  * $val-&gt;addExists( 'Length4', 'Length4 Description' );
  * $val-&gt;addLength( 'Length4', 'Length4 Description', null, 5 );
  * $val-&gt;addExists( 'Range1', 'Range1 Description' );
@@ -102,15 +104,16 @@ use \Jackbooted\Util\Invocation;
  * </pre>
  */
 class Validator extends \Jackbooted\Util\JB {
+
     /**
      * Enumerated list of functions that are available.
      */
-    const FN_EXISTS  = 'EXISTS';
+    const FN_EXISTS = 'EXISTS';
 
     /**
      * Function to check a range.
      */
-    const FN_RANGE   = 'RANGE';
+    const FN_RANGE = 'RANGE';
 
     /**
      * Function to check if the field is a valid integer.
@@ -120,30 +123,30 @@ class Validator extends \Jackbooted\Util\JB {
     /**
      * Check to see if the field is a valid email.
      */
-    const FN_EMAIL   = 'EMAIL';
+    const FN_EMAIL = 'EMAIL';
 
     /**
      * Check to see if 2 fields are the same.
      */
-    const FN_EQUAL   = 'EQUAL';
+    const FN_EQUAL = 'EQUAL';
 
     /**
      * Copies one field to another if the second one is empty.
      */
-    const FN_COPY    = 'COPY';
+    const FN_COPY = 'COPY';
 
     /**
      * Validates if the field is a particular length or range.
      */
-    const FN_LENGTH  = 'LENGTH';
+    const FN_LENGTH = 'LENGTH';
 
     /**
      * Validates if the field is 24hr time.
      */
-    const FN_24HRTIME  = '24HRTIME';
+    const FN_24HRTIME = '24HRTIME';
 
-    public static function factory ( $formName, $suffix='' ) {
-        return new Validator ( $formName, $suffix );
+    public static function factory( $formName, $suffix = '' ) {
+        return new Validator( $formName, $suffix );
     }
 
     /**
@@ -157,7 +160,7 @@ class Validator extends \Jackbooted\Util\JB {
      * @see $add
      * @var array
      */
-    private $testCases =  [];
+    private $testCases = [];
 
     /**
      * List of used functions.
@@ -166,7 +169,7 @@ class Validator extends \Jackbooted\Util\JB {
      * do not generate javascript that we don't need.
      * @var array
      */
-    private $usedFunct =  [];
+    private $usedFunct = [];
 
     /**
      * This variable will alert the user to any form variables that are missing.
@@ -180,7 +183,6 @@ class Validator extends \Jackbooted\Util\JB {
      * @var int is a unique name for the javascript. Automatically generated.
      */
     private $id;
-
     private $headerJS;
     private $existsJS;
     private $emailJS;
@@ -218,7 +220,7 @@ class Validator extends \Jackbooted\Util\JB {
      *
      * @since 1.0
      */
-    public function  __construct ( $formName, $suffix='' ) {
+    public function __construct( $formName, $suffix = '' ) {
         parent::__construct();
 
         if ( $suffix == '' ) {
@@ -226,7 +228,7 @@ class Validator extends \Jackbooted\Util\JB {
         }
         $this->formName = $formName;
         $this->id = '_' . $suffix;
-        $this->setUpJavaScriptFunctions ();
+        $this->setUpJavaScriptFunctions();
     }
 
     /**
@@ -241,7 +243,7 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function setMissingAlert ( $state ) {
+    public function setMissingAlert( $state ) {
         $this->alertOnMissingFormVar = $state;
         return $this;
     }
@@ -257,8 +259,8 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function addExists ( $fv, $desc ) {
-        return $this->add ( $fv, $desc,  self::FN_EXISTS );
+    public function addExists( $fv, $desc ) {
+        return $this->add( $fv, $desc, self::FN_EXISTS );
     }
 
     /**
@@ -280,8 +282,8 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function addLength ( $fv, $desc, $minLength=null, $maxLength=null, $zeroOk='false' ) {
-        return $this->add ( $fv, $desc,  self::FN_LENGTH,  [ $minLength, $maxLength, $zeroOk ] );
+    public function addLength( $fv, $desc, $minLength = null, $maxLength = null, $zeroOk = 'false' ) {
+        return $this->add( $fv, $desc, self::FN_LENGTH, [ $minLength, $maxLength, $zeroOk ] );
     }
 
     /**
@@ -301,8 +303,8 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function addRange ( $fv, $desc, $mn=null, $mx=null ) {
-        return $this->add ( $fv, $desc,  self::FN_RANGE,  [ $mn, $mx ] );
+    public function addRange( $fv, $desc, $mn = null, $mx = null ) {
+        return $this->add( $fv, $desc, self::FN_RANGE, [ $mn, $mx ] );
     }
 
     /**
@@ -318,8 +320,8 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function addInteger ( $fv, $desc ) {
-        return $this->add ( $fv, $desc,  self::FN_INTEGER );
+    public function addInteger( $fv, $desc ) {
+        return $this->add( $fv, $desc, self::FN_INTEGER );
     }
 
     /**
@@ -335,8 +337,8 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function addEmail ( $fv, $desc ) {
-        return $this->add ( $fv, $desc, self::FN_EMAIL   );
+    public function addEmail( $fv, $desc ) {
+        return $this->add( $fv, $desc, self::FN_EMAIL );
     }
 
     /**
@@ -350,9 +352,9 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 2.0
      * @return void
      */
-    public function add24HrTime ( $fv, $desc, $defaultTime='' ) {
+    public function add24HrTime( $fv, $desc, $defaultTime = '' ) {
         $this->usedFunct[self::FN_INTEGER] = 'YES';
-        return $this->add ( $fv, $desc, self::FN_24HRTIME, $defaultTime );
+        return $this->add( $fv, $desc, self::FN_24HRTIME, $defaultTime );
     }
 
     /**
@@ -368,8 +370,8 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function addEqual ( $fv1, $fv2, $desc ) {
-        return $this->add ( $fv1, $desc, self::FN_EQUAL, $fv2 );
+    public function addEqual( $fv1, $fv2, $desc ) {
+        return $this->add( $fv1, $desc, self::FN_EQUAL, $fv2 );
     }
 
     /**
@@ -385,8 +387,8 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function addCopy ( $fv1, $fv2 ) {
-        return $this->add ( $fv1, '', self::FN_COPY, $fv2 );
+    public function addCopy( $fv1, $fv2 ) {
+        return $this->add( $fv1, '', self::FN_COPY, $fv2 );
     }
 
     /**
@@ -402,11 +404,11 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    private function add ( $fv, $desc, $t, $xtra=NULL ) {
-        $this->testCases[] =  [ 'NAME' => $fv,
-                                     'DESC' => $desc,
-                                     'TEST' => $t,
-                                     'XTRA' => $xtra ];
+    private function add( $fv, $desc, $t, $xtra = NULL ) {
+        $this->testCases[] = [ 'NAME' => $fv,
+            'DESC' => $desc,
+            'TEST' => $t,
+            'XTRA' => $xtra ];
         $this->usedFunct[$t] = 'YES';
         return $this;
     }
@@ -417,110 +419,111 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return string
      */
-    public function toHtml () {
+    public function toHtml() {
         $msg = $this->headerJS;
 
         foreach ( $this->usedFunct as $key => $val ) {
-            $msg .= $this->addJSFunctions ( $key );
+            $msg .= $this->addJSFunctions( $key );
         }
 
         // Then create the validation function that will test all the
         // different form variables
-        $msg .= sprintf ( $this->validateHeaderJS, $this->formName );
+        $msg .= sprintf( $this->validateHeaderJS, $this->formName );
 
         foreach ( $this->testCases as $val ) {
-            $nam  = $val['NAME'];
+            $nam = $val['NAME'];
             $desc = $val['DESC'];
             $xtra = $val['XTRA'];
 
             // Test is in java and check if the form variable exists
             // Ensures the Javascript does not crash on
             // missing Form Variables
-            $msg .= sprintf ( $this->testCaseHeaderJS, $nam );
+            $msg .= sprintf( $this->testCaseHeaderJS, $nam );
 
-            $msg .= $this->createCaseJSTests ( $val, $xtra, $desc );
+            $msg .= $this->createCaseJSTests( $val, $xtra, $desc );
 
             // End of the if test that check if the form var exists
-            $msg .= sprintf ( $this->validateFooterJS, $this->formName );
+            $msg .= sprintf( $this->validateFooterJS, $this->formName );
 
             // Check if we are notifying the user on missing form vars
             if ( $this->alertOnMissingFormVar ) {
-                $msg .= sprintf ( $this->caseAlertMissingJS, $nam );
+                $msg .= sprintf( $this->caseAlertMissingJS, $nam );
             }
         }
 
-        $msg .= sprintf ( $this->validateFunctionJS, $this->formName );
-        return JS::library ( JS::JQUERY ) .
-               JS::javaScript ( $msg );
+        $msg .= sprintf( $this->validateFunctionJS, $this->formName );
+        return JS::library( JS::JQUERY ) .
+                JS::javaScript( $msg );
     }
 
-    private function createCaseJSTests ( $val, $xtra, $desc ) {
+    private function createCaseJSTests( $val, $xtra, $desc ) {
         // Output the javascript to do the different checks
         switch ( $val['TEST'] ) {
-        case self::FN_EXISTS:
-            return sprintf ( $this->caseExistsJS, $desc );
+            case self::FN_EXISTS:
+                return sprintf( $this->caseExistsJS, $desc );
 
-        case self::FN_LENGTH:
-            return $this->lengthJSCases ( $xtra, $desc );
+            case self::FN_LENGTH:
+                return $this->lengthJSCases( $xtra, $desc );
 
-        case self::FN_INTEGER:
-            return sprintf ( $this->caseIntegerJS, $desc );
+            case self::FN_INTEGER:
+                return sprintf( $this->caseIntegerJS, $desc );
 
-        case self::FN_RANGE:
-            return $this->rangeJSCases ( $xtra, $desc );
+            case self::FN_RANGE:
+                return $this->rangeJSCases( $xtra, $desc );
 
-        case self::FN_EMAIL:
-            return sprintf ( $this->caseEmailJS, $desc );
+            case self::FN_EMAIL:
+                return sprintf( $this->caseEmailJS, $desc );
 
-        case self::FN_24HRTIME:
-            return sprintf ( $this->case24HrTimeJS, $desc, $val['XTRA'], $val['XTRA'] );
+            case self::FN_24HRTIME:
+                return sprintf( $this->case24HrTimeJS, $desc, $val['XTRA'], $val['XTRA'] );
 
-        case self::FN_EQUAL:
-            return sprintf ( $this->caseEqualJS, $val['XTRA'], $desc );
+            case self::FN_EQUAL:
+                return sprintf( $this->caseEqualJS, $val['XTRA'], $desc );
 
-        case self::FN_COPY:
-            return sprintf ( $this->caseCopyJS, $val['XTRA'], $desc );
+            case self::FN_COPY:
+                return sprintf( $this->caseCopyJS, $val['XTRA'], $desc );
 
-        default:
-            return '';
+            default:
+                return '';
         }
     }
-    private function rangeJSCases ( $xtra, $desc ) {
+
+    private function rangeJSCases( $xtra, $desc ) {
         if ( $xtra[0] != NULL && $xtra[1] != NULL ) {
-            return sprintf ( $this->caseRangeBetweenJS, $xtra[0], $xtra[1], $desc );
+            return sprintf( $this->caseRangeBetweenJS, $xtra[0], $xtra[1], $desc );
         }
         else if ( $xtra[0] != NULL ) {
-            return sprintf ( $this->caseRangeGTJS, $xtra[0], $desc );
+            return sprintf( $this->caseRangeGTJS, $xtra[0], $desc );
         }
         else if ( $xtra[1] != NULL ) {
-            return sprintf ( $this->caseRangeLTJS, $xtra[1], $desc );
+            return sprintf( $this->caseRangeLTJS, $xtra[1], $desc );
         }
         else {
             return '';
         }
     }
 
-    private function lengthJSCases ( $xtra, $desc ) {
+    private function lengthJSCases( $xtra, $desc ) {
         if ( $xtra[0] != NULL && $xtra[1] != NULL ) {
             if ( $xtra[0] == $xtra[1] ) {
-                return sprintf ( $this->caseLenEqJS, $xtra[2], $xtra[0], $desc );
+                return sprintf( $this->caseLenEqJS, $xtra[2], $xtra[0], $desc );
             }
             else {
-                return sprintf ( $this->caseLenBetweenJS, $xtra[2], $xtra[0], $xtra[1], $desc );
+                return sprintf( $this->caseLenBetweenJS, $xtra[2], $xtra[0], $xtra[1], $desc );
             }
         }
         else if ( $xtra[0] != NULL ) {
-            return sprintf ( $this->caseLenGTJS, $xtra[2], $xtra[0], $desc );
+            return sprintf( $this->caseLenGTJS, $xtra[2], $xtra[0], $desc );
         }
         else if ( $xtra[1] != NULL ) {
-            return sprintf ( $this->caseLenLTJS, $xtra[2], $xtra[1], $desc );
+            return sprintf( $this->caseLenLTJS, $xtra[2], $xtra[1], $desc );
         }
         else {
             return '';
         }
     }
 
-    private function addJSFunctions ( $key ) {
+    private function addJSFunctions( $key ) {
         switch ( $key ) {
             case self::FN_EXISTS:  // Output the javascript functions for Existance
                 return $this->existsJS;
@@ -555,8 +558,8 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return string
      */
-    public function onSubmit ( $js='' ) {
-        return 'if(!' . $this->jsValidate() . ')return false;' . $js .'return true;';
+    public function onSubmit( $js = '' ) {
+        return 'if(!' . $this->jsValidate() . ')return false;' . $js . 'return true;';
     }
 
     /**
@@ -584,11 +587,11 @@ class Validator extends \Jackbooted\Util\JB {
      * @since 2.0
      * @return string
      */
-    public function jsValidate ( ) {
+    public function jsValidate() {
         return "validateForm{$this->id}()";
     }
 
-    private function setUpJavaScriptFunctions () {
+    private function setUpJavaScriptFunctions() {
         $this->headerJS = <<<EOT1
 function isEmpty{$this->id}( s ) {
     return ( ( s == null ) || ( s.length == 0 ) );
@@ -773,7 +776,7 @@ EOT20;
     }
 
 EOT19;
-    $this->validateFunctionJS = <<<EOT21
+        $this->validateFunctionJS = <<<EOT21
     return true;
 }
 
@@ -787,7 +790,7 @@ EOT21;
         }
 
 EOT22;
-         $this->t24HrTimeJS = <<<EOT23
+        $this->t24HrTimeJS = <<<EOT23
 function is24HrTime{$this->id} ( s ) {
     s = $.trim ( s );
     if ( s.length == 0 ) return true;
@@ -803,5 +806,6 @@ function is24HrTime{$this->id} ( s ) {
 }
 
 EOT23;
-   }
+    }
+
 }

@@ -1,7 +1,9 @@
 <?php
+
 namespace Jackbooted\Util;
 
 use \Jackbooted\Time\Stopwatch;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -26,7 +28,7 @@ use \Jackbooted\Time\Stopwatch;
  * This will ensure that you can create classes and the system will continue to know where they are.
  *
  * <b>Third Party Libraries</b><br>
-  * You can load third party libraries with the autoloader by creating a class with a dummy class name in comments and
+ * You can load third party libraries with the autoloader by creating a class with a dummy class name in comments and
  * require_once the file containing the third party library. Example:
  * <pre>
  * &lt;?php
@@ -41,6 +43,7 @@ use \Jackbooted\Time\Stopwatch;
  * @see AutoLoader
  */
 class ClassLocator extends \Jackbooted\Util\JB {
+
     /**
      * Location of the serialization file
      */
@@ -50,9 +53,9 @@ class ClassLocator extends \Jackbooted\Util\JB {
      *
      * @var string Regular expression that searches for the classes, abstracts, interfaces etc
      */
-    private static $regexClassSearch     = '/^\s*\b(interface|trait|class|abstract\s*class|final\s*class)\b/';
+    private static $regexClassSearch = '/^\s*\b(interface|trait|class|abstract\s*class|final\s*class)\b/';
     private static $regexNameSpaceSearch = '/namespace\s*([\\\\[:alnum:]]*)\s*/';
-    private static $regexPHPFiles        = '/^.*\.(php|class)$/';
+    private static $regexPHPFiles = '/^.*\.(php|class)$/';
     private static $defaultInstance;
     private static $log = null;
 
@@ -60,17 +63,18 @@ class ClassLocator extends \Jackbooted\Util\JB {
      * Initializes the system. This is called by the Autoloader
      * @param string $classDirectory You can pass in the name of the classes folder for the program to scan.
      */
-    public static function init ( $classDirectory=null ) {
+    public static function init( $classDirectory = null ) {
         self::$log = Log4PHP::logFactory( __CLASS__ );
-        if ( $classDirectory == null ) $classDirectory = dirname( __FILE__ );
-        self::$defaultInstance = new ClassLocator ( $classDirectory );
+        if ( $classDirectory == null )
+            $classDirectory = dirname( __FILE__ );
+        self::$defaultInstance = new ClassLocator( $classDirectory );
     }
 
-    public static function getLocation ( $className ) {
-        return self::$defaultInstance->getClassLocation ( $className );
+    public static function getLocation( $className ) {
+        return self::$defaultInstance->getClassLocation( $className );
     }
 
-    public static function getDefaultClassLocator ( ) {
+    public static function getDefaultClassLocator() {
         return self::$defaultInstance;
     }
 
@@ -78,11 +82,11 @@ class ClassLocator extends \Jackbooted\Util\JB {
     private $classesDir;
     private $locatorFile;
 
-    public function __construct ( $classDirectory=null ) {
+    public function __construct( $classDirectory = null ) {
         parent::__construct();
         $this->classesDir = $classDirectory;
-        $this->locatorFile = PHPExt::getTempDir () . '/ClassLocator' . md5 ( var_export ( $classDirectory, true ) ) . '.ser';
-        self::$log->trace ( "Locator File: {$this->locatorFile}" );
+        $this->locatorFile = PHPExt::getTempDir() . '/ClassLocator' . md5( var_export( $classDirectory, true ) ) . '.ser';
+        self::$log->trace( "Locator File: {$this->locatorFile}" );
     }
 
     /**
@@ -99,52 +103,53 @@ class ClassLocator extends \Jackbooted\Util\JB {
      * @param string $className Name of the class that youb are trying to locate
      * @return string The name of the file that it is contained in otherwise FALSE
      */
-    public function getClassLocation ( $className ) {
-        if ( ! isset( $this->locationArray ) ) $this->loadArrayFromDisk ();
+    public function getClassLocation( $className ) {
+        if ( !isset( $this->locationArray ) )
+            $this->loadArrayFromDisk();
 
         //echo '<pre>';
         //print_r ( $this->locationArray );
         //echo '<pre>';
-        
         // If the class location exists then send it back
-        if ( isset ( $this->locationArray[$className] ) &&
-             file_exists ( $this->locationArray[$className] ) ) {
+        if ( isset( $this->locationArray[$className] ) &&
+                file_exists( $this->locationArray[$className] ) ) {
             return $this->locationArray[$className];
         }
         else if ( substr( $className, 0, 1 ) == '\\' ) {
             $relativeClassName = substr( $className, 1 );
-            if ( isset ( $this->locationArray[$relativeClassName] ) &&
-                 file_exists ( $this->locationArray[$relativeClassName] ) ) {
+            if ( isset( $this->locationArray[$relativeClassName] ) &&
+                    file_exists( $this->locationArray[$relativeClassName] ) ) {
                 return $this->locationArray[$relativeClassName];
             }
         }
 
         // If made it to here then regenerate the array
-        $this->locationArray =  [];
+        $this->locationArray = [];
 
-        $timer = new Stopwatch ( 'ClassLocator Regen' );
-        if (is_string ( $this->classesDir ) ) {
+        $timer = new Stopwatch( 'ClassLocator Regen' );
+        if ( is_string( $this->classesDir ) ) {
             $cDir = $this->classesDir;
         }
-        else if (is_array( $this->classesDir ) ){
-            $cDir = join(', ', $this->classesDir );
+        else if ( is_array( $this->classesDir ) ) {
+            $cDir = join( ', ', $this->classesDir );
         }
-        self::$log->info ( "Regenerating class locator array ({$cDir})" );
+        self::$log->info( "Regenerating class locator array ({$cDir})" );
 
-        if ( is_string ( $this->classesDir ) ) {
-            $this->regenerateLocationArray ( $this->classesDir );
+        if ( is_string( $this->classesDir ) ) {
+            $this->regenerateLocationArray( $this->classesDir );
         }
-        else if ( is_array ( $this->classesDir ) ) {
+        else if ( is_array( $this->classesDir ) ) {
             foreach ( $this->classesDir as $dir ) {
-                $this->regenerateLocationArray ( $dir );
+                $this->regenerateLocationArray( $dir );
             }
         }
 
-        $this->saveLocationArray ();
+        $this->saveLocationArray();
         $timer->logLoadTime();
-        if ( isset( $this->locationArray[$className] ) ) return $this->locationArray[$className];
+        if ( isset( $this->locationArray[$className] ) )
+            return $this->locationArray[$className];
 
-        self::$log->error( "$className not found. Continual calls to this class will affect system performance"  );
+        self::$log->error( "$className not found. Continual calls to this class will affect system performance" );
         return false;
     }
 
@@ -152,17 +157,20 @@ class ClassLocator extends \Jackbooted\Util\JB {
      * Loads the location array from the file
      * @return void
      */
-    private function loadArrayFromDisk () {
-        if ( ! file_exists( $this->locatorFile ) ) return;
+    private function loadArrayFromDisk() {
+        if ( !file_exists( $this->locatorFile ) )
+            return;
 
-        $fd = fopen( $this->locatorFile , 'r' );
-        if ( $fd === false ) return;
+        $fd = fopen( $this->locatorFile, 'r' );
+        if ( $fd === false )
+            return;
 
-        $serializeLocator = fgets ( $fd );
-        $locatorArray = @unserialize  ( $serializeLocator );
+        $serializeLocator = fgets( $fd );
+        $locatorArray = @unserialize( $serializeLocator );
         fclose( $fd );
 
-        if ( $locatorArray === false ) return;
+        if ( $locatorArray === false )
+            return;
         $this->locationArray = $locatorArray;
     }
 
@@ -170,20 +178,21 @@ class ClassLocator extends \Jackbooted\Util\JB {
      * Searches all the files in the passed directory and scans them for classes
      * @param string $classesDir
      */
-    private function regenerateLocationArray ( $classesDir ) {
-        $handle = opendir ( $classesDir );
-        while ( false !== ( $file = readdir ( $handle ) ) ) {
-            if ( strpos ( $file, '.' ) === 0 ) continue;
+    private function regenerateLocationArray( $classesDir ) {
+        $handle = opendir( $classesDir );
+        while ( false !== ( $file = readdir( $handle ) ) ) {
+            if ( strpos( $file, '.' ) === 0 )
+                continue;
 
             $fullPathName = $classesDir . '/' . $file;
-            if ( is_dir ( $fullPathName ) ) {
-                $this->regenerateLocationArray ( $fullPathName );
+            if ( is_dir( $fullPathName ) ) {
+                $this->regenerateLocationArray( $fullPathName );
             }
             else {
-                $this->scanFileForClasses ( $fullPathName );
+                $this->scanFileForClasses( $fullPathName );
             }
         }
-        closedir ( $handle );
+        closedir( $handle );
     }
 
     /**
@@ -192,36 +201,39 @@ class ClassLocator extends \Jackbooted\Util\JB {
      * @param string $fullPathName
      * @return void
      */
-    private function scanFileForClasses ( $fullPathName ) {
-        if ( ! file_exists( $fullPathName ) ) return;
+    private function scanFileForClasses( $fullPathName ) {
+        if ( !file_exists( $fullPathName ) )
+            return;
 
         // Do not bother with this file
         $fileNameMatches = null;
-        if ( $fullPathName == __FILE__ ) return;
-        if ( ! preg_match ( self::$regexPHPFiles, $fullPathName, $fileNameMatches ) ) return;
+        if ( $fullPathName == __FILE__ )
+            return;
+        if ( !preg_match( self::$regexPHPFiles, $fullPathName, $fileNameMatches ) )
+            return;
 
         $namespace = '';
         $nameSpaceMatches = null;
 
-        $fd = fopen( $fullPathName , 'r' );
+        $fd = fopen( $fullPathName, 'r' );
         while ( false !== ( $line = fgets( $fd ) ) ) {
 
             // Check if this has a name space.
-            if ( preg_match ( self::$regexNameSpaceSearch, $line, $nameSpaceMatches ) ) {
+            if ( preg_match( self::$regexNameSpaceSearch, $line, $nameSpaceMatches ) ) {
                 if ( isset( $nameSpaceMatches[1] ) && $nameSpaceMatches[1] != false ) {
                     $namespace = $nameSpaceMatches[1] . '\\';
                 }
             }
 
-            if ( preg_match ( self::$regexClassSearch, $line ) ) {
-                $className = preg_replace ( self::$regexClassSearch, '', $line );
-                $className = preg_replace ( '/\b(extends|implements).*/', '', $className );
-                $className = preg_replace ( '/\{.*/', '', $className );
-                $className = preg_replace ( '/\s*/', '', $className );
+            if ( preg_match( self::$regexClassSearch, $line ) ) {
+                $className = preg_replace( self::$regexClassSearch, '', $line );
+                $className = preg_replace( '/\b(extends|implements).*/', '', $className );
+                $className = preg_replace( '/\{.*/', '', $className );
+                $className = preg_replace( '/\s*/', '', $className );
                 $className = $namespace . $className;
 
-                if ( isset ( $this->locationArray[$className] ) ) {
-                    self::$log->warn ( "Duplicate class found ({$className}) in file {$fullPathName} and " . $this->locationArray[$className] );
+                if ( isset( $this->locationArray[$className] ) ) {
+                    self::$log->warn( "Duplicate class found ({$className}) in file {$fullPathName} and " . $this->locationArray[$className] );
                 }
                 $this->locationArray[$className] = $fullPathName;
             }
@@ -233,10 +245,11 @@ class ClassLocator extends \Jackbooted\Util\JB {
      * Saves the array out to disk
      * @return void
      */
-    private function saveLocationArray () {
+    private function saveLocationArray() {
 
-        $fd = fopen( $this->locatorFile , 'w' );
-        if ( $fd === false ) return;
+        $fd = fopen( $this->locatorFile, 'w' );
+        if ( $fd === false )
+            return;
 
         @fputs( $fd, serialize( $this->locationArray ) );
         fclose( $fd );
@@ -246,7 +259,8 @@ class ClassLocator extends \Jackbooted\Util\JB {
      * Deletes the serialization file. Protected, only used for testing
      * @return void
      */
-    public function getLocatorFile () {
+    public function getLocatorFile() {
         return $this->locatorFile;
     }
+
 }

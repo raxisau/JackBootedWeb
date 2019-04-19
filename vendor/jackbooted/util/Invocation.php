@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Util;
 
 /**
@@ -11,12 +12,13 @@ namespace Jackbooted\Util;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
 class Invocation extends \Jackbooted\Util\JB {
+
     private static $dbtabInvocations = 0;
 
-    public static function next () {
+    public static function next() {
         $id = self::$dbtabInvocations++;
         return $id;
     }
+
 }

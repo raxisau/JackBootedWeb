@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Util;
 
 /**
@@ -16,10 +17,11 @@ namespace Jackbooted\Util;
  * Simple logging
  */
 class Log4PHP extends \Jackbooted\Util\JB {
+
     /**
      * Log all messages.
      */
-    const ALL   = 7;
+    const ALL = 7;
 
     /**
      * Log any message more severe than trace.
@@ -34,12 +36,12 @@ class Log4PHP extends \Jackbooted\Util\JB {
     /**
      * Log any message more severe than info (no debug or trace).
      */
-    const INFO  = 4;
+    const INFO = 4;
 
     /**
      * Log any message more severe than warning (no info, debug trace).
      */
-    const WARN  = 3;
+    const WARN = 3;
 
     /**
      * Log any message more severe than Error (no warn, info, debug trace).
@@ -54,29 +56,28 @@ class Log4PHP extends \Jackbooted\Util\JB {
     /**
      * No logging.
      */
-    const OFF   = 0;
+    const OFF = 0;
 
-    private static $FBMethods = [ self::INFO =>   [ 'FB', 'info'],
-                                  self::ERROR =>  [ 'FB', 'error' ],
-                                  self::WARN =>   [ 'FB', 'warn' ],
-                                  self::TRACE =>  [ 'FB', 'trace' ] ];
-
-    private static $prefix =  [ self::TRACE => 'TRACE',
-                                self::DEBUG => 'DEBUG',
-                                self::INFO  => 'INFO',
-                                self::WARN  => 'WARN',
-                                self::ERROR => 'ERROR',
-                                self::FATAL => 'FATAL' ];
+    private static $FBMethods = [ self::INFO => [ 'FB', 'info' ],
+        self::ERROR => [ 'FB', 'error' ],
+        self::WARN => [ 'FB', 'warn' ],
+        self::TRACE => [ 'FB', 'trace' ] ];
+    private static $prefix = [ self::TRACE => 'TRACE',
+        self::DEBUG => 'DEBUG',
+        self::INFO => 'INFO',
+        self::WARN => 'WARN',
+        self::ERROR => 'ERROR',
+        self::FATAL => 'FATAL' ];
 
     /**
      * Logging device to screen (seperated by <br>).
      */
-    const SCREEN  = 'S';
+    const SCREEN = 'S';
 
     /**
      * Logging device to text (phpunit style. Line breakes with \n).
      */
-    const RAW     = 'R';
+    const RAW = 'R';
 
     /**
      * Logging to phperror.log file.
@@ -86,7 +87,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
     /**
      * Logging to normal file in temp folder.
      */
-    const FILE    = 'F';
+    const FILE = 'F';
 
     /**
      * Logging to Firebug (not yet fully implemented).
@@ -97,7 +98,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @var array used to keep a cache of the classes that have a logger
      * created for them.
      */
-    private static $logList =  [];
+    private static $logList = [];
 
     /**
      * @var integer Keep the current log level.
@@ -112,8 +113,8 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public static function init ( $logLevel=self::ALL ) {
-        self::setLogLevel ( $logLevel );
+    public static function init( $logLevel = self::ALL ) {
+        self::setLogLevel( $logLevel );
     }
 
     /**
@@ -162,10 +163,11 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return Log4PHP
      */
-    public static function logFactory( $className=null ) {
-        if ( $className == null || ! isset ( self::$logList[$className] ) ) {
-            if ( $className == null ) $className = __CLASS__;
-            self::$logList[$className] = new Log4PHP ( $className );
+    public static function logFactory( $className = null ) {
+        if ( $className == null || !isset( self::$logList[$className] ) ) {
+            if ( $className == null )
+                $className = __CLASS__;
+            self::$logList[$className] = new Log4PHP( $className );
         }
 
         return self::$logList[$className];
@@ -176,16 +178,16 @@ class Log4PHP extends \Jackbooted\Util\JB {
      *
      * @param type $numDays Number of days to keep - defaults to 5
      */
-    public static function cleanup( $numDays=5 ) {
+    public static function cleanup( $numDays = 5 ) {
         $oneDay = 60 * 60 * 24;
         $removedFiles = 0;
 
         // Loop for 10 times looking for old files
-        for ( $i=0,$day=time()-($numDays*$oneDay); $i<10; $i++, $day-=$oneDay ) {
-            $fileName = PHPExt::getTempDir() .   '/Log4PHP-log-' . date('Y-m-d', $day ) . '.txt';
+        for ( $i = 0, $day = time() - ($numDays * $oneDay); $i < 10; $i++, $day -= $oneDay ) {
+            $fileName = PHPExt::getTempDir() . '/Log4PHP-log-' . date( 'Y-m-d', $day ) . '.txt';
 
             // If the file exists then remove it
-            if ( file_exists( $fileName ) ){
+            if ( file_exists( $fileName ) ) {
                 unlink( $fileName );
                 $removedFiles ++;
             }
@@ -213,11 +215,11 @@ class Log4PHP extends \Jackbooted\Util\JB {
      *
      * @since 1.0
      */
-    public function __construct( $c=null ) {
+    public function __construct( $c = null ) {
         parent::__construct();
         if ( $c == null ) {
-            $stack = debug_backtrace ();
-            $pi = pathinfo ( $stack[1]['file'] );
+            $stack = debug_backtrace();
+            $pi = pathinfo( $stack[1]['file'] );
             $c = $pi['filename'];
         }
 
@@ -272,18 +274,19 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function show( $level, $s, $source='' ) {
+    public function show( $level, $s, $source = '' ) {
         // Get out if the error level is too high
-        if ( $level > $this->classErrorLevel ) return;
+        if ( $level > $this->classErrorLevel )
+            return;
 
-        $errLev = error_reporting ( E_ALL | E_STRICT );
+        $errLev = error_reporting( E_ALL | E_STRICT );
 
         // Remove extra spaces and add prefix
-        $s = self::$prefix[$level] . ': ' . preg_replace ( '/\s{2,}/', ' ', $s );
+        $s = self::$prefix[$level] . ': ' . preg_replace( '/\s{2,}/', ' ', $s );
 
         if ( $source == '' ) {
-            $stack = debug_backtrace ();
-            $funcName = ( isset ( $stack[2]['function'] ) ) ? $stack[2]['function'] : 'NONE';
+            $stack = debug_backtrace();
+            $funcName = ( isset( $stack[2]['function'] ) ) ? $stack[2]['function'] : 'NONE';
             $source = $this->className . '.' . $funcName;
         }
 
@@ -292,7 +295,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
 
         switch ( $this->classOutputDevice ) {
             case self::SCREEN:
-                $this->messageToScreen ( $msg );
+                $this->messageToScreen( $msg );
                 break;
 
             case self::RAW:
@@ -300,21 +303,21 @@ class Log4PHP extends \Jackbooted\Util\JB {
                 break;
 
             case self::FILE:
-                $this->messageToFile ( $msg );
+                $this->messageToFile( $msg );
                 break;
 
             case self::FIREBUG:
-                $func = ( isset ( self::$FBMethods[$level] ) ) ? self::$FBMethods[$level] : self::$FBMethods[self::INFO];
-                call_user_func ( $func, $msg );
+                $func = ( isset( self::$FBMethods[$level] ) ) ? self::$FBMethods[$level] : self::$FBMethods[self::INFO];
+                call_user_func( $func, $msg );
                 break;
 
             case self::LOGFILE:
             default:
-                error_log ( str_replace ( "\n", ' ', $msg ) );
+                error_log( str_replace( "\n", ' ', $msg ) );
                 break;
         }
 
-        error_reporting ( $errLev );
+        error_reporting( $errLev );
     }
 
     /**
@@ -327,10 +330,10 @@ class Log4PHP extends \Jackbooted\Util\JB {
      */
     private function messageToFile( $msg ) {
         if ( self::$logFile == null ) {
-            self::$logFile = @fopen ( PHPExt::getTempDir() .   '/Log4PHP-log-' . date('Y-m-d') . '.txt', 'a' );
+            self::$logFile = @fopen( PHPExt::getTempDir() . '/Log4PHP-log-' . date( 'Y-m-d' ) . '.txt', 'a' );
         }
 
-        @fwrite ( self::$logFile, date ( 'Y-m-d H:i:s') . ' ' . str_replace ( "\n", ' ', $msg ). "\n" );
+        @fwrite( self::$logFile, date( 'Y-m-d H:i:s' ) . ' ' . str_replace( "\n", ' ', $msg ) . "\n" );
     }
 
     /**
@@ -342,7 +345,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @return void
      */
     private function messageToScreen( $msg ) {
-        echo date ( 'Y-m-d H:i:s') . ' ' . str_replace ( "\n", ' ', $msg ). "<br/>\n";
+        echo date( 'Y-m-d H:i:s' ) . ' ' . str_replace( "\n", ' ', $msg ) . "<br/>\n";
     }
 
     /**
@@ -354,7 +357,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function trace( $msg, $source='' ) {
+    public function trace( $msg, $source = '' ) {
         $this->show( self::TRACE, $msg, $source );
     }
 
@@ -367,7 +370,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function debug( $msg, $source='' ) {
+    public function debug( $msg, $source = '' ) {
         $this->show( self::DEBUG, $msg, $source );
     }
 
@@ -380,7 +383,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function info( $msg, $source='' ) {
+    public function info( $msg, $source = '' ) {
         $this->show( self::INFO, $msg, $source );
     }
 
@@ -393,7 +396,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function warn ( $msg, $source='' ) {
+    public function warn( $msg, $source = '' ) {
         $this->show( self::WARN, $msg, $source );
     }
 
@@ -406,7 +409,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function error( $msg, $source='' ) {
+    public function error( $msg, $source = '' ) {
         $this->show( self::ERROR, $msg, $source );
     }
 
@@ -419,7 +422,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * @since 1.0
      * @return void
      */
-    public function fatal ( $msg, $source='' ) {
+    public function fatal( $msg, $source = '' ) {
         $this->show( self::FATAL, $msg, $source );
     }
 

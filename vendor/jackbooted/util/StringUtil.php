@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Util;
 
 /**
@@ -8,14 +9,14 @@ namespace Jackbooted\Util;
  * brett at brettdutton dot com
  *
  */
-
 class StringUtil extends \Jackbooted\Util\JB {
 
-    public static function unitsFormat ( $num, $units, $msg='' ) {
+    public static function unitsFormat( $num, $units, $msg = '' ) {
         return $msg . ( ( $msg == '' ) ? '' : ' ' ) . $num . ' ' . $units . self::plural( $num );
     }
 
-    public static function plural ( $num ) {
+    public static function plural( $num ) {
         return ( $num == 1 ) ? '' : 's';
     }
+
 }

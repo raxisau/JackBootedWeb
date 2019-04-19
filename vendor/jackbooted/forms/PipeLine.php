@@ -1,7 +1,9 @@
 <?php
+
 namespace Jackbooted\Forms;
 
 use \Jackbooted\Config\Cfg;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -16,34 +18,35 @@ use \Jackbooted\Config\Cfg;
 /**
  * Class for Managing Form Variables
  */
-abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator{
+abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
 
     protected static $log;
 
-    public static function init () {
-        self::$log = \Jackbooted\Util\Log4PHP::logFactory ( __CLASS__ );
+    public static function init() {
+        self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
     }
 
-    protected $formVars =  [];
+    protected $formVars = [];
 
-    public function __construct () {
+    public function __construct() {
         parent::__construct();
     }
 
-    public function clear () {
+    public function clear() {
         $this->formVars = [];
     }
 
-    public function getRaw ( $key ) {
-        $oldValues = Cfg::turnOffErrorHandling ();
-        eval ( '$value = $this->formVars' . $key . ';' );
-        if ( ! isset ( $value ) ) $value = '';
-        Cfg::turnOnErrorHandling ( $oldValues );
+    public function getRaw( $key ) {
+        $oldValues = Cfg::turnOffErrorHandling();
+        eval( '$value = $this->formVars' . $key . ';' );
+        if ( !isset( $value ) )
+            $value = '';
+        Cfg::turnOnErrorHandling( $oldValues );
         return $value;
     }
 
-    public function count () {
-        return count ( $this->formVars );
+    public function count() {
+        return count( $this->formVars );
     }
 
     /**
@@ -52,8 +55,8 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator{
      * @since 1.0
      * @return array
      */
-    public function current ( ) {
-        return current ( $this->formVars );
+    public function current() {
+        return current( $this->formVars );
     }
 
     /**
@@ -62,8 +65,8 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator{
      * @since 1.0
      * @return integer
      */
-    public function key ( ){
-        return key ( $this->formVars )  ;
+    public function key() {
+        return key( $this->formVars );
     }
 
     /**
@@ -72,8 +75,8 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator{
      * @since 1.0
      * @return void
      */
-    public function next ( ){
-        next ( $this->formVars );
+    public function next() {
+        next( $this->formVars );
     }
 
     /**
@@ -82,8 +85,8 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator{
      * @since 1.0
      * @return void
      */
-    public function rewind ( ){
-        reset ( $this->formVars );
+    public function rewind() {
+        reset( $this->formVars );
     }
 
     /**
@@ -92,7 +95,8 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator{
      * @since 1.0
      * @return boolean
      */
-    public function valid (){
-        return current ( $this->formVars ) !== false;
+    public function valid() {
+        return current( $this->formVars ) !== false;
     }
+
 }

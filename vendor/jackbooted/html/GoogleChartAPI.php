@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Html;
 
 /**
@@ -16,10 +17,11 @@ namespace Jackbooted\Html;
  * http://code.google.com/apis/chart/docs/chart_params.html
  */
 class GoogleChartAPI extends \Jackbooted\Util\JB {
+
     private static $URL;
 
-    public static function init () {
-        if ( isset ( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
+    public static function init() {
+        if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
             self::$URL = 'https://chart.googleapis.com/chart?';
         }
         else {
@@ -27,56 +29,58 @@ class GoogleChartAPI extends \Jackbooted\Util\JB {
         }
     }
 
-    public static function create () {
+    public static function create() {
         return new GoogleChartAPI ();
     }
 
-    private $params = array ();
+    private $params = array();
 
-    public function __construct () {
+    public function __construct() {
+
     }
 
-    public function add ( $key, $value ) {
+    public function add( $key, $value ) {
         $this->params[$key] = $value;
         return $this;
     }
 
-    public function autoValues ( /* var args */ ) {
-        $allValues = func_get_args ();
-        $combinedList = array ();
+    public function autoValues( /* var args */ ) {
+        $allValues = func_get_args();
+        $combinedList = array();
         foreach ( $allValues as $values ) {
-            $combinedList = array_merge ( $values, $combinedList );
+            $combinedList = array_merge( $values, $combinedList );
         }
 
-        $max = (int)ceil ( max ( $combinedList ) );
-        $min = (int)floor ( min ( $combinedList ) );
+        $max = (int) ceil( max( $combinedList ) );
+        $min = (int) floor( min( $combinedList ) );
         $range = $max - $min;
-        if ( abs ( $range ) < 0.00001 ) {
+        if ( abs( $range ) < 0.00001 ) {
             $min = 0;
             $range = $max - $min;
-            if ( abs ( $range ) < 0.00001 ) {
+            if ( abs( $range ) < 0.00001 ) {
                 return false;
             }
         }
 
-        $valuesStrings = array ();
+        $valuesStrings = array();
         foreach ( $allValues as $values ) {
             foreach ( $values as $idx => $val ) {
-                $values[$idx] = (int)( ( $values[$idx] - $min ) * 100.0 / $range );
+                $values[$idx] = (int) ( ( $values[$idx] - $min ) * 100.0 / $range );
             }
-            $valuesStrings[] = join ( ',', $values );
+            $valuesStrings[] = join( ',', $values );
         }
 
         $step = $range / 5.0;
-        if ( $step > 3 ) $step = (int)floor ( $step );
+        if ( $step > 3 )
+            $step = (int) floor( $step );
 
-        return $this->add ( 'chxr', "1,{$min},{$max},{$step}" )
-                    ->add ( 'chg',  '0,10' )
-                    ->add ( 'chd', 't:' . join ( '|', $valuesStrings ) );
-
+        return $this->add( 'chxr', "1,{$min},{$max},{$step}" )
+                        ->add( 'chg', '0,10' )
+                        ->add( 'chd', 't:' . join( '|', $valuesStrings ) );
     }
 
-    public function __toString () {
-        return Tag::img ( self::$URL . http_build_query ( $this->params ) );
+    public function __toString() {
+        return Tag::img( self::$URL . http_build_query( $this->params ) );
     }
+
 }

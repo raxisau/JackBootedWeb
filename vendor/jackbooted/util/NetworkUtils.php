@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Util;
 
 /*
@@ -10,11 +11,11 @@ namespace Jackbooted\Util;
 
 class NetworkUtils extends JB {
 
-    public static function whatIsMyIP () {
+    public static function whatIsMyIP() {
         return file_get_contents( 'https://api.ipify.org' );
     }
 
-    public static function ping( $host, $timeout = 1) {
+    public static function ping( $host, $timeout = 1 ) {
         /* ICMP ping packet with a pre-calculated checksum */
         $package = "\x08\x00\x7d\x4b\x00\x00\x00\x00PingHost";
         $ts = microtime( true );
@@ -25,9 +26,9 @@ class NetworkUtils extends JB {
 
         socket_set_option( $socket, SOL_SOCKET, SO_RCVTIMEO, [ 'sec' => $timeout, 'usec' => 0 ] );
         socket_connect( $socket, $host, null );
-        socket_send( $socket, $package, strLen($package), 0 );
+        socket_send( $socket, $package, strLen( $package ), 0 );
         if ( socket_read( $socket, 255 ) ) {
-            $result = microtime(true) - $ts;
+            $result = microtime( true ) - $ts;
         }
         else {
             $result = false;
@@ -35,4 +36,5 @@ class NetworkUtils extends JB {
         socket_close( $socket );
         return $result;
     }
+
 }

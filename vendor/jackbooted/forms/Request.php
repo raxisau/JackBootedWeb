@@ -1,8 +1,10 @@
 <?php
+
 namespace Jackbooted\Forms;
 
 use \Jackbooted\Security\Cryptography;
 use \Jackbooted\Security\TamperGuard;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -18,9 +20,10 @@ use \Jackbooted\Security\TamperGuard;
  * Class for Managing Form Variables
  */
 class Request extends PipeLine {
+
     private static $defaultInstance = null;
 
-    public static function init () {
+    public static function init() {
         self::$defaultInstance = new Request ( );
     }
 
@@ -32,8 +35,8 @@ class Request extends PipeLine {
      * @param  $def
      * @return ?#M#P#CRequest.defaultInstance.getVar
      */
-    public static function get ( $key=null, $def=null ) {
-        return self::$defaultInstance->getVar ( $key, $def );
+    public static function get( $key = null, $def = null ) {
+        return self::$defaultInstance->getVar( $key, $def );
     }
 
     /**
@@ -42,63 +45,66 @@ class Request extends PipeLine {
      * @param  $val
      * @return void
      */
-    public static function set ( $key, $val ) {
-        self::$defaultInstance->setVar ( $key, $val );
+    public static function set( $key, $val ) {
+        self::$defaultInstance->setVar( $key, $val );
     }
 
-    public static function check ( ) {
-        return TamperGuard::check ( self::$defaultInstance );
+    public static function check() {
+        return TamperGuard::check( self::$defaultInstance );
     }
 
     /**
      * @param  $varsToProcess
      * @return void
      */
-    public function __construct ( &$varsToProcess=null ) {
+    public function __construct( &$varsToProcess = null ) {
         parent::__construct();
-        if ( $varsToProcess == null ) $this->formVars = $this->getRequestVars ();
-        else if ( is_array ( $varsToProcess ) ) $this->formVars = $varsToProcess;
-        else if ( is_string ( $varsToProcess ) ) $this->formVars = $this->convertQueryStringToArray ( $varsToProcess );
+        if ( $varsToProcess == null )
+            $this->formVars = $this->getRequestVars();
+        else if ( is_array( $varsToProcess ) )
+            $this->formVars = $varsToProcess;
+        else if ( is_string( $varsToProcess ) )
+            $this->formVars = $this->convertQueryStringToArray( $varsToProcess );
 
-        $this->decryptRequestVars ( $this->formVars );
+        $this->decryptRequestVars( $this->formVars );
     }
 
-    private function decryptRequestVars ( &$arr ) {
+    private function decryptRequestVars( &$arr ) {
         foreach ( $arr as $key => $val ) {
-            if ( is_string ( $arr[$key] ) ) {
-                $arr[$key] = Cryptography::de ( $arr[$key] );
+            if ( is_string( $arr[$key] ) ) {
+                $arr[$key] = Cryptography::de( $arr[$key] );
             }
-            else if ( is_array ( $arr[$key] ) ) {
-                $this->decryptRequestVars ( $arr[$key] );
+            else if ( is_array( $arr[$key] ) ) {
+                $this->decryptRequestVars( $arr[$key] );
             }
         }
     }
 
-    private function getRequestVars ( ) {
-        $vars = array_merge ( $_GET, $_POST );
-        if ( get_magic_quotes_gpc () ) {
-            $this->stripSlashes ( $vars );
+    private function getRequestVars() {
+        $vars = array_merge( $_GET, $_POST );
+        if ( get_magic_quotes_gpc() ) {
+            $this->stripSlashes( $vars );
         }
         return $vars;
     }
 
-    private function stripSlashes ( &$arr ) {
+    private function stripSlashes( &$arr ) {
         foreach ( $arr as $key => $val ) {
-            if ( is_string ( $arr[$key] ) ) {
-                $arr[$key] = stripslashes ( $arr[$key] );
+            if ( is_string( $arr[$key] ) ) {
+                $arr[$key] = stripslashes( $arr[$key] );
             }
-            else if ( is_array ( $arr[$key] ) ) {
-                $this->stripSlashes ( $arr[$key] );
+            else if ( is_array( $arr[$key] ) ) {
+                $this->stripSlashes( $arr[$key] );
             }
         }
     }
 
-    private function convertQueryStringToArray ( $queryString ) {
-        $rawArray = explode ( '&', $queryString );
-        $qArray =  [];
+    private function convertQueryStringToArray( $queryString ) {
+        $rawArray = explode( '&', $queryString );
+        $qArray = [];
         foreach ( $rawArray as $element ) {
-            list ( $key, $val ) = explode ( '=', $element );
-            $qArray[$key] = urldecode ( $val );
+            list ( $key, $val ) = explode( '=', $element );
+            $qArray[$key] = urldecode( $val );
         }
         return $qArray;
     }
@@ -111,18 +117,19 @@ class Request extends PipeLine {
      * @param  $def
      * @return array|string
      */
-    public function getVar ( $key=null, $def=null ) {
+    public function getVar( $key = null, $def = null ) {
         // if no key then give them the lot
-        if ( $key === null ) return $this->formVars;
+        if ( $key === null )
+            return $this->formVars;
 
-        if ( isset ( $this->formVars[$key] ) ) {
+        if ( isset( $this->formVars[$key] ) ) {
             return $this->formVars[$key];
         }
         else if ( $def === null ) {
             return '';
         }
         else {
-            $this->setVar ( $key, $def );
+            $this->setVar( $key, $def );
             return $def;
         }
     }
@@ -132,7 +139,8 @@ class Request extends PipeLine {
      * @param  $val
      * @return void
      */
-    public function setVar ( $key, $val ) {
-        $this->formVars[$key]=$val;
+    public function setVar( $key, $val ) {
+        $this->formVars[$key] = $val;
     }
+
 }

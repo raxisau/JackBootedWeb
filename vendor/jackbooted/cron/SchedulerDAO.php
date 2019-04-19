@@ -1,8 +1,10 @@
 <?php
+
 namespace Jackbooted\Cron;
 
 use \Jackbooted\DB\DAO;
 use \Jackbooted\Util\Log4PHP;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -13,8 +15,8 @@ use \Jackbooted\Util\Log4PHP;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
+class SchedulerDAO extends DAO {
 
-class SchedulerDAO extends DAO  {
     const ACTIVE = 'Yes';
 
     private static $log;
@@ -22,14 +24,14 @@ class SchedulerDAO extends DAO  {
     /**
      * @return void
      */
-    public static function init () {
-        self::$log = Log4PHP::logFactory ( __CLASS__ );
+    public static function init() {
+        self::$log = Log4PHP::logFactory( __CLASS__ );
     }
 
     /**
      * @return void
      */
-    public function __construct () {
+    public function __construct() {
         $this->db = 'local';
         $this->primaryKey = 'fldSchedulerID';
         $this->tableName = 'tblScheduler';
@@ -45,13 +47,14 @@ class SchedulerDAO extends DAO  {
             )
 SQL;
 
-        $this->orm =  [ 'command'         => 'fldCommand',
-                        'cmd'             => 'fldCommand',
-                        'active'          => 'fldActive',
-                        'start'           => 'fldStartTime',
-                        'cron'            => 'fldCron',
-                        'lastRun'         => 'fldLastRun' ];
+        $this->orm = [ 'command' => 'fldCommand',
+            'cmd' => 'fldCommand',
+            'active' => 'fldActive',
+            'start' => 'fldStartTime',
+            'cron' => 'fldCron',
+            'lastRun' => 'fldLastRun' ];
 
         parent::__construct();
     }
+
 }

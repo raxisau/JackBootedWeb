@@ -1,13 +1,14 @@
 <?php
-// This file contains application specific
-$config['menu'] = [ 'Main'   => '\App\Controllers\JackMain',
-                    'Config' => '\App\Controllers\JackConfig',
-                  ];
 
-$config['modules']   = [ '\App\Jack' ];
+// This file contains application specific
+$config['menu'] = [ 'Main' => '\App\Controllers\JackMain',
+    'Config' => '\App\Controllers\JackConfig',
+];
+
+$config['modules'] = [ '\App\Jack' ];
 
 $config['migration'] = [ '\App\Commands\InstallationCLI',
-                         '\App\Commands\MigrationsCLI' ];
+    '\App\Commands\MigrationsCLI' ];
 
 $config['def_display'] = '\App\Controllers\JackMain->index()';
 

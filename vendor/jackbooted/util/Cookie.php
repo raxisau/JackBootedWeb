@@ -1,8 +1,10 @@
 <?php
+
 namespace Jackbooted\Util;
 
 use \Jackbooted\Config\Cfg;
 use \Jackbooted\Security\Cryptography;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -13,15 +15,15 @@ use \Jackbooted\Security\Cryptography;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
 class Cookie extends \Jackbooted\Util\JB {
+
     const CRYPTO_KEY = 'hgfads8h4325h7676asdvbe2misaj9fdsa3r';
 
     private static $crypto;
     private static $timeout;
 
-    public static function init () {
-        self::$crypto = new Cryptography ( self::CRYPTO_KEY );
+    public static function init() {
+        self::$crypto = new Cryptography( self::CRYPTO_KEY );
         self::$timeout = 14 * 24 * 60 * 60;
     }
 
@@ -29,10 +31,11 @@ class Cookie extends \Jackbooted\Util\JB {
      * @param $s The name of the Cookie
      * @public
      */
-    public static function get ( $s, $def='' ) {
-        if ( ! isset ( $_COOKIE[$s] ) ) return $def;
+    public static function get( $s, $def = '' ) {
+        if ( !isset( $_COOKIE[$s] ) )
+            return $def;
 
-        return self::$crypto->decrypt ( $_COOKIE[$s] );
+        return self::$crypto->decrypt( $_COOKIE[$s] );
     }
 
     /** Function to set a Cookie
@@ -40,17 +43,16 @@ class Cookie extends \Jackbooted\Util\JB {
      * @param $val The value of the Cookie
      * @public
      */
-    public static function set ( $key, $val ) {
-        setcookie ( $key, self::$crypto->encrypt ( $val ) ,
-                    time () + self::$timeout,
-                    Cfg::get ( 'cookie_path', '/' ) );
+    public static function set( $key, $val ) {
+        setcookie( $key, self::$crypto->encrypt( $val ), time() + self::$timeout, Cfg::get( 'cookie_path', '/' ) );
     }
 
     /** Function to clear a Cookie
      * @param $s The name of the Cookie
      * @public
      */
-    public static function clear ( $key ) {
-        self::set ( $key, '' );
+    public static function clear( $key ) {
+        self::set( $key, '' );
     }
+
 }

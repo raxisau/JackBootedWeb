@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Admin;
 
 use \Jackbooted\Config\Cfg;
@@ -7,6 +8,7 @@ use \Jackbooted\Forms\Response;
 use \Jackbooted\Html\JS;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\WebPage;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -19,16 +21,16 @@ use \Jackbooted\Html\WebPage;
  */
 class ImagePositionLocator extends WebPage {
 
-    protected function zoom () {
+    protected function zoom() {
         $siteUrl = Cfg::siteUrl();
 
         $html = '';
         $html .= JS::library( JS::JQUERY );
 
         // Get the current Pin
-        $url = Request::get ( 'url' );
+        $url = Request::get( 'url' );
 
-        $jQuery =  <<<JS
+        $jQuery = <<<JS
     var currentXPos = 0;
     var currentYPos = 0;
     var IE = document.all?true:false
@@ -55,51 +57,57 @@ JS;
 
         $html .= JS::javaScript( $jQuery );
 
-        $html .= Tag::img ( $siteUrl . $url,
-                                [ 'title' => 'Click on this image to move the Pin',
-                                  'id' => 'baseImage',
-                                  'onClick' => 'movePinToCursor();',
-                                  'name' => 'voodoo_image' ] );
-        $html .= '<br>X' . Tag::text ( 'PinLeft', '',  [ 'size' => 4, 'id' => 'PinLeft' ] );
-        $html .= '<br>Y' . Tag::text ( 'PinTop', '',  [ 'size' => 4, 'id' => 'PinTop'  ] );
+        $html .= Tag::img( $siteUrl . $url, [ 'title' => 'Click on this image to move the Pin',
+                    'id' => 'baseImage',
+                    'onClick' => 'movePinToCursor();',
+                    'name' => 'voodoo_image' ] );
+        $html .= '<br>X' . Tag::text( 'PinLeft', '', [ 'size' => 4, 'id' => 'PinLeft' ] );
+        $html .= '<br>Y' . Tag::text( 'PinTop', '', [ 'size' => 4, 'id' => 'PinTop' ] );
 
         return $html;
     }
+
     /**
      * Searches all the files in the passed directory and scans them for classes
      * @param string $classesDir
      */
-    private function findImages ( $searchDir ) {
-        $items =  [];
-        $handle = opendir ( $searchDir );
-        while ( false !== ( $file = readdir ( $handle ) ) ) {
-            if ( strpos ( $file, '.' ) === 0 ) continue;
-            if ( strpos ( $file, '_private' ) === 0 ) continue;
-            if ( strpos ( $file, 'thumbs' ) === 0 ) continue;
+    private function findImages( $searchDir ) {
+        $items = [];
+        $handle = opendir( $searchDir );
+        while ( false !== ( $file = readdir( $handle ) ) ) {
+            if ( strpos( $file, '.' ) === 0 )
+                continue;
+            if ( strpos( $file, '_private' ) === 0 )
+                continue;
+            if ( strpos( $file, 'thumbs' ) === 0 )
+                continue;
 
             $fullPathName = $searchDir . '/' . $file;
-            if ( is_dir ( $fullPathName ) ) $items = array_merge ( $items, $this->findImages ( $fullPathName ) );
-            else if ( preg_match( '/^.*\.(jpg|jpeg|png|gif)$/i', $file ) ) $items[] = $fullPathName;
+            if ( is_dir( $fullPathName ) )
+                $items = array_merge( $items, $this->findImages( $fullPathName ) );
+            else if ( preg_match( '/^.*\.(jpg|jpeg|png|gif)$/i', $file ) )
+                $items[] = $fullPathName;
         }
-        closedir ( $handle );
+        closedir( $handle );
         return $items;
     }
 
-    public function index ( ) {
+    public function index() {
 
-        $sitePath = Cfg::get ( 'site_path' );
-        $sitePathLen = strlen ( $sitePath );
-        $resp = Response::factory()->action ( __CLASS__ . '->zoom()'  );
+        $sitePath = Cfg::get( 'site_path' );
+        $sitePathLen = strlen( $sitePath );
+        $resp = Response::factory()->action( __CLASS__ . '->zoom()' );
 
-        $html = Tag::ul (  );
-        foreach ( $this->findImages ( $sitePath ) as $item ) {
-            $relItemName = substr ( $item, $sitePathLen );
-            $html .= Tag::li ( ) .
-                       Tag::hRef ( '?' . $resp->set ( 'url' , $relItemName )->toUrl (), $relItemName ) .
-                     Tag::_li ( );
+        $html = Tag::ul();
+        foreach ( $this->findImages( $sitePath ) as $item ) {
+            $relItemName = substr( $item, $sitePathLen );
+            $html .= Tag::li() .
+                    Tag::hRef( '?' . $resp->set( 'url', $relItemName )->toUrl(), $relItemName ) .
+                    Tag::_li();
         }
-        $html .= Tag::_ul (  );
+        $html .= Tag::_ul();
 
         return $html;
     }
+
 }

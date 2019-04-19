@@ -19,10 +19,10 @@ define( 'ATOM', 'ATOM', true );
  */
 class FeedWriter {
 
-    private $channels = array ( );  // Collection of channel elements
-    private $items = array ( );  // Collection of items as object of FeedItem class.
-    private $data = array ( );  // Store some other version wise data
-    private $CDATAEncoding = array ( );  // The tag names which have to encoded as CDATA
+    private $channels = array();  // Collection of channel elements
+    private $items = array();  // Collection of items as object of FeedItem class.
+    private $data = array();  // Store some other version wise data
+    private $CDATAEncoding = array();  // The tag names which have to encoded as CDATA
     private $version = null;
 
     /**
@@ -30,7 +30,7 @@ class FeedWriter {
      *
      * @param    constant    the version constant (RSS1/RSS2/ATOM).
      */
-    function __construct ( $version = RSS2 ) {
+    function __construct( $version = RSS2 ) {
         $this->version = $version;
 
         // Setting default value for assential channel elements
@@ -38,7 +38,7 @@ class FeedWriter {
         $this->channels['link'] = 'http://www.ajaxray.com/blog';
 
         //Tag names to encode in CDATA
-        $this->CDATAEncoding = array ( 'description', 'content:encoded', 'summary' );
+        $this->CDATAEncoding = array( 'description', 'content:encoded', 'summary' );
     }
 
     // Start # public functions ---------------------------------------------
@@ -50,7 +50,7 @@ class FeedWriter {
      * @param    string  content of the channel tag
      * @return   void
      */
-    public function setChannelElement ( $elementName, $content ) {
+    public function setChannelElement( $elementName, $content ) {
         $this->channels[$elementName] = $content;
     }
 
@@ -62,7 +62,7 @@ class FeedWriter {
      * @param    array   array of channels
      * @return   void
      */
-    public function setChannelElementsFromArray ( $elementArray ) {
+    public function setChannelElementsFromArray( $elementArray ) {
         if ( !is_array( $elementArray ) )
             return;
         foreach ( $elementArray as $elementName => $content ) {
@@ -76,7 +76,7 @@ class FeedWriter {
      * @access   public
      * @return   void
      */
-    public function genarateFeed () {
+    public function genarateFeed() {
         header( "Content-type: text/xml" );
 
         $this->printHead();
@@ -91,7 +91,7 @@ class FeedWriter {
      * @access   public
      * @return   object  instance of FeedItem class
      */
-    public function createNewItem () {
+    public function createNewItem() {
         $Item = new FeedItem( $this->version );
         return $Item;
     }
@@ -103,7 +103,7 @@ class FeedWriter {
      * @param    object  instance of FeedItem class
      * @return   void
      */
-    public function addItem ( $feedItem ) {
+    public function addItem( $feedItem ) {
         $this->items[] = $feedItem;
     }
 
@@ -116,7 +116,7 @@ class FeedWriter {
      * @param    srting  value of 'title' channel tag
      * @return   void
      */
-    public function setTitle ( $title ) {
+    public function setTitle( $title ) {
         $this->setChannelElement( 'title', $title );
     }
 
@@ -127,7 +127,7 @@ class FeedWriter {
      * @param    srting  value of 'description' channel tag
      * @return   void
      */
-    public function setDescription ( $desciption ) {
+    public function setDescription( $desciption ) {
         $this->setChannelElement( 'description', $desciption );
     }
 
@@ -138,7 +138,7 @@ class FeedWriter {
      * @param    srting  value of 'link' channel tag
      * @return   void
      */
-    public function setLink ( $link ) {
+    public function setLink( $link ) {
         $this->setChannelElement( 'link', $link );
     }
 
@@ -151,8 +151,8 @@ class FeedWriter {
      * @param    srting  path url of the image
      * @return   void
      */
-    public function setImage ( $title, $link, $url ) {
-        $this->setChannelElement( 'image', array ( 'title' => $title, 'link' => $link, 'url' => $url ) );
+    public function setImage( $title, $link, $url ) {
+        $this->setChannelElement( 'image', array( 'title' => $title, 'link' => $link, 'url' => $url ) );
     }
 
     /**
@@ -162,7 +162,7 @@ class FeedWriter {
      * @param    srting  value of 'about' channel tag
      * @return   void
      */
-    public function setChannelAbout ( $url ) {
+    public function setChannelAbout( $url ) {
         $this->data['ChannelAbout'] = $url;
     }
 
@@ -172,7 +172,7 @@ class FeedWriter {
      * @param      string  an optional prefix
      * @return     string  the formated uuid
      */
-    public function uuid ( $key = null, $prefix = '' ) {
+    public function uuid( $key = null, $prefix = '' ) {
         $key = ($key == null) ? uniqid( rand() ) : $key;
         $chars = md5( $key );
         $uuid = substr( $chars, 0, 8 ) . '-';
@@ -193,7 +193,7 @@ class FeedWriter {
      * @access   private
      * @return   void
      */
-    private function printHead () {
+    private function printHead() {
         $out = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
 
         if ( $this->version == RSS2 ) {
@@ -223,7 +223,7 @@ class FeedWriter {
      * @access   private
      * @return   void
      */
-    private function printTale () {
+    private function printTale() {
         if ( $this->version == RSS2 ) {
             echo '</channel>' . PHP_EOL . '</rss>';
         }
@@ -244,7 +244,7 @@ class FeedWriter {
      * @param    array   Attributes(if any) in 'attrName' => 'attrValue' format
      * @return   string  formatted xml tag
      */
-    private function makeNode ( $tagName, $tagContent, $attributes = null ) {
+    private function makeNode( $tagName, $tagContent, $attributes = null ) {
         $nodeText = '';
         $attrText = '';
 
@@ -281,7 +281,7 @@ class FeedWriter {
      * @access   private
      * @return   void
      */
-    private function printChannels () {
+    private function printChannels() {
         //Start channel tag
         switch ( $this->version ) {
             case RSS2:
@@ -296,7 +296,7 @@ class FeedWriter {
         foreach ( $this->channels as $key => $value ) {
             if ( $this->version == ATOM && $key == 'link' ) {
                 // ATOM prints link element as href attribute
-                echo $this->makeNode( $key, '', array ( 'href' => $value ) );
+                echo $this->makeNode( $key, '', array( 'href' => $value ) );
                 //Add the id for ATOM
                 echo $this->makeNode( 'id', $this->uuid( $value, 'urn:uuid:' ) );
             }
@@ -322,7 +322,7 @@ class FeedWriter {
      * @access   private
      * @return   void
      */
-    private function printItems () {
+    private function printItems() {
         foreach ( $this->items as $item ) {
             $thisItems = $item->getElements();
 
@@ -343,7 +343,7 @@ class FeedWriter {
      * @param    srting  The vale of about tag which is used for only RSS 1.0
      * @return   void
      */
-    private function startItem ( $about = false ) {
+    private function startItem( $about = false ) {
         if ( $this->version == RSS2 ) {
             echo '<item>' . PHP_EOL;
         }
@@ -366,7 +366,7 @@ class FeedWriter {
      * @access   private
      * @return   void
      */
-    private function endItem () {
+    private function endItem() {
         if ( $this->version == RSS2 || $this->version == RSS1 ) {
             echo '</item>' . PHP_EOL;
         }
@@ -391,7 +391,7 @@ class FeedWriter {
  */
 class FeedItem {
 
-    private $elements = array ( );    //Collection of feed elements
+    private $elements = array();    //Collection of feed elements
     private $version;
 
     /**
@@ -399,7 +399,7 @@ class FeedItem {
      *
      * @param    contant     (RSS1/RSS2/ATOM) RSS2 is default.
      */
-    function __construct ( $version = RSS2 ) {
+    function __construct( $version = RSS2 ) {
         $this->version = $version;
     }
 
@@ -412,7 +412,7 @@ class FeedItem {
      * @param    array   Attributes(if any) in 'attrName' => 'attrValue' format
      * @return   void
      */
-    public function addElement ( $elementName, $content, $attributes = null ) {
+    public function addElement( $elementName, $content, $attributes = null ) {
         $this->elements[$elementName]['name'] = $elementName;
         $this->elements[$elementName]['content'] = $content;
         $this->elements[$elementName]['attributes'] = $attributes;
@@ -426,7 +426,7 @@ class FeedItem {
      * @param    array   array of elements in 'tagName' => 'tagContent' format.
      * @return   void
      */
-    public function addElementArray ( $elementArray ) {
+    public function addElementArray( $elementArray ) {
         if ( !is_array( $elementArray ) )
             return;
         foreach ( $elementArray as $elementName => $content ) {
@@ -440,7 +440,7 @@ class FeedItem {
      * @access   public
      * @return   array
      */
-    public function getElements () {
+    public function getElements() {
         return $this->elements;
     }
 
@@ -453,7 +453,7 @@ class FeedItem {
      * @param    string  The content of 'description' element
      * @return   void
      */
-    public function setDescription ( $description ) {
+    public function setDescription( $description ) {
         $tag = ($this->version == ATOM) ? 'summary' : 'description';
         $this->addElement( $tag, $description );
     }
@@ -464,7 +464,7 @@ class FeedItem {
      * @param    string  The content of 'title' element
      * @return   void
      */
-    public function setTitle ( $title ) {
+    public function setTitle( $title ) {
         $this->addElement( 'title', $title );
     }
 
@@ -475,7 +475,7 @@ class FeedItem {
      * @param    string  The content of 'date' element
      * @return   void
      */
-    public function setDate ( $date ) {
+    public function setDate( $date ) {
         if ( !is_numeric( $date ) ) {
             $date = strtotime( $date );
         }
@@ -503,12 +503,12 @@ class FeedItem {
      * @param    string  The content of 'link' element
      * @return   void
      */
-    public function setLink ( $link ) {
+    public function setLink( $link ) {
         if ( $this->version == RSS2 || $this->version == RSS1 ) {
             $this->addElement( 'link', $link );
         }
         else {
-            $this->addElement( 'link', '', array ( 'href' => $link ) );
+            $this->addElement( 'link', '', array( 'href' => $link ) );
             $this->addElement( 'id', FeedWriter::uuid( $link, 'urn:uuid:' ) );
         }
     }
@@ -523,8 +523,9 @@ class FeedItem {
      * @param    string  The type attribute of encloser tag
      * @return   void
      */
-    public function setEncloser ( $url, $length, $type ) {
-        $attributes = array ( 'url' => $url, 'length' => $length, 'type' => $type );
+    public function setEncloser( $url, $length, $type ) {
+        $attributes = array( 'url' => $url, 'length' => $length, 'type' => $type );
         $this->addElement( 'enclosure', '', $attributes );
     }
+
 }

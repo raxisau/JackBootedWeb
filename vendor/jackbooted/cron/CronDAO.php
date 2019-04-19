@@ -1,8 +1,10 @@
 <?php
+
 namespace Jackbooted\Cron;
 
 use \Jackbooted\DB\DAO;
 use \Jackbooted\Util\Log4PHP;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -13,10 +15,10 @@ use \Jackbooted\Util\Log4PHP;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
+class CronDAO extends DAO {
 
-class CronDAO extends DAO  {
-    const STATUS_NEW      = 'NEW';
-    const STATUS_RUNNING  = 'RUNNING';
+    const STATUS_NEW = 'NEW';
+    const STATUS_RUNNING = 'RUNNING';
     const STATUS_COMPLETE = 'COMPLETE';
 
     private static $log;
@@ -24,15 +26,15 @@ class CronDAO extends DAO  {
     /**
      * @return void
      */
-    public static function init () {
+    public static function init() {
         $className = __CLASS__;
-        self::$log = Log4PHP::logFactory ( $className );
+        self::$log = Log4PHP::logFactory( $className );
     }
 
     /**
      * @return void
      */
-    public function __construct () {
+    public function __construct() {
         $this->db = 'local';
         $this->primaryKey = 'fldCronQueueID';
         $this->tableName = 'tblCronQueue';
@@ -51,32 +53,32 @@ class CronDAO extends DAO  {
             )
 SQL;
 
-        $this->orm =  [ 'ref'             => 'fldref',
-                        'command'         => 'fldCommand',
-                        'cmd'             => 'fldCommand',
-                        'priority'        => 'fldPriority',
-                        'status'          => 'fldStatus',
-                        'runTime'         => 'fldRunTime',
-                        'result'          => 'fldReturnValue',
-                        'message'         => 'fldReturnOutput' ];
+        $this->orm = [ 'ref' => 'fldref',
+            'command' => 'fldCommand',
+            'cmd' => 'fldCommand',
+            'priority' => 'fldPriority',
+            'status' => 'fldStatus',
+            'runTime' => 'fldRunTime',
+            'result' => 'fldReturnValue',
+            'message' => 'fldReturnOutput' ];
 
         parent::__construct();
     }
 
-    public function getActive ( $ref=null ) {
+    public function getActive( $ref = null ) {
         $where = $this->orm['status'] . "!='" . self::STATUS_COMPLETE . "'";
         if ( $ref != null ) {
             $where .= ' AND ' . $this->orm['ref'] . '=' . $ref;
         }
-        return $this->getRowCount ( $where );
+        return $this->getRowCount( $where );
     }
 
-    public function getNew ( $ref=null ) {
+    public function getNew( $ref = null ) {
         $where = $this->orm['status'] . "='" . self::STATUS_NEW . "'";
         if ( $ref != null ) {
             $where .= ' AND ' . $this->orm['ref'] . '=' . $ref;
         }
-        return $this->getRowCount ( $where );
+        return $this->getRowCount( $where );
     }
 
 }

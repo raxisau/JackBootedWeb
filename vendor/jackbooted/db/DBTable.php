@@ -1,10 +1,12 @@
 <?php
+
 namespace Jackbooted\DB;
 
 use \Jackbooted\DB\DB;
 use \Jackbooted\Html\Widget;
 use \Jackbooted\Util\DataCache;
 use \Jackbooted\Util\Invocation;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -38,7 +40,7 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
     private static $dataCache;
 
     public static function init() {
-        self::$dataCache = new DataCache ( __CLASS__, 100 );
+        self::$dataCache = new DataCache( __CLASS__, 100 );
     }
 
     /**
@@ -49,21 +51,21 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return DBTable
      */
-    public static function create ( $dbh, $qry, $params=null, $fetch=DB::FETCH_BOTH ) {
-        return new DBTable ( $dbh, $qry, $params, $fetch );
-    }
-    public static function factory ( $dbh, $qry, $params=null, $fetch=DB::FETCH_BOTH ) {
-        return new DBTable ( $dbh, $qry, $params, $fetch );
+    public static function create( $dbh, $qry, $params = null, $fetch = DB::FETCH_BOTH ) {
+        return new DBTable( $dbh, $qry, $params, $fetch );
     }
 
-    public static function clearCache () {
-        self::$dataCache->clear ();
+    public static function factory( $dbh, $qry, $params = null, $fetch = DB::FETCH_BOTH ) {
+        return new DBTable( $dbh, $qry, $params, $fetch );
+    }
+
+    public static function clearCache() {
+        self::$dataCache->clear();
     }
 
     // Might need a value to return
-    private static $emptyArray =  [];
+    private static $emptyArray = [];
     private static $falseValue = false;
-
     // The array in memory
     private $table = null;
     private $fetch;
@@ -75,22 +77,23 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      *
      * @since 1.0
      */
-    public function __construct ( $dbh, $qry, $params=null, $fetch=DB::FETCH_BOTH ) {
+    public function __construct( $dbh, $qry, $params = null, $fetch = DB::FETCH_BOTH ) {
         parent::__construct();
         $this->fetch = $fetch;
 
-        if ( is_object ( $dbh ) ) {
-            $this->table = $dbh->fetchAll ( $fetch );
+        if ( is_object( $dbh ) ) {
+            $this->table = $dbh->fetchAll( $fetch );
         }
         else {
-            $cacheKey = $dbh . ' ' . $qry . ' ' . serialize ( $params );
-            if ( ( $cacheValue = self::$dataCache->get ( $cacheKey ) ) !== false ) {
+            $cacheKey = $dbh . ' ' . $qry . ' ' . serialize( $params );
+            if ( ( $cacheValue = self::$dataCache->get( $cacheKey ) ) !== false ) {
                 $this->table = $cacheValue;
             }
             else {
-                if ( ( $resultSet = DB::query ( $dbh, $qry, $params ) ) === false ) return;
-                $this->table = $resultSet->fetchAll ( $fetch );
-                self::$dataCache->set ( $cacheKey, $this->table );
+                if ( ( $resultSet = DB::query( $dbh, $qry, $params ) ) === false )
+                    return;
+                $this->table = $resultSet->fetchAll( $fetch );
+                self::$dataCache->set( $cacheKey, $this->table );
             }
         }
     }
@@ -103,18 +106,19 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return array
      */
-    public function getColumn ( $columnNameOrIndex=0 ) {
-        if ( ! $this->ok () ) {
-            return  [];
+    public function getColumn( $columnNameOrIndex = 0 ) {
+        if ( !$this->ok() ) {
+            return [];
         }
 
-        $column =  [];
+        $column = [];
         foreach ( $this->table as &$row ) {
             $column[] = $row[$columnNameOrIndex];
         }
 
         return $column;
     }
+
     /**
      * Gets a column.
      *
@@ -123,12 +127,12 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return array
      */
-    public function getColumnCount ( ) {
-        if ( ! $this->ok () ) {
+    public function getColumnCount() {
+        if ( !$this->ok() ) {
             return 0;
         }
 
-        return count ( $this->getRow ( 0 ) );
+        return count( $this->getRow( 0 ) );
     }
 
     /**
@@ -137,8 +141,8 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return array
      */
-    public function &getRaw ( ) {
-        if ( ! $this->ok () ) {
+    public function &getRaw() {
+        if ( !$this->ok() ) {
             return self::$emptyArray;
         }
 
@@ -155,8 +159,9 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return mixed
      */
-    public function setValue ( $value, $columnNameOrIndex=0, $row=0 ) {
-        if ( ! $this->ok () ) return self::$falseValue;
+    public function setValue( $value, $columnNameOrIndex = 0, $row = 0 ) {
+        if ( !$this->ok() )
+            return self::$falseValue;
 
         $this->table[$row][$columnNameOrIndex] = $value;
     }
@@ -170,13 +175,14 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return array
      */
-    public function &getValue ( $columnNameOrIndex=0, $row=0 ) {
-        if ( ! $this->ok () ) return self::$falseValue;
+    public function &getValue( $columnNameOrIndex = 0, $row = 0 ) {
+        if ( !$this->ok() )
+            return self::$falseValue;
 
-        $row = $this->getRow ( $row );
+        $row = $this->getRow( $row );
 
-        if ( is_integer ( $columnNameOrIndex ) && ! isset ( $row[$columnNameOrIndex] ) ) {
-            $row = array_values ( $row );
+        if ( is_integer( $columnNameOrIndex ) && !isset( $row[$columnNameOrIndex] ) ) {
+            $row = array_values( $row );
         }
 
         return $row[$columnNameOrIndex];
@@ -190,8 +196,8 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return array
      */
-    public function &getRow ( $idx=0 ) {
-        if ( ! $this->ok () || $idx < 0 || $idx >= $this->getRowCount () ) {
+    public function &getRow( $idx = 0 ) {
+        if ( !$this->ok() || $idx < 0 || $idx >= $this->getRowCount() ) {
             return self::$emptyArray;
         }
 
@@ -204,8 +210,8 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return array
      */
-    public function &getTable ( ) {
-        if ( ! $this->ok () ) {
+    public function &getTable() {
+        if ( !$this->ok() ) {
             return null;
         }
 
@@ -218,12 +224,12 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return integer
      */
-    public function getRowCount ( ) {
-        if ( ! $this->ok () ) {
+    public function getRowCount() {
+        if ( !$this->ok() ) {
             return 0;
         }
 
-        return count ( $this->table );
+        return count( $this->table );
     }
 
     /**
@@ -232,8 +238,8 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return boolean
      */
-    public function ok () {
-        return is_array ( $this->table );
+    public function ok() {
+        return is_array( $this->table );
     }
 
     /**
@@ -242,8 +248,8 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return boolean
      */
-    public function isEmpty () {
-        return $this->getRowCount () <= 0;
+    public function isEmpty() {
+        return $this->getRowCount() <= 0;
     }
 
     // Pointer to the current row
@@ -255,8 +261,8 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return array
      */
-    public function &current ( ) {
-        return $this->getRow ( $this->currentRow );
+    public function &current() {
+        return $this->getRow( $this->currentRow );
     }
 
     /**
@@ -265,7 +271,7 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return integer
      */
-    public function key ( ){
+    public function key() {
         return $this->currentRow;
     }
 
@@ -275,8 +281,8 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return void
      */
-    public function next ( ){
-        ++ $this->currentRow;
+    public function next() {
+        ++$this->currentRow;
     }
 
     /**
@@ -285,7 +291,7 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return void
      */
-    public function rewind ( ){
+    public function rewind() {
         $this->currentRow = 0;
     }
 
@@ -295,11 +301,11 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return boolean
      */
-    public function valid (){
+    public function valid() {
         return $this->currentRow < $this->getRowCount();
     }
 
-    public function  __toString() {
+    public function __toString() {
         $id = 'DBTable_' . Invocation::next();
 
         $msg = '<table id="' . $id . '">';
@@ -311,18 +317,20 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
             foreach ( $this->table as &$row ) {
                 if ( $firstTime ) {
                     $msg .= '  <tr>';
-                    foreach ( $row as $key => &$value ) $msg .= '<th>' . $key . '</th>';
-                    $msg .= '  </tr>'. "\n";
+                    foreach ( $row as $key => &$value )
+                        $msg .= '<th>' . $key . '</th>';
+                    $msg .= '  </tr>' . "\n";
                     $firstTime = false;
                 }
                 $msg .= '  <tr>';
                 foreach ( $row as &$value ) {
                     $msg .= '<td>' . $value . '</td>';
                 }
-                $msg .= '  </tr>'. "\n";
+                $msg .= '  </tr>' . "\n";
             }
         }
-        $msg .= '</table>'. "\n";
-        return Widget::styleTable ( '#' . $id ) . $msg;
+        $msg .= '</table>' . "\n";
+        return Widget::styleTable( '#' . $id ) . $msg;
     }
+
 }

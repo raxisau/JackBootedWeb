@@ -1,7 +1,9 @@
 <?php
+
 namespace Jackbooted\Util;
 
 use \Jackbooted\Config\Cfg;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -12,7 +14,6 @@ use \Jackbooted\Config\Cfg;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
 
 /**
  * The day of require_once is now over for classes. This class will automatically set itself up to load any class from
@@ -48,27 +49,29 @@ use \Jackbooted\Config\Cfg;
  * @see ClassLocator
  */
 class AutoLoader extends \Jackbooted\Util\JB {
+
     /**
      * Suffix for classes that are auto loaded
      */
     const CLASS_SUFFIX = '.php';
     const THIRD_PARTY_REGEX = '/^.*\/3rdparty.*$/';
+
     /**
      * initialization method
      */
     const STATIC_INIT = 'init';
 
     private static $log;
-    private static $ignoreList =  [];
+    private static $ignoreList = [];
 
     /**
      * load set up the static variables of the class
      * (still waiting on static initialisation from PHP)
      * @param string $classesDir
      */
-    public static function init () {
-        spl_autoload_register ( __CLASS__ . '::autoload' );
-        self::$log = Log4PHP::logFactory ( __CLASS__ );
+    public static function init() {
+        spl_autoload_register( __CLASS__ . '::autoload' );
+        self::$log = Log4PHP::logFactory( __CLASS__ );
     }
 
     /**
@@ -78,26 +81,29 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * imports the class
      * @return void
      */
-    public static function ignore ( $className, $fullName=null ) {
+    public static function ignore( $className, $fullName = null ) {
         self::$ignoreList[$className] = true;
-        if ( $fullName != null && Cfg::get ( 'quercus', false ) ) {
-            eval ( 'import ' . $fullName . ';' );
+        if ( $fullName != null && Cfg::get( 'quercus', false ) ) {
+            eval( 'import ' . $fullName . ';' );
         }
     }
+
     /**
      * This method is called by the autoloader - Registered somewhere (config)
      * with spl_autoload_register ( 'AutoLoader::autoload' );
      * This class must be manually loaded with require_one and then call init
      * @param string $className Class name that needs to be loaded
      */
-    public static function autoload ( $className ) {
-        if ( isset ( self::$ignoreList[$className] ) ) return;
+    public static function autoload( $className ) {
+        if ( isset( self::$ignoreList[$className] ) )
+            return;
 
-        $tries = self::locateClassFromFileAndLoad ( $className );
-        if ( $tries === true )  return;
+        $tries = self::locateClassFromFileAndLoad( $className );
+        if ( $tries === true )
+            return;
 
         // If made it to here then we have not loaded anything
-        self::$log->error ( 'The system has attempted to autoload non existing class: ' . $className . ' tried: (' . implode ( ', ', $tries ) . ')'  );
+        self::$log->error( 'The system has attempted to autoload non existing class: ' . $className . ' tried: (' . implode( ', ', $tries ) . ')' );
     }
 
     /**
@@ -106,11 +112,13 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * @return mixed Return true on successful load, otherwise it returns a list of all the file locations
      * that it tried to load from
      */
-    private static function locateClassFromFileAndLoad ( $className ) {
+    private static function locateClassFromFileAndLoad( $className ) {
         $fileToLoad = ClassLocator::getLocation( $className );
-        if ( $fileToLoad === false ) return  [ 'none found' ];
-        if ( self::loadClassFromFile( $className, $fileToLoad ) ) return true;
-        return  [ $fileToLoad ];
+        if ( $fileToLoad === false )
+            return [ 'none found' ];
+        if ( self::loadClassFromFile( $className, $fileToLoad ) )
+            return true;
+        return [ $fileToLoad ];
     }
 
     /**
@@ -119,22 +127,23 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * @param string $fileToLoad The file that you are loading the class from
      * @return boolean true on sucess
      */
-    public static function loadClassFromFile ( $className, $fileToLoad ) {
+    public static function loadClassFromFile( $className, $fileToLoad ) {
         // If the file does not exist then get out
-        if ( ! file_exists ( $fileToLoad ) ) return false;
+        if ( !file_exists( $fileToLoad ) )
+            return false;
 
         // Everything good!
         require_once $fileToLoad;
 
         // RUn class level initialization only on classes that follow JackBoot Web standard
-        if ( preg_match ( self::THIRD_PARTY_REGEX, $fileToLoad ) ) {
-            self::$log->trace ( "Skipping class initialization for {$className} from " . $fileToLoad );
+        if ( preg_match( self::THIRD_PARTY_REGEX, $fileToLoad ) ) {
+            self::$log->trace( "Skipping class initialization for {$className} from " . $fileToLoad );
         }
         else {
-            self::runClassInitialization ( $className );
+            self::runClassInitialization( $className );
         }
 
-        self::$log->trace ( "Loaded {$className} from " . $fileToLoad );
+        self::$log->trace( "Loaded {$className} from " . $fileToLoad );
         return true;
     }
 
@@ -143,13 +152,14 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * Need this because PHP does not have static initialisation yet
      * @param string $className to initialise
      */
-    private static function runClassInitialization ( $className ) {
-        if ( Cfg::get ( 'quercus', false ) ) {
-            @eval ( $className . '::' . self::STATIC_INIT . '();' );
+    private static function runClassInitialization( $className ) {
+        if ( Cfg::get( 'quercus', false ) ) {
+            @eval( $className . '::' . self::STATIC_INIT . '();' );
         }
-        else if ( method_exists ( $className, self::STATIC_INIT ) ) {
-            $classLevelInit =  [ $className, self::STATIC_INIT ];
-            call_user_func ( $classLevelInit );
+        else if ( method_exists( $className, self::STATIC_INIT ) ) {
+            $classLevelInit = [ $className, self::STATIC_INIT ];
+            call_user_func( $classLevelInit );
         }
     }
+
 }

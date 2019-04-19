@@ -1,5 +1,7 @@
 <?php
+
 namespace Jackbooted\Mail;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -10,13 +12,13 @@ namespace Jackbooted\Mail;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
 use \Jackbooted\Config\Config;
 use \Jackbooted\Security\Cryptography;
 
 class GMailSender extends \PHPMailer {
-    public function __construct ( $exceptions = false ) {
-        parent::__construct ( $exceptions );
+
+    public function __construct( $exceptions = false ) {
+        parent::__construct( $exceptions );
 
         //Tell PHPMailer to use SMTP
         $this->isSMTP();
@@ -47,4 +49,5 @@ class GMailSender extends \PHPMailer {
         // $this->Username = ???;
         // $this->Password = ???;
     }
+
 }

@@ -1,10 +1,12 @@
 <?php
+
 namespace Jackbooted\Html;
 
 use \Jackbooted\DB\DB;
 use \Jackbooted\DB\DBTable;
 use \Jackbooted\Forms\Request;
 use \Jackbooted\Util\Log4PHP;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -21,11 +23,11 @@ use \Jackbooted\Util\Log4PHP;
  * This class generates the HTML for lists. Value add to the basic tags
  */
 class Lists extends \Jackbooted\Util\JB {
+
     private static $log;
 
-    public static function init () {
-        self::$log = Log4PHP::logFactory ( __CLASS__ );
-
+    public static function init() {
+        self::$log = Log4PHP::logFactory( __CLASS__ );
     }
 
     /**
@@ -37,69 +39,72 @@ class Lists extends \Jackbooted\Util\JB {
      * @param boolean $blank true if you want to generate a blank row
      * @returns string The resulting HTML
      */
-    static function select ( $name, $displayList=null, $attribs=array() ) {
+    static function select( $name, $displayList = null, $attribs = array() ) {
 
         $blank = false;
-        if ( isset ( $attribs['hasBlank'] ) ) {
+        if ( isset( $attribs['hasBlank'] ) ) {
             $blank = $attribs['hasBlank'];
         }
 
         $db = DB::DEF;
-        if ( isset ( $attribs['DB'] ) ) {
+        if ( isset( $attribs['DB'] ) ) {
             $db = $attribs['DB'];
-            unset ( $attribs['DB'] );
+            unset( $attribs['DB'] );
         }
 
         // If an array is here
-        if ( is_array ( $displayList ) && ( count ( $displayList ) > 0 || $blank ) ) {
-            if ( isset ( $attribs['default'] ) ) {
+        if ( is_array( $displayList ) && ( count( $displayList ) > 0 || $blank ) ) {
+            if ( isset( $attribs['default'] ) ) {
                 $defaultValue = $attribs['default'];
-                unset ( $attribs['default'] );
+                unset( $attribs['default'] );
             }
             else {
-                $defaultValue = Request::get ( $name, null );
+                $defaultValue = Request::get( $name, null );
             }
 
             $blank = false;
-            if ( isset ( $attribs['hasBlank'] ) ) {
+            if ( isset( $attribs['hasBlank'] ) ) {
                 $blank = $attribs['hasBlank'];
-                unset ( $attribs['hasBlank'] );
+                unset( $attribs['hasBlank'] );
             }
 
-            $tag = Tag::select ( $name, $attribs );
-            if ( ! is_array ( $defaultValue ) ) $defaultValue = array ( $defaultValue );
+            $tag = Tag::select( $name, $attribs );
+            if ( !is_array( $defaultValue ) )
+                $defaultValue = array( $defaultValue );
 
-            if ( $blank ) $tag .= Tag::optiontag ( ' ', '', in_array ( '' , $defaultValue ) );
+            if ( $blank )
+                $tag .= Tag::optiontag( ' ', '', in_array( '', $defaultValue ) );
             foreach ( $displayList as $key => $val ) {
-                if ( is_int( $key ) ) $key = $val;
-                $key = trim ( $key );
-                $tag .= Tag::optiontag ( $key, $val, in_array ( $key, $defaultValue ) );
+                if ( is_int( $key ) )
+                    $key = $val;
+                $key = trim( $key );
+                $tag .= Tag::optiontag( $key, $val, in_array( $key, $defaultValue ) );
             }
-            $tag .= Tag::_select ( );
+            $tag .= Tag::_select();
         }
 
         // If this is a DBTable object
         else if ( is_object( $displayList ) && $displayList instanceof DBTable ) {
-            $newDisplayList = array ();
-            for ( $i=0; $i<$displayList->getRowCount (); $i++ ) {
-                $key = $displayList->getValue ( 0, $i );
-                $val = ( $displayList->getColumnCount () > 1 ) ? $displayList->getValue ( 1, $i ) : $key;
+            $newDisplayList = array();
+            for ( $i = 0; $i < $displayList->getRowCount(); $i++ ) {
+                $key = $displayList->getValue( 0, $i );
+                $val = ( $displayList->getColumnCount() > 1 ) ? $displayList->getValue( 1, $i ) : $key;
                 $newDisplayList[' ' . $key] = $val;
             }
-            $tag = self::select ( $name, $newDisplayList, $attribs );
+            $tag = self::select( $name, $newDisplayList, $attribs );
         }
 
         // If this is a sql string
-        else if ( is_string ( $displayList ) ) {
-            $table = new DBTable ( $db, $displayList, null, DB::FETCH_NUM );
-            $tag = self::select ( $name, $table, $attribs );
+        else if ( is_string( $displayList ) ) {
+            $table = new DBTable( $db, $displayList, null, DB::FETCH_NUM );
+            $tag = self::select( $name, $table, $attribs );
         }
 
         // Default to nothing
         else {
             $tag = "**None Available**";
-            if ( isset ( $attribs['default'] ) ) {
-                $tag .= Tag::hidden ( $name, $attribs['default'] );
+            if ( isset( $attribs['default'] ) ) {
+                $tag .= Tag::hidden( $name, $attribs['default'] );
             }
         }
         return $tag;
@@ -114,71 +119,77 @@ class Lists extends \Jackbooted\Util\JB {
      * @param boolean $blank true if you want to generate a blank row
      * @returns string The resulting HTML
      */
-    static function selectWithCategories ( $name, $resultset, $attribs=array() ) {
-        if ( isset ( $attribs['default'] ) ) {
+    static function selectWithCategories( $name, $resultset, $attribs = array() ) {
+        if ( isset( $attribs['default'] ) ) {
             $defaultValue = $attribs['default'];
-            unset ( $attribs['default'] );
+            unset( $attribs['default'] );
         }
         else {
-            $defaultValue = Request::get ( $name, null );
+            $defaultValue = Request::get( $name, null );
         }
 
         $hasBlank = false;
-        if ( isset ( $attribs['hasBlank'] ) ) {
+        if ( isset( $attribs['hasBlank'] ) ) {
             $hasBlank = $attribs['hasBlank'];
-            unset ( $attribs['hasBlank'] );
+            unset( $attribs['hasBlank'] );
         }
 
-        $optGroupAttrib = array ();
-        if ( isset ( $attribs['optGroupAttrib'] ) ) {
+        $optGroupAttrib = array();
+        if ( isset( $attribs['optGroupAttrib'] ) ) {
             $optGroupAttrib = $attribs['optGroupAttrib'];
-            unset ( $attribs['optGroupAttrib'] );
+            unset( $attribs['optGroupAttrib'] );
         }
 
-        if ( is_array ( $resultset ) ) {
-            if ( count ( $resultset ) == 0 ) {
+        if ( is_array( $resultset ) ) {
+            if ( count( $resultset ) == 0 ) {
                 $tag = "* None Available *";
-                if ( $defaultValue != null ) $tag .= Tag::hidden ( $name, $defaultValue );
+                if ( $defaultValue != null )
+                    $tag .= Tag::hidden( $name, $defaultValue );
             }
             else {
-                $tag = Tag::select ( $name, $attribs );
-                if ( $hasBlank ) $tag .= Tag::optiontag ( ' ', '', ( ! isset( $defaultValue ) || $defaultValue == false ) );
+                $tag = Tag::select( $name, $attribs );
+                if ( $hasBlank )
+                    $tag .= Tag::optiontag( ' ', '', (!isset( $defaultValue ) || $defaultValue == false ) );
                 foreach ( $resultset as $category => $list ) {
-                    $tag .= Tag::hTag ( 'optgroup', array_merge ( $optGroupAttrib, array ( 'label' => $category ) ) );
+                    $tag .= Tag::hTag( 'optgroup', array_merge( $optGroupAttrib, array( 'label' => $category ) ) );
                     foreach ( $list as $key => $val ) {
-                        $tag .= Tag::optiontag ( trim ( $key ), $val, ( $defaultValue == $key ) );
+                        $tag .= Tag::optiontag( trim( $key ), $val, ( $defaultValue == $key ) );
                     }
-                    $tag .= Tag::_hTag ( 'optgroup' );
+                    $tag .= Tag::_hTag( 'optgroup' );
                 }
-                $tag .= Tag::_select ( );
+                $tag .= Tag::_select();
             }
         }
-        else if ( is_object ( $resultset ) ) {
-            /** FIXME **/
-            $table = new DBTable ( $resultset, DB::FETCH_NUM );
-            if ( $table->rowCount () == 0 ) {
+        else if ( is_object( $resultset ) ) {
+            /** FIXME * */
+            $table = new DBTable( $resultset, DB::FETCH_NUM );
+            if ( $table->rowCount() == 0 ) {
                 $tag = "* None Available *";
-                if ( $defaultValue != null ) $tag .= Tag::hidden ( $name, $defaultValue );
+                if ( $defaultValue != null )
+                    $tag .= Tag::hidden( $name, $defaultValue );
             }
             else {
-                $tag = Tag::select ( $name, $attribs );
-                if ( $hasBlank ) $tag .= Tag::optiontag ( ' ', '', ( ! isset( $defaultValue ) || $defaultValue == false ) );
+                $tag = Tag::select( $name, $attribs );
+                if ( $hasBlank )
+                    $tag .= Tag::optiontag( ' ', '', (!isset( $defaultValue ) || $defaultValue == false ) );
                 $prevCategory = '';
                 foreach ( $table as $row ) {
                     if ( $prevCategory != $row[0] ) {
-                        if ( $prevCategory != '' ) $tag .= Tag::_hTag ( 'optgroup' );
-                        $tag .= Tag::hTag ( 'optgroup', array ( 'label' => $row[0] ) );
+                        if ( $prevCategory != '' )
+                            $tag .= Tag::_hTag( 'optgroup' );
+                        $tag .= Tag::hTag( 'optgroup', array( 'label' => $row[0] ) );
                         $prevCategory = $row[0];
                     }
-                    $tag .= Tag::optiontag ( $row[1], $row[2], ( $defaultValue == $row[1] ) );
+                    $tag .= Tag::optiontag( $row[1], $row[2], ( $defaultValue == $row[1] ) );
                 }
-                $tag .= Tag::_hTag ( 'optgroup' );
-                $tag .= Tag::_select ( );
+                $tag .= Tag::_hTag( 'optgroup' );
+                $tag .= Tag::_select();
             }
         }
 
         return $tag;
     }
+
     /**
      * Generates a radio awlwct box from almost anything
      * @param array $displayList
@@ -187,35 +198,36 @@ class Lists extends \Jackbooted\Util\JB {
      * @param boolean $blank true if you want to generate a blank row
      * @returns string The resulting HTML
      */
-    static function radio ( $name, $displayList, $attribs=array() ) {
+    static function radio( $name, $displayList, $attribs = array() ) {
 
         // If an array is here
-        if ( is_array ( $displayList ) && count ( $displayList ) > 0 ) {
-            if ( isset ( $attribs['side'] ) ) {
+        if ( is_array( $displayList ) && count( $displayList ) > 0 ) {
+            if ( isset( $attribs['side'] ) ) {
                 $side = $attribs['side'];
-                unset ( $attribs['side'] );
+                unset( $attribs['side'] );
             }
             else {
                 $side = 'left';
             }
 
-            if ( isset ( $attribs['default'] ) ) {
+            if ( isset( $attribs['default'] ) ) {
                 $defaultValue = $attribs['default'];
-                unset ( $attribs['default'] );
+                unset( $attribs['default'] );
             }
             else {
-                $defaultValue = Request::get ( $name, null );
+                $defaultValue = Request::get( $name, null );
             }
 
-            $tag = array ();
+            $tag = array();
             $idx = 0;
             foreach ( $displayList as $key => $val ) {
-                if ( is_int( $key ) ) $key = $val;
-                $key = trim ( $key );
+                if ( is_int( $key ) )
+                    $key = $val;
+                $key = trim( $key );
 
                 $attribs['id'] = $name . $idx ++;
-                $label = Tag::label ( $attribs['id'], ucwords ( strtolower ( $val ) ) );
-                $radio = Tag::radio ( $name, $key, ( $defaultValue == $key ), $attribs );
+                $label = Tag::label( $attribs['id'], ucwords( strtolower( $val ) ) );
+                $radio = Tag::radio( $name, $key, ( $defaultValue == $key ), $attribs );
                 if ( $side == 'left' ) {
                     $tag[$attribs['id']] = $label . '&nbsp;' . $radio;
                 }
@@ -227,31 +239,31 @@ class Lists extends \Jackbooted\Util\JB {
 
         // If this is a DBTable object
         else if ( is_object( $displayList ) && $displayList instanceof DBTable ) {
-            $newDisplayList = array ();
-            for ( $i=0; $i<$displayList->getRowCount (); $i++ ) {
-                $key = $displayList->getValue ( 0, $i );
-                $val = ( $displayList->getColumnCount () > 1 ) ? $displayList->getValue ( 1, $i ) : $key;
+            $newDisplayList = array();
+            for ( $i = 0; $i < $displayList->getRowCount(); $i++ ) {
+                $key = $displayList->getValue( 0, $i );
+                $val = ( $displayList->getColumnCount() > 1 ) ? $displayList->getValue( 1, $i ) : $key;
                 $newDisplayList[' ' . $key] = $val;
             }
-            $tag = self::radio ( $name, $newDisplayList, $attribs );
+            $tag = self::radio( $name, $newDisplayList, $attribs );
         }
 
         // If this is a sql string
-        else if ( is_string ( $displayList ) ) {
-            $table = new DBTable ( DB::DEF, $displayList, null, DB::FETCH_NUM );
-            $tag = self::radio ( $name, $table, $attribs );
+        else if ( is_string( $displayList ) ) {
+            $table = new DBTable( DB::DEF, $displayList, null, DB::FETCH_NUM );
+            $tag = self::radio( $name, $table, $attribs );
         }
 
         // Default to nothing
-        else if ( isset ( $attribs['default'] ) ) {
-            $tag = Tag::hidden ( $name, $attribs['default'] );
+        else if ( isset( $attribs['default'] ) ) {
+            $tag = Tag::hidden( $name, $attribs['default'] );
         }
-
         else {
             $tag = false;
         }
         return $tag;
     }
+
     /** Creates a Dual Select windows
      * @param string $lName Left Column name
      * @param array $lList Left Column name
@@ -260,31 +272,29 @@ class Lists extends \Jackbooted\Util\JB {
      * @param int $ht Height
      * @returns String The Html pf a dual select
      */
-    public static function dualSelect ( $lName, $lList, $rName, $rList, $ht=8 ) {
-        $title = array ( "title" => "Select items is the left list to move to the selected list. " .
-                                    "Move items in the right list to remove from the selected list. " .
-                                    "Select buttons in the moddle to move all the items in the list" );
+    public static function dualSelect( $lName, $lList, $rName, $rList, $ht = 8 ) {
+        $title = array( "title" => "Select items is the left list to move to the selected list. " .
+            "Move items in the right list to remove from the selected list. " .
+            "Select buttons in the moddle to move all the items in the list" );
 
-        $msg  = "";
-        $msg .= Tag::table ( $title );
-        $msg .=   Tag::tr ( );
-        $msg .=     Tag::td ( "align=center" );
-        $msg .=       "Out of List<br>";
-        $msg .=       Lists::select ( $lName, $lList,
-                                  "onChange=\"selMove ( '$lName','$rName',false );\" Size=$ht Multiple" );
-        $msg .=     Tag::_td ( );
-        $msg .=     Tag::td ( "valign=middle" );
-        $msg .=       "<br>" . Tag::button ( ">>", "onClick=\"selMove ( '$lName','$rName',true );\"" );
-        $msg .=       "<br>" . Tag::button ( "<<", "onClick=\"selMove ( '$rName','$lName',true );\"" );
-        $msg .=     Tag::_td ( );
-        $msg .=     Tag::td ( "align=center" );
-        $msg .=       "In the List<br>";
-        $msg .=       Lists::select ( $rName, $rList,
-                                  "onChange=\"selMove ( '$rName','$lName',false );\" Size=$ht Multiple" );
-        $msg .=       Tag::hidden ( $rName . "Result" );
-        $msg .=     Tag::_td ( );
-        $msg .=   Tag::_tr ( );
-        $msg .= Tag::_table ( );
+        $msg = "";
+        $msg .= Tag::table( $title );
+        $msg .= Tag::tr();
+        $msg .= Tag::td( "align=center" );
+        $msg .= "Out of List<br>";
+        $msg .= Lists::select( $lName, $lList, "onChange=\"selMove ( '$lName','$rName',false );\" Size=$ht Multiple" );
+        $msg .= Tag::_td();
+        $msg .= Tag::td( "valign=middle" );
+        $msg .= "<br>" . Tag::button( ">>", "onClick=\"selMove ( '$lName','$rName',true );\"" );
+        $msg .= "<br>" . Tag::button( "<<", "onClick=\"selMove ( '$rName','$lName',true );\"" );
+        $msg .= Tag::_td();
+        $msg .= Tag::td( "align=center" );
+        $msg .= "In the List<br>";
+        $msg .= Lists::select( $rName, $rList, "onChange=\"selMove ( '$rName','$lName',false );\" Size=$ht Multiple" );
+        $msg .= Tag::hidden( $rName . "Result" );
+        $msg .= Tag::_td();
+        $msg .= Tag::_tr();
+        $msg .= Tag::_table();
 
         return ( $msg );
     }

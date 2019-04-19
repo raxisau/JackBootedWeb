@@ -1,7 +1,9 @@
 <?php
+
 namespace Jackbooted\Html;
 
 use \Jackbooted\Config\Cfg;
+
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
  *
@@ -20,14 +22,16 @@ use \Jackbooted\Config\Cfg;
  * retro: awesome generated, 8-bit arcade-style pixelated faces
  */
 class Gravatar extends \Jackbooted\Util\JB {
+
     private static $URL;
+
     const ICO = '%s/avatar/%s?s=%d&r=%s&d=%s';
 
     static $gravType = 'mm';
 
-    public static function init () {
-        self::$gravType = Cfg::get ( 'gravatar', 'wavatar' );
-        if ( isset ( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
+    public static function init() {
+        self::$gravType = Cfg::get( 'gravatar', 'wavatar' );
+        if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
             self::$URL = 'https://secure.gravatar.com';
         }
         else {
@@ -35,26 +39,28 @@ class Gravatar extends \Jackbooted\Util\JB {
         }
     }
 
-    public static function icon ( $email, $size=24, $rating='PG', $type=null ) {
-        if ( $type == null ) $type = self::$gravType;
-        $gHash = md5 ( strtolower ( trim ( $email ) ) );
+    public static function icon( $email, $size = 24, $rating = 'PG', $type = null ) {
+        if ( $type == null )
+            $type = self::$gravType;
+        $gHash = md5( strtolower( trim( $email ) ) );
 
         $tPath = Cfg::get( 'tmp_path' );
         $fName = 'GRAV' . $size . $type . $gHash . '.png';
         $fPath = $tPath . '/' . $fName;
 
         // Locally Caches the gavatar image
-        if ( ! file_exists( $fPath ) ) {
-            copy( sprintf ( self::ICO, self::$URL, $gHash, $size, $rating, $type ) , $fPath );
-            if ( ! file_exists( $fPath ) ) {
-                return Tag::img ( sprintf ( self::ICO, self::$URL, $gHash, $size, $rating, $type ) );
+        if ( !file_exists( $fPath ) ) {
+            copy( sprintf( self::ICO, self::$URL, $gHash, $size, $rating, $type ), $fPath );
+            if ( !file_exists( $fPath ) ) {
+                return Tag::img( sprintf( self::ICO, self::$URL, $gHash, $size, $rating, $type ) );
             }
         }
 
-        return Tag::img (  Cfg::get ( 'site_url') . '/' . basename( $tPath ) . '/' . $fName );
+        return Tag::img( Cfg::get( 'site_url' ) . '/' . basename( $tPath ) . '/' . $fName );
     }
 
-    public static function getURL ( ) {
+    public static function getURL() {
         return self::$URL;
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackbooted\Util;
 
 /**
@@ -11,9 +12,9 @@ namespace Jackbooted\Util;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-
 class ObjectUtil {
-    public static function toArray ( $d ) {
+
+    public static function toArray( $d ) {
         if ( is_object( $d ) ) {
             // Gets the properties of the given object with get_object_vars function
             $d = get_object_vars( $d );
@@ -28,4 +29,5 @@ class ObjectUtil {
             return $d;
         }
     }
+
 }
