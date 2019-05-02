@@ -20,6 +20,10 @@ use \Jackbooted\Util\StringUtil;
  * Stopwatch
  */
 class Stopwatch extends \Jackbooted\Util\JB {
+    const ONE_MINUTE = 60;
+    const ONE_HOUR   = 3600;   // 60 * 60
+    const ONE_DAY    = 86400;  // 60 * 60 * 24
+    const ONE_WEEK   = 608800; // 60 * 60 * 24 * 7
 
     private static $log;
     private $startTime;

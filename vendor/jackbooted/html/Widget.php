@@ -206,7 +206,7 @@ JS;
     $().ready(function() {
         $( "$selector" ).each( function() {
             $(this).datepicker({
-                dateFormat: "yy-mm-dd"
+                dateFormat: "yyyy-mm-dd"
             });
         });
     });
