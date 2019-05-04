@@ -41,8 +41,9 @@ class Stopwatch extends \Jackbooted\Util\JB {
 
     private function start( $displayStart ) {
         $this->startTime = self::begin();
-        if ( $displayStart )
+        if ( $displayStart ) {
             self::$log->debug( $this->msg );
+        }
         return $this->startTime;
     }
 
@@ -73,14 +74,16 @@ class Stopwatch extends \Jackbooted\Util\JB {
     }
 
     public static function timeToDB( $time = false ) {
-        if ( $time === false )
+        if ( $time === false ) {
             $time = time();
+        }
         return date( 'Y-m-d H:i:s', $time );
     }
 
     public static function dateToDB( $time = false ) {
-        if ( $time === false )
+        if ( $time === false ) {
             $time = time();
+        }
         return date( 'Y-m-d', $time );
     }
 
@@ -104,14 +107,18 @@ class Stopwatch extends \Jackbooted\Util\JB {
         $hr %= 60;
 
         $msg = '';
-        if ( $day != 0 )
+        if ( $day != 0 ) {
             $msg = StringUtil::unitsFormat( $day, 'day', $msg );
-        if ( $hr != 0 )
+        }
+        if ( $hr != 0 ) {
             $msg = StringUtil::unitsFormat( $hr, 'hour', $msg );
-        if ( $min != 0 )
+        }
+        if ( $min != 0 ) {
             $msg = StringUtil::unitsFormat( $min, 'min', $msg );
-        if ( $sec != 0 )
+        }
+        if ( $sec != 0 ) {
             $msg = StringUtil::unitsFormat( $sec, 'sec', $msg );
+        }
         return $msg;
     }
 
@@ -125,5 +132,4 @@ class Stopwatch extends \Jackbooted\Util\JB {
 
         return $day;
     }
-
 }

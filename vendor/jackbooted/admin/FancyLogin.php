@@ -51,10 +51,10 @@ class FancyLogin extends Login {
 
     private function displayUserDetails() {
         $jQuery = <<<JS
-    $().ready(function() {
-        $('#hoverimage').hover( function () { $('#extralinks').fadeIn('fast'); },
-                                function () { setTimeout("$('#extralinks').fadeOut('slow');", 3000 ); });
-    });
+            $().ready(function() {
+                $('#hoverimage').hover( function () { $('#extralinks').fadeIn('fast'); },
+                                        function () { setTimeout("$('#extralinks').fadeOut('slow');", 3000 ); });
+            });
 JS;
 
         $resp = new Response ();
