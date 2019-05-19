@@ -91,7 +91,6 @@ abstract class ORM extends \Jackbooted\Util\JB {
     }
 
     public function __get( $key ) {
-        echo "key=$key<br/>";
         if ( isset( $this->dao->orm[$key] ) ) {
             $key = $this->dao->orm[$key];
         }
