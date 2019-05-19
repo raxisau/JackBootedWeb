@@ -102,7 +102,7 @@ class DBEdit extends \Jackbooted\Util\JB {
                   Tag::tr() .
                     Tag::td( ['valign' => 'top'] ) .
                       Tag::form( [ 'method' => 'get' ] ) .
-                        $this->resp->set( $this->action, __CLASS__ . '->index()' )->toHidden ( false ) .
+                        $this->resp->set( $this->action, 'index' )->toHidden ( false ) .
                         Lists::select ( $this->daoObject->primaryKey,
                                         $this->selectSQL,
                                         [ 'size' => $this->displayRows,'onClick' => 'submit();', 'default' => $id ] ) .
@@ -114,7 +114,7 @@ class DBEdit extends \Jackbooted\Util\JB {
                   Tag::_tr() .
                   Tag::tr() .
                     Tag::td( ['colspan' => '10'] ) .
-                      Tag::linkButton( $this->formAction . $this->resp->set( $this->action, __CLASS__ . '->insertBlank()' )->toUrl(), 'Insert Blank' ) .
+                      Tag::linkButton( $this->formAction . $this->resp->set( $this->action, 'insertBlank' )->toUrl(), 'Insert Blank' ) .
                     Tag::_td() .
                   Tag::_tr() .
                 Tag::_table();
@@ -137,7 +137,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         $resp = $this->resp->set( $this->daoObject->primaryKey, $id );
 
         $html = Tag::form() .
-                  $resp->set( $this->action, __CLASS__ . '->save()' )->toHidden( ) .
+                  $resp->set( $this->action, 'save' )->toHidden( ) .
                   Tag::table();
 
         foreach ( $ormObject->getData() as $key => $value ) {
@@ -152,8 +152,8 @@ class DBEdit extends \Jackbooted\Util\JB {
         $html .=    Tag::tr() .
                       Tag::td([ 'colspan' => 10]) .
                         Tag::submit( 'Save' ) .
-                        Tag::linkButton( $this->formAction . $this->resp->set( $this->action, __CLASS__ . '->dup()' )->toUrl(), 'Dup' ) .
-                        Tag::linkButton( $this->formAction . $this->resp->set( $this->action, __CLASS__ . '->del()' )->toUrl(), 'Del' ) .
+                        Tag::linkButton( $this->formAction . $this->resp->set( $this->action, 'dup' )->toUrl(), 'Dup' ) .
+                        Tag::linkButton( $this->formAction . $this->resp->set( $this->action, 'del' )->toUrl(), 'Del' ) .
                       Tag::_td() .
                     Tag::_tr() .
                   Tag::_table() .
@@ -291,7 +291,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         if ( ( $action = Request::get( $this->action ) ) == '' ) {
             return '';
         }
-        else if ( !method_exists( $this, $action ) ) {
+        else if ( ! method_exists( $this, $action ) ) {
             return "Method: $action does not exist";
         }
         else {
