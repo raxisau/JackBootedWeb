@@ -279,7 +279,7 @@ class DBEdit extends \Jackbooted\Util\JB {
     }
     private function controller() {
         if ( ( $action = Request::get( $this->action ) ) == '' ) {
-            return $this->action . 'Does not exist';
+            return '';
         }
         else if ( !method_exists( $this, $action ) ) {
             return "Method: $action does not exist";
