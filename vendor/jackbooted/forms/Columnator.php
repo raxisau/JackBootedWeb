@@ -27,7 +27,8 @@ class Columnator extends Navigator {
     const COL_LINK_CLASS = 'COL_LINK_CLASS';
     const COL_BUTTON_CLASS = 'COL_BUTTON_CLASS';
 
-    private static $columnation = [ self::SORT_COL => '',
+    private static $columnation = [
+        self::SORT_COL => '',
         self::SORT_ORDER => '' ];
 
     /**

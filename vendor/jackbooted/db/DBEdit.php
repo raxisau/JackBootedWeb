@@ -119,7 +119,7 @@ class DBEdit extends \Jackbooted\Util\JB {
                   Tag::_tr() .
                 Tag::_table();
 
-        Request::dump();
+        Request::dmp();
         return $html;
     }
 
