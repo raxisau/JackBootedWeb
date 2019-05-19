@@ -35,8 +35,13 @@ abstract class ORM extends \Jackbooted\Util\JB {
         }
 
         $obj = new $clazz( $data );
-        $obj->save();
-        return $obj;
+
+        // remove the primary key from the update
+        if ( isset( $obj->data[$obj->dao->primaryKey] ) ) {
+            unset( $obj->data[$obj->dao->primaryKey] );
+        }
+
+        return $obj->save();
     }
 
     public static function factory( $data ) {

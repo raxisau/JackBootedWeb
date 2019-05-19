@@ -5,7 +5,6 @@ namespace Jackbooted\DB;
 use \Jackbooted\DB\DB;
 use \Jackbooted\Forms\Request;
 use \Jackbooted\Forms\Response;
-use \Jackbooted\Html\JS;
 use \Jackbooted\Html\Lists;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\WebPage;
@@ -76,6 +75,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         $this->displayRows = ( isset( $extraArgs['displayRows'] ) ) ? $extraArgs['displayRows'] : 10;
         $this->suffix      = ( isset( $extraArgs['suffix'] ) )      ? $extraArgs['suffix']      : '_' . Invocation::next();
         $this->formAction  = ( isset( $extraArgs['formAction'] ) )  ? $extraArgs['formAction']  : '?';
+        $this->insDefaults = ( isset( $extraArgs['insDefaults'] ) ) ? $extraArgs['insDefaults'] : [];
 
         $this->ormClass    = $ormClass;
         $daoClass          = $ormClass . 'DAO';
@@ -124,8 +124,10 @@ class DBEdit extends \Jackbooted\Util\JB {
     }
 
     public function insertBlank() {
-        return __METHOD__ .
-               $this->index();
+        $ormClass = $this->ormClass;
+        $ormObject = $ormClass::create( $this->insDefaults );
+        Request::set( $this->daoObject->primaryKey, $ormObject->id );
+        Widget::popupWrapper( "Inserted one object ID:{$ormObject->id}" );
     }
 
     private function indexItem( $id ) {
@@ -164,13 +166,21 @@ class DBEdit extends \Jackbooted\Util\JB {
         if ( ( $id = Request::get( $this->daoObject->primaryKey ) ) == '' ) {
             return Widget::popupWrapper( 'Error. Invalid Object ID' );
         }
-        return __METHOD__;
+
+        $ormClass = $this->ormClass;
+        $ormObject = $ormClass::create( $ormClass::load( $id )->getData() );
+        return Widget::popupWrapper( "Created duplicate row {$ormObject->id}" );
     }
+
     public function del( ) {
         if ( ( $id = Request::get( $this->daoObject->primaryKey ) ) == '' ) {
             return Widget::popupWrapper( 'Error. Invalid Object ID' );
         }
-        return __METHOD__;
+
+        $ormClass = $this->ormClass;
+        $ormObject = $ormClass::load( $id );
+        $ormObject->delete();
+        return Widget::popupWrapper( "Deleted row {$ormObject->id}" );
     }
     public function save( ) {
         if ( ( $id = Request::get( $this->daoObject->primaryKey ) ) == '' ) {
