@@ -40,7 +40,7 @@ class Request extends PipeLine {
     }
 
     public static function dmp( ) {
-        return self::$defaultInstance->dumpVar();
+        return self::$defaultInstance->dump();
     }
 
     /**
