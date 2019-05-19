@@ -42,8 +42,6 @@ class DBEdit extends \Jackbooted\Util\JB {
     const CHECKBOX  = 'CHECKBOX';
     const TIMESTAMP = 'TIMESTAMP';
 
-    private static $headerDisplayed = false;
-
     private $db;
     private $dbType;
     private $displayRows;
@@ -291,7 +289,9 @@ class DBEdit extends \Jackbooted\Util\JB {
         }
     }
     private function getDefaultID() {
-        if ( ( $row = DB::oneRow( $this->db, $this->selectSQL ) ) == false ) return false;
-        return $row[0];
+        foreach ( DBTable::factory( $this->db, $this->selectSQL ) as $row ) {
+            return $row[0];
+        }
+        return false;
     }
 }
