@@ -39,6 +39,10 @@ class Request extends PipeLine {
         return self::$defaultInstance->getVar( $key, $def );
     }
 
+    public static function dmp( ) {
+        return self::$defaultInstance->dumpVar();
+    }
+
     /**
      * Save the value into the session
      * @param  $key
@@ -142,5 +146,4 @@ class Request extends PipeLine {
     public function setVar( $key, $val ) {
         $this->formVars[$key] = $val;
     }
-
 }

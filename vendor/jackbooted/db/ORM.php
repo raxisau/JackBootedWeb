@@ -2,7 +2,7 @@
 
 namespace Jackbooted\DB;
 
-use \Jackbooted\Util\Log4PHP;
+use \Jackbooted\Forms\Request;
 
 /**
  * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
@@ -22,10 +22,7 @@ abstract class ORM extends \Jackbooted\Util\JB {
     const UPDATE = 'update';
     const INSERT = 'insert';
 
-    private static $log;
-
     public static function init() {
-        self::$log = Log4PHP::logFactory( __CLASS__ );
     }
 
     public static function create( $data ) {
@@ -73,7 +70,9 @@ abstract class ORM extends \Jackbooted\Util\JB {
 
     protected $data;
     protected $dirty;
-    private $dao;
+    private   $dao;
+
+    public abstract static function load( $id );
 
     public function __construct( DAO $dao, $data ) {
         parent::__construct();
@@ -87,6 +86,7 @@ abstract class ORM extends \Jackbooted\Util\JB {
     }
 
     public function __get( $key ) {
+        echo "key=$key<br/>";
         if ( isset( $this->dao->orm[$key] ) ) {
             $key = $this->dao->orm[$key];
         }
@@ -140,4 +140,21 @@ abstract class ORM extends \Jackbooted\Util\JB {
         }
     }
 
+    public function copyToRequest() {
+        foreach ( $this->getData() as $key => $value ) {
+            Request::set( $key, $value );
+        }
+        return $this;
+    }
+
+    public function copyFromRequest( ) {
+        foreach ( $this->getData() as $key => $value ) {
+            if ( ( $requestValue = Request::get( $key ) ) != '' ) {
+                if ( $requestValue != $value ) {
+                    $this->$key = $requestValue;
+                }
+            }
+        }
+        return $this;
+    }
 }

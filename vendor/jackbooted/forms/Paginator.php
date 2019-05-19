@@ -37,11 +37,13 @@ class Paginator extends Navigator {
      * @var integer Counts the number of times that this class is invoked so
      * that each invokation can have a unique id
      */
-    private static $pagination = [ self::STARTING_ROW => 0,
+    private static $pagination = [
+        self::STARTING_ROW  => 0,
         self::STARTING_PAGE => 0,
-        self::TOTAL_ROWS => 0,
-        self::SQL_START => 0,
-        self::ROWS_PER_PAGE => 10 ];
+        self::TOTAL_ROWS    => 0,
+        self::SQL_START     => 0,
+        self::ROWS_PER_PAGE => 10
+    ];
     private static $itemsPerPageList = [ 5, 10, 20, 50, 100, 200 ];
 
     /**
@@ -333,23 +335,23 @@ SQL;
         }
 
         return Tag::div( $this->attribs ) .
-                Tag::form( [ 'method' => 'get' ] ) .
-                $this->toHidden( $exemptVars ) .
-                $firstPage .
-                $previousPage .
-                '&nbsp;' . join( '&nbsp;&#183;&nbsp;', $html[0] ) .
-                '&nbsp;' . Tag::text( $this->toFormName( self::STARTING_PAGE ), [ 'value' => $curPage,
-                    'align' => 'middle',
-                    'size' => 1 + max( 1, strlen( $curPage ) - 1 ),
-                    'title' => 'Manually enter the page number that you want and press enter',
-                    'style' => 'font-weight:bold;' ] ) .
-                '&nbsp;' . join( '&nbsp;&#183;&nbsp;', $html[1] ) .
-                '&nbsp;' .
-                $nextPage .
-                $lastPage .
-                $pageSizeHtml .
-                Tag::_form() .
+                 Tag::form( [ 'method' => 'get' ] ) .
+                   $this->toHidden( $exemptVars ) .
+                   $firstPage .
+                   $previousPage .
+                   '&nbsp;' . join( '&nbsp;&#183;&nbsp;', $html[0] ) .
+                   '&nbsp;' . Tag::text( $this->toFormName( self::STARTING_PAGE ),
+                                         [ 'value' => $curPage,
+                                           'align' => 'middle',
+                                           'size' => 1 + max( 1, strlen( $curPage ) - 1 ),
+                                           'title' => 'Manually enter the page number that you want and press enter',
+                                           'style' => 'font-weight:bold;' ] ) .
+                    '&nbsp;' . join( '&nbsp;&#183;&nbsp;', $html[1] ) .
+                    '&nbsp;' .
+                    $nextPage .
+                    $lastPage .
+                    $pageSizeHtml .
+                  Tag::_form() .
                 Tag::_div();
     }
-
 }

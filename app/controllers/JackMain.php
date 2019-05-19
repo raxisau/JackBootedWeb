@@ -3,7 +3,9 @@ namespace App\Controllers;
 
 use \Jackbooted\DB\DB;
 use \Jackbooted\DB\DBTable;
+use \Jackbooted\DB\DBEdit;
 use \Jackbooted\Forms\Request;
+use \Jackbooted\Forms\CRUD;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\WebPage;
 use \Jackbooted\Html\Widget;
@@ -11,6 +13,8 @@ use \Jackbooted\Util\MenuUtils;
 use \Jackbooted\Html\Lists;
 use \Jackbooted\Util\AutoLoader;
 use \Jackbooted\Util\ClassLocator;
+
+use \App\Models\Alerts;
 
 class JackMain extends WebPage {
     const DEF = '\App\Controllers\JackMain->index()';
@@ -24,6 +28,12 @@ class JackMain extends WebPage {
                  [ 'name'    => 'Recent Alerts',
                    'url'     => '?' . $resp->action ( __CLASS__ . '->recentAlarms()' ),
                    'attribs' =>  [ 'title' => 'List of recent Alerts' ] ],
+                 [ 'name'    => 'Edit Alerts',
+                   'url'     => '?' . $resp->action ( __CLASS__ . '->editAlerts()' ),
+                   'attribs' =>  [ 'title' => 'Edit a list recent Alerts' ] ],
+                 [ 'name'    => 'CRUD Alerts',
+                   'url'     => '?' . $resp->action ( __CLASS__ . '->crudAlerts()' ),
+                   'attribs' =>  [ 'title' => 'Edit a list recent Alerts' ] ],
                  [ 'name'    => 'TODO List',
                    'url'     => '?' . $resp->action ( __CLASS__ . '->todo()' ),
                    'attribs' =>  [ 'title' => 'List of outstanding items' ] ],
@@ -48,6 +58,39 @@ class JackMain extends WebPage {
 HTML;
         return '<h2>Welcome to Jackbooted PHP Framework</h2>' .
                 $html;
+    }
+
+    public function editAlerts() {
+        error_reporting( -1 );
+        ini_set('display_errors', '1');
+
+        $editTable = new DBEdit( '\App\Models\Alerts',
+                                 'SELECT fldModJackAlertID,fldDescription FROM tblModJackAlert' );
+
+        $editTable->copyVarsFromRequest( MenuUtils::ACTIVE_MENU );
+
+        $html = $editTable->index( 'AL0000005' );
+
+        return $html;
+    }
+
+    public function crudAlerts() {
+        error_reporting( -1 );
+        ini_set('display_errors', '1');
+        $crud = new CRUD( 'tblModJackAlert',  [ 'insDefaults' =>  [ 'fldType'        => Alerts::TYPE_DEBUG,
+                                                                    'fldStatus'      => Alerts::STATUS_NEW,
+                                                                    'fldErrorID'     => 'JB001',
+                                                                    'fldProcess'     => __FUNCTION__,
+                                                                    'fldDescription' => __METHOD__ ],
+                                                'nullsEmpty'  => true ] );
+
+        $crud->setColDisplay ( 'fldStatus', Alerts::$statusList );
+        $crud->setColDisplay ( 'fldType',   Alerts::$typeList );
+        $crud->copyVarsFromRequest( MenuUtils::ACTIVE_MENU );
+
+        $html = $crud->index();
+
+        return $html;
     }
 
     public function recentAlarms() {

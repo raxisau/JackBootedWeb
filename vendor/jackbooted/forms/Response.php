@@ -223,5 +223,4 @@ class Response extends PipeLine {
             return Cryptography::en( $value );
         }
     }
-
 }

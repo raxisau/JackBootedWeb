@@ -46,7 +46,7 @@ class Alerts extends ORM {
         self::$log->fatal( "({$process}) $description #{$errNum}" );
     }
 
-    public static function get( $id ) {
+    public static function load( $id ) {
         if ( ( $row = self::$dao->oneRow ( $id ) ) == false ) return false;
         return new Alerts ( $row );
     }

@@ -44,19 +44,23 @@ abstract class DAO extends \Jackbooted\Util\JB {
             $this->auditTable();
         }
 
-        if ( !isset( $this->orm[0] ) )
+        if ( !isset( $this->orm[0] ) ) {
             $this->orm[0] = $this->primaryKey;
-        if ( !isset( $this->orm['id'] ) )
+        }
+        if ( !isset( $this->orm['id'] ) ) {
             $this->orm['id'] = $this->primaryKey;
+        }
 
-        if ( !isset( $this->titles[$this->primaryKey] ) )
+        if ( !isset( $this->titles[$this->primaryKey] ) ) {
             $this->titles[$this->primaryKey] = 'ID';
+        }
     }
 
     public function defaultORM() {
         if ( ( $row = DB::oneRow( $this->db, "SELECT * FROM " . $this->tableName . " LIMIT 1" ) ) !== FALSE ) {
-            foreach ( array_keys( $row ) as $colName ) {
+            foreach ( array_keys( $row ) as $idx => $colName ) {
                 $this->orm[$colName] = $colName;
+                $this->orm[$idx]     = $colName;
             }
         }
     }
@@ -292,5 +296,4 @@ abstract class DAO extends \Jackbooted\Util\JB {
     public function __toString() {
         return $this->tableStructure;
     }
-
 }

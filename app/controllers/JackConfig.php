@@ -1,14 +1,11 @@
 <?php
 namespace App\Controllers;
+
 use \Jackbooted\Html\WebPage;
 use \Jackbooted\Util\MenuUtils;
 use \Jackbooted\Forms\Request;
-use \Jackbooted\Config\Config;
-use \Jackbooted\Config\Cfg;
 use \Jackbooted\Html\Widget;
 use \Jackbooted\Html\Tag;
-use \Jackbooted\Html\JS;
-use \Jackbooted\Html\Lists;
 use \Jackbooted\DB\DB;
 
 class JackConfig extends WebPage {

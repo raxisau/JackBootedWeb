@@ -31,14 +31,7 @@ SQL;
         /* This is the mapping between the object names and the column names
          * Please note that you can access data as different names
          */
-        $this->orm = [ 0             => $this->primaryKey,
-                       1             => 'fldErrorID',
-                       2             => 'fldType',
-                       3             => 'fldProcess',
-                       4             => 'fldDescription',
-                       5             => 'fldStatus',
-                       'id'          => $this->primaryKey,
-                       'errorID'     => 'fldErrorID',
+        $this->orm = [ 'errorID'     => 'fldErrorID',
                        'error_id'    => 'fldErrorID',
                        'type'        => 'fldType',
                        'process'     => 'fldProcess',
@@ -47,7 +40,7 @@ SQL;
                        'status'      => 'fldStatus',
                      ];
 
-        $this->titles = [ $this->primaryKey => 'ID',
+        $this->titles = [ 'fldDescription' => 'Alert Description',
                         ];
 
         parent::__construct();

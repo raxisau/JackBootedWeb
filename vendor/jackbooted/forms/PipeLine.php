@@ -99,4 +99,12 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
         return current( $this->formVars ) !== false;
     }
 
+    public function dump( ) {
+        echo $this->__toString();
+        return $this;
+    }
+    
+    public function __toString() {
+        return "<pre>\n" . print_r ( $this->formVars, true ) . '</pre>';
+    }
 }
