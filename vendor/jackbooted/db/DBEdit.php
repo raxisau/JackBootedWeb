@@ -55,31 +55,10 @@ class DBEdit extends \Jackbooted\Util\JB {
     private $ormClass;
     private $daoObject;
     private $selectSQL;
+    private $defaultID;
 
     public static function factory( $ormClass, $selectSQL, $extraArgs = [] ) {
         return new DBEdit( $ormClass, $selectSQL, $extraArgs );
-    }
-
-    private static function header() {
-        if ( self::$headerDisplayed ) {
-            return '';
-        }
-
-        self::$headerDisplayed = true;
-        $js = <<<JS
-    var pageDirty = false;
-    function autoUpdate () {
-        pageDirty = true;
-    }
-    $().ready(function() {
-        window.onbeforeunload = function () {
-            if ( ! pageDirty ) return;
-            return 'Changes have been made on this page and will not be saved.'
-        };
-    });
-JS;
-        return JS::library( JS::JQUERY ) .
-                JS::javaScript( $js );
     }
 
     /**
@@ -106,18 +85,21 @@ JS;
         $this->selectSQL   = $selectSQL;
         $this->action      = self::ACTION . $this->suffix;
         $this->submitId    = 'S' . $this->suffix;
+        $this->defaultID   = $this->getDefaultID();
 
         $this->setupDefaultStyle();
 
         $this->copyVarsFromRequest( WebPage::ACTION );
     }
 
-    public function index( $defaultID='' ) {
-        $html = $this->controller();
+    public function index() {
 
-        $id = Request::get( $this->daoObject->primaryKey, $defaultID );
+        if ( ( $id = Request::get( $this->daoObject->primaryKey, $this->defaultID ) ) == '' ) {
+            return 'No Default ID';
+        }
 
-        $html .='<H4>Click on row to edit this item</h4>' .
+        $html = $this->controller() .
+                '<H4>Click on row to edit this item</h4>' .
                 Tag::table() .
                   Tag::tr() .
                     Tag::td( ['valign' => 'top'] ) .
@@ -152,8 +134,7 @@ JS;
         $ormClass = $this->ormClass;
         $ormObject = $ormClass::load( $id )->copyToRequest();
 
-        $resp = $this->resp
-                           ->set( $this->daoObject->primaryKey, $id );
+        $resp = $this->resp->set( $this->daoObject->primaryKey, $id );
 
         $html = Tag::form() .
                   $resp->set( $this->action, __CLASS__ . '->save()' )->toHidden( ) .
@@ -308,5 +289,9 @@ JS;
         else {
             return $this->$action();
         }
+    }
+    private function getDefaultID() {
+        if ( ( $row = DB::oneRow( $this->db, $this->selectSQL ) ) == false ) return false;
+        return $row[0];
     }
 }

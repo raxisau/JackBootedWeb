@@ -69,7 +69,7 @@ HTML;
 
         $editTable->copyVarsFromRequest( MenuUtils::ACTIVE_MENU );
 
-        $html = $editTable->index( 'AL0000005' );
+        $html = $editTable->index( );
 
         return $html;
     }
