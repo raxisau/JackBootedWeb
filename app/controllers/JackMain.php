@@ -61,12 +61,22 @@ HTML;
     }
 
     public function editAlerts() {
-        error_reporting( -1 );
-        ini_set('display_errors', '1');
+        //error_reporting( -1 );
+        //ini_set('display_errors', '1');
 
         $editTable = new DBEdit( '\App\Models\Alerts',
-                                 'SELECT fldModJackAlertID,fldDescription FROM tblModJackAlert' );
+                                 'SELECT fldModJackAlertID,fldDescription FROM tblModJackAlert',
+                                 [ 'insDefaults' =>  [ 'fldType'       => Alerts::TYPE_DEBUG,
+                                                       'fldStatus'      => Alerts::STATUS_NEW,
+                                                       'fldErrorID'     => 'JB001',
+                                                       'fldProcess'     => __FUNCTION__,
+                                                       'fldDescription' => __METHOD__
+                                                     ],
+                                 ]
+                );
 
+        $editTable->setColDisplay ( 'fldStatus', [ CRUD::SELECT, Alerts::$statusList ] );
+        $editTable->setColDisplay ( 'fldType',   [ CRUD::SELECT, Alerts::$typeList ] );
         $editTable->copyVarsFromRequest( MenuUtils::ACTIVE_MENU );
 
         $html = $editTable->index( );
@@ -84,8 +94,8 @@ HTML;
                                                                     'fldDescription' => __METHOD__ ],
                                                 'nullsEmpty'  => true ] );
 
-        $crud->setColDisplay ( 'fldStatus', Alerts::$statusList );
-        $crud->setColDisplay ( 'fldType',   Alerts::$typeList );
+        $crud->setColDisplay ( 'fldStatus', [ CRUD::SELECT, Alerts::$statusList ] );
+        $crud->setColDisplay ( 'fldType',   [ CRUD::SELECT, Alerts::$typeList ] );
         $crud->copyVarsFromRequest( MenuUtils::ACTIVE_MENU );
 
         $html = $crud->index();

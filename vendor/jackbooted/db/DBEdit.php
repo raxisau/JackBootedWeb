@@ -46,6 +46,14 @@ class DBEdit extends \Jackbooted\Util\JB {
     private $displayRows;
     private $suffix;
     private $formAction;
+    private $canUpdate;
+    private $canDelete;
+    private $canInsert;
+    private $insDefaults;
+
+    private $displayType = [];
+    private $cellAttributes = [];
+    private $columnTitles = [];
 
     private $log;
     private $resp;
@@ -76,6 +84,9 @@ class DBEdit extends \Jackbooted\Util\JB {
         $this->suffix      = ( isset( $extraArgs['suffix'] ) )      ? $extraArgs['suffix']      : '_' . Invocation::next();
         $this->formAction  = ( isset( $extraArgs['formAction'] ) )  ? $extraArgs['formAction']  : '?';
         $this->insDefaults = ( isset( $extraArgs['insDefaults'] ) ) ? $extraArgs['insDefaults'] : [];
+        $this->canDelete   = ( isset( $extraArgs['canDelete'] ) )   ? $extraArgs['canDelete']   : true;
+        $this->canUpdate   = ( isset( $extraArgs['canUpdate'] ) )   ? $extraArgs['canUpdate']   : true;
+        $this->canInsert   = ( isset( $extraArgs['canInsert'] ) )   ? $extraArgs['canInsert']   : true;
 
         $this->ormClass    = $ormClass;
         $daoClass          = $ormClass . 'DAO';
@@ -119,7 +130,6 @@ class DBEdit extends \Jackbooted\Util\JB {
                   Tag::_tr() .
                 Tag::_table();
 
-        Request::dmp();
         return $html;
     }
 
@@ -133,6 +143,11 @@ class DBEdit extends \Jackbooted\Util\JB {
     private function indexItem( $id ) {
         $ormClass = $this->ormClass;
         $ormObject = $ormClass::load( $id )->copyToRequest();
+        foreach ( $ormObject->getData() as $col => $val ) {
+            $this->columnTitles[$col]   = $this->convertColumnToTitle( $col );
+            $this->cellAttributes[$col] = [];
+            $this->calculateColumnWidth( $col, $val );
+        }
 
         $resp = $this->resp->set( $this->daoObject->primaryKey, $id );
 
@@ -141,12 +156,7 @@ class DBEdit extends \Jackbooted\Util\JB {
                   Tag::table();
 
         foreach ( $ormObject->getData() as $key => $value ) {
-            if ( $this->daoObject->primaryKey == $key ) continue;
-
-            $html .=Tag::tr() .
-                      Tag::td() . $this->convertColumnToTitle( $key ) . Tag::_td() .
-                      Tag::td() . Tag::text ( $key ) .Tag::_td() .
-                    Tag::_tr();
+            $html .= $this->renderValue( $key, $value );
         }
 
         $html .=    Tag::tr() .
@@ -160,6 +170,99 @@ class DBEdit extends \Jackbooted\Util\JB {
                 Tag::_form ();
 
         return $html;
+    }
+
+    private function renderValue( $colName, $value ) {
+        $html = '';
+
+        $type = $this->getColumnType( $colName );
+        $updCheckAttrib = [];
+
+        switch ( $type ) {
+            case self::NONE:
+                break;
+
+            case self::DISPLAY:
+                $html .= ( $value == '' ) ? '&nbsp;' : Tag::e( $value );
+                break;
+
+            case self::HIDDEN:
+                $this->resp->set( $colName, $value );
+                break;
+
+            case self::RADIO:
+                $dispList = ( isset( $this->displayType[$colName][1] ) ) ? $this->displayType[$colName][1] : null;
+                $updCheckAttrib['default'] = $value;
+                $html .= Tag::table() .
+                           Tag::tr() .
+                             Tag::td( [ 'nowrap' => 'nowrap' ] ) .
+                               implode( Tag::_td() . Tag::td( [ 'nowrap' => 'nowrap' ] ), Lists::radio( $colName, $dispList, $updCheckAttrib ) ) .
+                             Tag::_td() .
+                           Tag::_tr() .
+                         Tag::_table();
+                break;
+
+            case self::SELECT:
+                $dispList  = ( isset( $this->displayType[$colName][1] ) ) ? $this->displayType[$colName][1] : null;
+                $blankLine = ( isset( $this->displayType[$colName][2] ) ) ? $this->displayType[$colName][2] : false;
+                $updCheckAttrib['default'] = $value;
+                $updCheckAttrib['hasBlank'] = $blankLine;
+                $html .= Lists::select( $colName, $dispList, $updCheckAttrib );
+                break;
+
+            case self::CHECKBOX:
+                $checkValue = ( isset( $this->displayType[$colName][1] ) ) ? $this->displayType[$colName][1] : 'YES';
+                $html .= Tag::checkBox( $colName, $checkValue, $value == $checkValue );
+                break;
+
+            case self::TIMESTAMP:
+                $attribs = array_merge( $updCheckAttrib, $this->cellAttributes[$colName] );
+                $attribs['value'] = strftime( '%Y-%m-%d %H:%M:%S', (int) $value );
+                $attribs['size'] = strlen( $attribs['value'] ) + 1;
+                $html .= Tag::text( $colName, $attribs );
+                break;
+
+            case self::ENCTEXT:
+                $value = Cryptography::de( (string) $value );
+            // Fall through to output text field
+
+            case self::TEXT:
+            default:
+                $updCheckAttrib['value'] = (string) $value;
+                $html .= Tag::text( $colName, array_merge( $updCheckAttrib, $this->cellAttributes[$colName] ) );
+                break;
+        }
+
+        if ( !in_array( $type, [ self::HIDDEN, self::NONE ] ) ) {
+            $html = Tag::tr() .
+                      Tag::td() . $this->convertColumnToTitle( $colName ) . Tag::_td() .
+                      Tag::td() . $html .Tag::_td() .
+                    Tag::_tr();
+        }
+
+        return $html;
+    }
+
+    private function getColumnType( $colName ) {
+        if ( isset( $this->displayType[$colName] ) ) {
+            if ( is_string( $this->displayType[$colName] ) ) {
+                $type = $this->displayType[$colName];
+            }
+            else {
+                $type = $this->displayType[$colName][0];
+            }
+        }
+        else if ( $colName == $this->daoObject->primaryKey ) {
+            $type = self::DISPLAY;
+        }
+        else {
+            $type = self::TEXT;
+        }
+
+        if ( ! $this->canUpdate && ! in_array( $type, [ self::HIDDEN, self::NONE ] ) ) {
+            $type = self::DISPLAY;
+        }
+        return $type;
     }
 
     public function dup( ) {
@@ -303,5 +406,27 @@ class DBEdit extends \Jackbooted\Util\JB {
             return $row[0];
         }
         return false;
+    }
+    private function calculateColumnWidth( $colName, $value ) {
+        if ( isset( $this->cellAttributes[$colName]['size'] ) ) {
+            return;
+        }
+
+        $width = strlen( $value );
+        if ( $width > 40 ) {
+            $width = 40;
+        }
+
+        if ( $width >= 0 && $width <= 40 ) {
+            $this->cellAttributes[$colName]['size'] = $width;
+        }
+    }
+
+    private function arrayMaxStringLength( $value ) {
+        $maxWidth = 0;
+        if ( ( $w = strlen( $value ) ) > $maxWidth ) {
+            $maxWidth = $w;
+        }
+        return $maxWidth;
     }
 }
