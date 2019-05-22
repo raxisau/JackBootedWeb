@@ -103,15 +103,13 @@ class DBEdit extends \Jackbooted\Util\JB {
 
     public function index() {
 
-        error_reporting( -1 );
-        ini_set('display_errors', '1');
+        $html = $this->controller();
 
         if ( ( $id = Request::get( $this->daoObject->primaryKey, $this->defaultID ) ) == '' ) {
             return 'No Default ID';
         }
 
-        $html = $this->controller() .
-                '<H4>Click on row to edit this item</h4>' .
+        $html .='<H4>Click on row to edit this item</h4>' .
                 Tag::table() .
                   Tag::tr() .
                     Tag::td( ['valign' => 'top'] ) .
@@ -279,6 +277,7 @@ class DBEdit extends \Jackbooted\Util\JB {
 
         $ormClass = $this->ormClass;
         $ormObject = $ormClass::create( $ormClass::load( $id )->getData() );
+        Request::set( $this->daoObject->primaryKey, $ormObject->id );
         return Widget::popupWrapper( "Created duplicate row {$ormObject->id}" );
     }
 
@@ -287,10 +286,10 @@ class DBEdit extends \Jackbooted\Util\JB {
             return Widget::popupWrapper( 'Error. Invalid Object ID' );
         }
 
-        Request::set( $this->daoObject->primaryKey, '' );
         $ormClass = $this->ormClass;
         $ormObject = $ormClass::load( $id );
         $ormObject->delete();
+        Request::set( $this->daoObject->primaryKey, $this->getDefaultID() );
         return Widget::popupWrapper( "Deleted row {$ormObject->id}" );
     }
     public function save( ) {
