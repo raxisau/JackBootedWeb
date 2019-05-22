@@ -103,6 +103,9 @@ class DBEdit extends \Jackbooted\Util\JB {
 
     public function index() {
 
+        error_reporting( -1 );
+        ini_set('display_errors', '1');
+
         if ( ( $id = Request::get( $this->daoObject->primaryKey, $this->defaultID ) ) == '' ) {
             return 'No Default ID';
         }
@@ -137,7 +140,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         $ormClass = $this->ormClass;
         $ormObject = $ormClass::create( $this->insDefaults );
         Request::set( $this->daoObject->primaryKey, $ormObject->id );
-        Widget::popupWrapper( "Inserted one object ID:{$ormObject->id}" );
+        return Widget::popupWrapper( "Inserted one object ID:{$ormObject->id}" );
     }
 
     private function indexItem( $id ) {
@@ -392,7 +395,7 @@ class DBEdit extends \Jackbooted\Util\JB {
     }
     private function controller() {
         if ( ( $action = Request::get( $this->action ) ) == '' ) {
-            return '';
+            return 'No Action ';
         }
         else if ( ! method_exists( $this, $action ) ) {
             return "Method: $action does not exist";
@@ -420,13 +423,5 @@ class DBEdit extends \Jackbooted\Util\JB {
         if ( $width >= 0 && $width <= 40 ) {
             $this->cellAttributes[$colName]['size'] = $width;
         }
-    }
-
-    private function arrayMaxStringLength( $value ) {
-        $maxWidth = 0;
-        if ( ( $w = strlen( $value ) ) > $maxWidth ) {
-            $maxWidth = $w;
-        }
-        return $maxWidth;
     }
 }
