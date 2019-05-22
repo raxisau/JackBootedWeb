@@ -116,7 +116,7 @@ class DBEdit extends \Jackbooted\Util\JB {
                   Tag::tr() .
                     Tag::td( ['valign' => 'top'] ) .
                       Tag::form( [ 'method' => 'get' ] ) .
-                        $this->resp->set( $this->action, 'index' )->toHidden ( false ) .
+                        $this->resp->set( $this->action, 'dummyClick' )->toHidden ( false ) .
                         Lists::select ( $this->daoObject->primaryKey,
                                         $this->selectSQL,
                                         [ 'size' => $this->displayRows,'onClick' => 'submit();', 'default' => $id ] ) .
@@ -134,6 +134,10 @@ class DBEdit extends \Jackbooted\Util\JB {
                 Tag::_table();
 
         return $html;
+    }
+
+    public function dummyClick() {
+        return '';
     }
 
     public function insertBlank() {
@@ -283,6 +287,7 @@ class DBEdit extends \Jackbooted\Util\JB {
             return Widget::popupWrapper( 'Error. Invalid Object ID' );
         }
 
+        Request::set( $this->daoObject->primaryKey, '' );
         $ormClass = $this->ormClass;
         $ormObject = $ormClass::load( $id );
         $ormObject->delete();
@@ -395,14 +400,14 @@ class DBEdit extends \Jackbooted\Util\JB {
     }
     private function controller() {
         if ( ( $action = Request::get( $this->action ) ) == '' ) {
-            return 'No Action ';
+            return '';
         }
-        else if ( ! method_exists( $this, $action ) ) {
+        Request::set( $this->action, ''  );
+        if ( ! method_exists( $this, $action ) ) {
             return "Method: $action does not exist";
         }
-        else {
-            return $this->$action();
-        }
+
+        return $this->$action();
     }
     private function getDefaultID() {
         foreach ( DBTable::factory( $this->db, $this->selectSQL ) as $row ) {

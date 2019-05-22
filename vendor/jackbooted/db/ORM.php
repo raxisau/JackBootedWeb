@@ -40,8 +40,8 @@ abstract class ORM extends \Jackbooted\Util\JB {
         if ( isset( $obj->data[$obj->dao->primaryKey] ) ) {
             unset( $obj->data[$obj->dao->primaryKey] );
         }
-
-        return $obj->save();
+        $obj->save();
+        return $obj;
     }
 
     public static function factory( $data ) {
