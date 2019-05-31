@@ -260,7 +260,7 @@ class DBEdit extends \Jackbooted\Util\JB {
 
         if ( !in_array( $type, [ self::HIDDEN, self::NONE ] ) ) {
             $html = Tag::tr() .
-                      Tag::th( [ 'valign' => 'top' ] ) . $this->convertColumnToTitle( $colName ) . Tag::_th() .
+                      Tag::td( [ 'valign' => 'top' ] ) . $this->convertColumnToTitle( $colName ) . Tag::_td() .
                       Tag::td() . $html .Tag::_td() .
                     Tag::_tr();
         }
