@@ -231,7 +231,7 @@ class DBEdit extends \Jackbooted\Util\JB {
                 break;
 
             case self::TEXTAREA:
-                $attribs = array_merge( [ 'rows' => 5, 'cols' => 40 ], $updCheckAttrib, $this->cellAttributes[$colName] );
+                $attribs = array_merge( [ 'rows' => 5, 'style' => 'width:100%;' ], $updCheckAttrib, $this->cellAttributes[$colName] );
                 $html .= Tag::textArea( $colName, $value, $attribs );
                 break;
 
@@ -240,7 +240,7 @@ class DBEdit extends \Jackbooted\Util\JB {
                     $tinyMCEJS = Widget::tinyMCE( '.dbedit_tinymce' );
                 }
 
-                $attribs = array_merge( [ 'rows' => '13',
+                $attribs = array_merge( [ 'rows' => '10',
                                           'style' => 'width:100%;',
                                           'class' => 'dbedit_tinymce',
                                           'title' => 'Edit this field' ], $updCheckAttrib, $this->cellAttributes[$colName] );
@@ -254,6 +254,7 @@ class DBEdit extends \Jackbooted\Util\JB {
             case self::TEXT:
             default:
                 $updCheckAttrib['value'] = (string) $value;
+                $updCheckAttrib['style'] = 'width:100%;';
                 $html .= Tag::text( $colName, array_merge( $updCheckAttrib, $this->cellAttributes[$colName] ) );
                 break;
         }
