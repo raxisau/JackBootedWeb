@@ -38,6 +38,7 @@ class DBEdit extends \Jackbooted\Util\JB {
     const RADIO     = 'RADIO';
     const ENCTEXT   = 'ENCTEXT';
     const TEXT      = 'TEXT';
+    const TEXTAREA  = 'TEXTAREA';
     const CHECKBOX  = 'CHECKBOX';
     const TIMESTAMP = 'TIMESTAMP';
 
@@ -225,6 +226,11 @@ class DBEdit extends \Jackbooted\Util\JB {
                 $attribs['value'] = strftime( '%Y-%m-%d %H:%M:%S', (int) $value );
                 $attribs['size'] = strlen( $attribs['value'] ) + 1;
                 $html .= Tag::text( $colName, $attribs );
+                break;
+
+            case self::TEXTAREA:
+                $attribs = array_merge( [ 'rows' => 5, 'cols' => 40 ], $updCheckAttrib, $this->cellAttributes[$colName] );
+                $html .= Tag::textArea( $colName, $value, $attribs );
                 break;
 
             case self::ENCTEXT:
