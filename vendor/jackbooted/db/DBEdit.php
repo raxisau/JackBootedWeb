@@ -39,6 +39,7 @@ class DBEdit extends \Jackbooted\Util\JB {
     const ENCTEXT   = 'ENCTEXT';
     const TEXT      = 'TEXT';
     const TEXTAREA  = 'TEXTAREA';
+    const TINYMCE   = 'TINYMCE';
     const CHECKBOX  = 'CHECKBOX';
     const TIMESTAMP = 'TIMESTAMP';
 
@@ -180,6 +181,7 @@ class DBEdit extends \Jackbooted\Util\JB {
 
     private function renderValue( $colName, $value ) {
         $html = '';
+        $tinyMCEJS = '';
 
         $type = $this->getColumnType( $colName );
         $updCheckAttrib = [];
@@ -233,9 +235,21 @@ class DBEdit extends \Jackbooted\Util\JB {
                 $html .= Tag::textArea( $colName, $value, $attribs );
                 break;
 
+            case self::TINYMCE:
+                if ( $tinyMCEJS == '' ) {
+                    $tinyMCEJS = Widget::tinyMCE( '.dbedit_tinymce' );
+                }
+
+                $attribs = array_merge( [ 'rows' => '13',
+                                          'style' => 'width:100%;',
+                                          'class' => 'dbedit_tinymce',
+                                          'title' => 'Edit this field' ], $updCheckAttrib, $this->cellAttributes[$colName] );
+                $html .= Tag::textArea ( $colName, $value, $attribs );
+                break;
+
             case self::ENCTEXT:
                 $value = Cryptography::de( (string) $value );
-            // Fall through to output text field
+                // Fall through to output text field
 
             case self::TEXT:
             default:
@@ -251,7 +265,8 @@ class DBEdit extends \Jackbooted\Util\JB {
                     Tag::_tr();
         }
 
-        return $html;
+        return $tinyMCEJS .
+               $html;
     }
 
     private function getColumnType( $colName ) {

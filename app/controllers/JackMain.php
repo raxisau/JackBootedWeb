@@ -75,8 +75,9 @@ HTML;
                                  ]
                 );
 
-        $editTable->setColDisplay ( 'fldStatus', [ CRUD::SELECT, Alerts::$statusList ] );
-        $editTable->setColDisplay ( 'fldType',   [ CRUD::SELECT, Alerts::$typeList ] );
+        $editTable->setColDisplay ( 'fldStatus',      [ DBEdit::SELECT, Alerts::$statusList ] );
+        $editTable->setColDisplay ( 'fldType',        [ DBEdit::SELECT, Alerts::$typeList ] );
+        $editTable->setColDisplay ( 'fldDescription', DBEdit::TINYMCE );
         $editTable->copyVarsFromRequest( MenuUtils::ACTIVE_MENU );
 
         $html = $editTable->index( );

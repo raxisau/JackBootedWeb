@@ -101,6 +101,34 @@ JS;
                 JS::javaScript( $js );
     }
 
+    public static function tinyMCE( $selector ) {
+
+        $js = <<<JS
+    $().ready(function() {
+        // From Here https://www.tinymce.com/docs/demo/full-featured/
+        tinymce.init({
+            selector: '$selector',
+            theme: 'modern',
+            plugins: [
+              'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+              'searchreplace wordcount visualblocks visualchars code fullscreen',
+              'insertdatetime media nonbreaking save table contextmenu directionality',
+              'emoticons template paste textcolor colorpicker textpattern imagetools'
+            ],
+            toolbar1: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+            image_advtab: true,
+            content_css: [
+              '//www.tinymce.com/css/codepen.min.css'
+            ]
+        });
+    });
+JS;
+
+        return JS::library ( JS::JQUERY ) .
+               "<script src='//cdn.tinymce.com/4/tinymce.min.js'></script>" .
+               JS::javaScript ( $js );
+    }
+
     public static function popupWrapper( $msg, $timeout = 1500, $title = '' ) {
         $id = Invocation::next();
         if ( $title == '' )
