@@ -54,6 +54,10 @@ class Lists extends \Jackbooted\Util\JB {
 
         // If an array is here
         if ( is_array( $displayList ) && ( count( $displayList ) > 0 || $blank ) ) {
+            if ( isset( $attribs['size'] ) && $attribs['size'] > count( $displayList ) ) {
+                $attribs['size'] = count( $displayList );
+            }
+
             if ( isset( $attribs['default'] ) ) {
                 $defaultValue = $attribs['default'];
                 unset( $attribs['default'] );
@@ -69,14 +73,16 @@ class Lists extends \Jackbooted\Util\JB {
             }
 
             $tag = Tag::select( $name, $attribs );
-            if ( !is_array( $defaultValue ) )
+            if ( !is_array( $defaultValue ) ) {
                 $defaultValue = array( $defaultValue );
-
-            if ( $blank )
+            }
+            if ( $blank ) {
                 $tag .= Tag::optiontag( ' ', '', in_array( '', $defaultValue ) );
+            }
             foreach ( $displayList as $key => $val ) {
-                if ( is_int( $key ) )
+                if ( is_int( $key ) ) {
                     $key = $val;
+                }
                 $key = trim( $key );
                 $tag .= Tag::optiontag( $key, $val, in_array( $key, $defaultValue ) );
             }

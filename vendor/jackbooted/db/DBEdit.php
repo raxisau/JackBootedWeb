@@ -111,10 +111,10 @@ class DBEdit extends \Jackbooted\Util\JB {
             return 'No Default ID';
         }
 
-        $html .='<H4>Click on row to edit this item</h4>' .
-                Tag::table() .
+        $html .=Tag::table( array_merge( [ 'id' => 'DBEdit' . $this->suffix ], $this->styles[self::TABLE_C] ) ) .
                   Tag::tr() .
                     Tag::td( ['valign' => 'top'] ) .
+                      '<H4>Click on item</h4>' .
                       Tag::form( [ 'method' => 'get' ] ) .
                         $this->resp->set( $this->action, 'dummyClick' )->toHidden ( false ) .
                         Lists::select ( $this->daoObject->primaryKey,
@@ -133,7 +133,8 @@ class DBEdit extends \Jackbooted\Util\JB {
                   Tag::_tr() .
                 Tag::_table();
 
-        return $html;
+        return Widget::styleTable( '#DBEdit' . $this->suffix ) .
+               $html;
     }
 
     public function dummyClick() {
