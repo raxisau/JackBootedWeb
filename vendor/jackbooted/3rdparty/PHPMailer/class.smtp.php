@@ -150,7 +150,7 @@ class SMTP {
      * @param string $str Debug string to output
      * @return void
      */
-    protected function edebug( $str ) {
+    public function edebug( $str ) {
         switch ( $this->Debugoutput ) {
             case 'error_log':
                 //Don't output, just log
