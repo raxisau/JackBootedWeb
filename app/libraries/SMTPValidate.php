@@ -23,8 +23,8 @@ class SMTPValidate extends \Jackbooted\Util\JB {
         }
 
         if ( ! $smtp->connected( ) ) return false;
-
-        $host = ( $from == null ) ? '' : self::getDomain( $from );
+        if ( $from == null || $from == '' ) $from = 'support@b2bconsultancy.asia';
+        $host = self::getDomain( $from );
         if ( ! $smtp->hello( $host ) ) return false;
         if ( ! $smtp->mail( $from ) ) return false;
         if ( ! $smtp->recipient( $to ) ) return false;

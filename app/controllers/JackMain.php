@@ -5,6 +5,7 @@ use \Jackbooted\DB\DB;
 use \Jackbooted\DB\DBTable;
 use \Jackbooted\DB\DBEdit;
 use \Jackbooted\Forms\Request;
+use \Jackbooted\Forms\Response;
 use \Jackbooted\Forms\CRUD;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\WebPage;
@@ -37,6 +38,9 @@ class JackMain extends WebPage {
                  [ 'name'    => 'TODO List',
                    'url'     => '?' . $resp->action ( __CLASS__ . '->todo()' ),
                    'attribs' =>  [ 'title' => 'List of outstanding items' ] ],
+                 [ 'name'    => 'Validate Email',
+                   'url'     => '?' . $resp->action ( __CLASS__ . '->validateEmail()' ),
+                   'attribs' =>  [ 'title' => 'Tests email' ] ],
                  [ 'name'    => 'Browse Classes',
                    'url'     => '?' . $resp->action ( __CLASS__ . '->browse()' ),
                    'slug'    => 'browse_classes',
@@ -58,6 +62,55 @@ class JackMain extends WebPage {
 HTML;
         return '<h2>Welcome to Jackbooted PHP Framework</h2>' .
                 $html;
+    }
+
+    public function validateEmail() {
+        $formName = 'Jack' . __FUNCTION__;
+
+        $val = Validator::factory( $formName )
+                        ->addExists( 'fldEmailTo', 'The To email address must exist' )
+                        ->addEmail( 'fldEmailTo', 'The To email address must be in the correct email format a@b.com' )
+                        ->addEmail( 'fldEmailFrom', 'The From email address must be in the correct email format a@b.com' );
+
+        return $val->toHtml ( ) .
+               Tag::form(  [ 'id' => $formName,
+                             'name' => $formName,
+                             'onSubmit' => $val->onSubmit() ] ) .
+                  MenuUtils::responseObject ()
+                           ->action ( __CLASS__ . '->validateEmailDisplay()' )
+                           ->toHidden () .
+                  Tag::table (  ) .
+                    Tag::tr ( ).
+                      Tag::td ( ) . 'Email To' . Tag::_td ( ) .
+                      Tag::td ( ) .
+                        Tag::text ( 'fldEmailTo',  [ 'title' => 'Enter the To Email address' ] ) .
+                      Tag::_td ( ) .
+                    Tag::_tr ( ).
+                    Tag::tr ( ).
+                      Tag::td ( ) . 'Email From (optional)' . Tag::_td ( ) .
+                      Tag::td ( ) .
+                        Tag::text ( 'fldEmailFrom',  [ 'title' => 'Enter the From Email address' ] ) .
+                      Tag::_td ( ) .
+                    Tag::_tr ( ).
+                    Tag::tr ( ).
+                      Tag::td (  [ 'colspan' => 3 ] ) .
+                        Tag::submit ( 'Display Results',  [ 'title' => 'Display Results' ] ) .
+                      Tag::_td ( ) .
+                    Tag::_tr ( ).
+                  Tag::_table ( ) .
+                Tag::_form();
+    }
+
+    public function validateEmailDisplay() {
+        error_reporting( -1 );
+        ini_set('display_errors', '1');
+
+        $result = \App\Libraries\SMTPValidate::isValid( Response::get( 'fldEmailTo' ), Response::get( 'fldEmailFrom' ), 4 );
+        return 'Checking To email: ' . Response::get( 'fldEmailTo' ) . '<br/>' .
+               ( ( $result ) ? 'Is Valid' : 'is not valid' ) . '<br/>' .
+               ( ( Response::get( 'fldEmailFrom' ) == '' ) ? '' : ' Sending from ' . Response::get( 'fldEmailFrom' )  ) .
+               $this->validateEmail() .
+               Widget::popupWrapper( 'Checking To email: ' . Response::get( 'fldEmailTo' ) . ( $result ) ? 'Is Valid' : 'is not valid' );
     }
 
     public function editAlerts() {
