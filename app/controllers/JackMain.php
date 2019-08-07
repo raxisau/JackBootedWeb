@@ -106,7 +106,9 @@ HTML;
         error_reporting( -1 );
         ini_set('display_errors', '1');
 
+        echo '<pre>';
         $result = \App\Libraries\SMTPValidate::isValid( Request::get( 'fldEmailTo' ), Request::get( 'fldEmailFrom' ), 4 );
+        echo '</pre>';
         return 'Checking To email: ' . Request::get( 'fldEmailTo' ) . '<br/>' .
                ( ( $result ) ? 'Is Valid' : 'is not valid' ) . '<br/>' .
                ( ( Request::get( 'fldEmailFrom' ) == '' ) ? '' : ' Sending from ' . Request::get( 'fldEmailFrom' )  ) .
