@@ -5,6 +5,43 @@ namespace App\Libraries;
 
 class SMTPValidate extends \Jackbooted\Util\JB {
     public static function isValid( $to, $from='support@b2bconsultancy.asia', $debugLevel=0 ) {
+        $smtp = new \PHPMailer\PHPMailer\SMTP();
+
+        $smtp->do_debug = $debugLevel;
+        if ( $smtp->do_debug >= 3 ) {
+            $smtp->edebug( "Debug Level: $debugLevel" );
+        }
+
+        $mxs = self::buildMxs( self::getDomain( $to ) );
+        if ( $smtp->do_debug >= 3 ) {
+            $smtp->edebug( print_r( $mxs, true ) );
+        }
+        $tls = false;
+        foreach ( $mxs as $host => $weight ) {
+            if ( $smtp->connect( $host ) ) {
+                break;
+            }
+            if ( $smtp->connect( $host, 587 ) ) {
+                break;
+            }
+        }
+
+
+        if ( ! $smtp->connected( ) ) return false;
+        if ( $tls ) {
+            $smtp->startTLS ();
+        }
+        if ( $from == null || $from == '' ) $from = 'support@b2bconsultancy.asia';
+        $host = self::getDomain( $from );
+        if ( ! $smtp->hello( $host ) ) return false;
+        if ( ! $smtp->mail( $from ) ) return false;
+        if ( ! $smtp->recipient( $to ) ) return false;
+        $smtp->reset();
+        $smtp->close();
+
+        return true;
+    }
+    public static function isValidOld( $to, $from='support@b2bconsultancy.asia', $debugLevel=0 ) {
         $smtp = new \SMTP();
 
         $smtp->do_debug = $debugLevel;
