@@ -106,12 +106,12 @@ HTML;
         error_reporting( -1 );
         ini_set('display_errors', '1');
 
-        $result = \App\Libraries\SMTPValidate::isValid( Response::get( 'fldEmailTo' ), Response::get( 'fldEmailFrom' ), 4 );
-        return 'Checking To email: ' . Response::get( 'fldEmailTo' ) . '<br/>' .
+        $result = \App\Libraries\SMTPValidate::isValid( Request::get( 'fldEmailTo' ), Request::get( 'fldEmailFrom' ), 4 );
+        return 'Checking To email: ' . Request::get( 'fldEmailTo' ) . '<br/>' .
                ( ( $result ) ? 'Is Valid' : 'is not valid' ) . '<br/>' .
-               ( ( Response::get( 'fldEmailFrom' ) == '' ) ? '' : ' Sending from ' . Response::get( 'fldEmailFrom' )  ) .
+               ( ( Request::get( 'fldEmailFrom' ) == '' ) ? '' : ' Sending from ' . Request::get( 'fldEmailFrom' )  ) .
                $this->validateEmail() .
-               Widget::popupWrapper( 'Checking To email: ' . Response::get( 'fldEmailTo' ) . ( $result ) ? 'Is Valid' : 'is not valid' );
+               Widget::popupWrapper( 'Checking To email: ' . Request::get( 'fldEmailTo' ) . ( $result ) ? 'Is Valid' : 'is not valid' );
     }
 
     public function editAlerts() {
