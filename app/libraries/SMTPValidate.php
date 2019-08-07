@@ -18,10 +18,11 @@ class SMTPValidate extends \Jackbooted\Util\JB {
         }
         $tls = false;
         foreach ( $mxs as $host => $weight ) {
-            if ( $smtp->connect( $host ) ) {
+            if ( $smtp->connect( $host, 25 ) ) {
                 break;
             }
             if ( $smtp->connect( $host, 587 ) ) {
+                $tls = true;
                 break;
             }
         }
