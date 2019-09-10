@@ -142,13 +142,19 @@ class Login extends WebPage {
     }
 
     public static function checkAuthenticated( $username, $password, $hash = null ) {
-        if ( !isset( $username ) ||
-                !isset( $password ) ||
-                $username == false ||
-                $password == false )
+        if ( ! isset( $username ) || ! isset( $password ) || $username == false || $password == false || $username == '' || $password == '' ) {
             return false;
+        }
 
+        $sqlLoginAttempts = <<<SQL
+            SELECT COUNT(*)
+            FROM   tblLoginAttempt
+            WHERE  fldUsername=?
+SQL;
         if ( $hash != null && !self::testHash( $username, $password, $hash ) ) {
+            $sucessfulLogin = false;
+        }
+        else if ( DB::oneValue( DB::DEF, $sqlLoginAttempts, [ $username ] ) > 4 ) {
             $sucessfulLogin = false;
         }
         else {
@@ -172,35 +178,31 @@ SQL;
 SQL;
                 $numEntries = DB::oneValue( DB::DEF, $sql, [ hash( 'md5', $password ), $username ] );
             }
-
             $sucessfulLogin = ( $numEntries == 1 );
-
-            if ( !$sucessfulLogin ) {
-                $params = [ DBMaintenance::dbNextNumber( DB::DEF, 'tblLoginAttempt' ),
-                    $username,
-                    $password,
-                    $_SERVER['HTTP_USER_AGENT'],
-                    $_SERVER['SERVER_ADDR'] ];
-                DB::exec( DB::DEF, 'INSERT INTO tblLoginAttempt VALUES(?,?,?,?,?)', $params );
-            }
         }
 
         if ( $sucessfulLogin ) {
             self::updateLastLogin( $username );
         }
         else {
-            self::incrementFails( $username );
+            self::incrementFails( $username, $password );
         }
 
         return $sucessfulLogin;
     }
 
     public static function updateLastLogin( $username ) {
-        $sql = 'UPDATE tblUser SET fldLastLogin=?,fldFails=0 WHERE fldUser=?';
-        DB::exec( DB::DEF, $sql, [ time(), $username ] );
+        DB::exec( DB::DEF, 'UPDATE tblUser SET fldLastLogin=?,fldFails=0 WHERE fldUser=?', [ time(), $username ] );
+        DB::exec( DB::DEF, 'DELETE FROM tblLoginAttempt WHERE fldUsername=?', [ $username ] );
     }
 
-    public static function incrementFails( $username ) {
+    public static function incrementFails( $username, $password ) {
+        $params = [ DBMaintenance::dbNextNumber( DB::DEF, 'tblLoginAttempt' ),
+                    $username,
+                    $password,
+                    $_SERVER['HTTP_USER_AGENT'],
+                    $_SERVER['REMOTE_ADDR'] ];
+        DB::exec( DB::DEF, 'INSERT INTO tblLoginAttempt VALUES(?,?,?,?,?)', $params );
         DB::exec( DB::DEF, 'UPDATE tblUser SET fldFails=fldFails+1 WHERE fldUser=?', $username );
         return DB::oneValue( DB::DEF, 'SELECT fldFails FROM tblUser WHERE fldUser=?', $username );
     }
