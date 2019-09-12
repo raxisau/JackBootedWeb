@@ -208,8 +208,9 @@ SQL;
     }
 
     public static function clearFails() {
+        $la = DB::exec( DB::DEF, 'DELETE FROM tblLoginAttempt WHERE fldUsername IN (SELECT fldUser FROM tblUser)' );
         $up = DB::exec( DB::DEF, 'UPDATE tblUser SET fldFails=0' );
-        return [ 0, "Cleared: $up " ];
+        return [ 0, "Cleared: $up Login Attempts: $la" ];
     }
 
     public static function loadPreferences( $user ) {
