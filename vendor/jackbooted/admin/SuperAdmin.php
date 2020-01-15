@@ -16,7 +16,7 @@ use \Jackbooted\Security\Privileges;
 use \Jackbooted\Util\PHPExt;
 
 /**
- * @copyright Confidential and copyright (c) 2019 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2020 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
