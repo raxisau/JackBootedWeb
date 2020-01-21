@@ -10,5 +10,4 @@
     RewriteRule ^ router.php [L]
 </IfModule>
 
-
 RedirectMatch 404 /\.git
