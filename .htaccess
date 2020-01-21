@@ -9,3 +9,5 @@
     RewriteCond %{REQUEST_URI} /api/
     RewriteRule ^ router.php [L]
 </IfModule>
+
+RedirectMatch 404 /\.git
