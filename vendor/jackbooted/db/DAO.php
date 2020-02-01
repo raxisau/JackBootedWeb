@@ -149,9 +149,10 @@ abstract class DAO extends \Jackbooted\Util\JB {
         }
 
         $params = [];
+        if ( ( $whereSql = $this->toWhere( $where, $params ) ) == '' ) return false;
         $sql = 'UPDATE ' . $this->tableName . ' ' .
                 'SET ' . join( '=?, ', array_keys( $sets ) ) . '=? ' .
-                $this->toWhere( $where, $params );
+                $whereSql;
 
         return DB::exec( $this->db, $sql, array_merge( array_values( $sets ), $params ) );
     }

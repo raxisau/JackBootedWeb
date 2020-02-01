@@ -26,6 +26,7 @@ class Config extends \Jackbooted\Util\JB {
     // In memory cache of configuration items
     private static $configItemsObjects = [];
     private static $overrideScope = false;
+    private static $haveDB = true;
 
     const INSERT_SQL = "REPLACE INTO tblConfig (fldConfigID,fldUserID,fldKey,fldValue) VALUES(?,?,?,?)";
     const SELECT_SQL_ID = "SELECT fldConfigID FROM tblConfig WHERE fldKey=? AND fldUserID=?";
@@ -35,6 +36,10 @@ class Config extends \Jackbooted\Util\JB {
 
     public static function setOverrideScope( $scope = false ) {
         self::$overrideScope = $scope;
+    }
+
+    public static function setHaveDB( $doWeHaveDB ) {
+        self::$haveDB = $doWeHaveDB;
     }
 
     public static function get( $key, $def = '', $scope = self::USER_SCOPE ) {
@@ -75,6 +80,10 @@ class Config extends \Jackbooted\Util\JB {
     }
 
     private static function putIntoDB( $key, $value, $scope = self::USER_SCOPE ) {
+        if ( ! self::$haveDB ) {
+            return;
+        }
+
         $uid = self::getScope( $scope );
 
         if ( ( $id = DB::oneValue( DB::DEF, self::SELECT_SQL_ID, [ $key, $uid ] ) ) === false ) {
@@ -88,6 +97,10 @@ class Config extends \Jackbooted\Util\JB {
     }
 
     private static function getFromDB( $key, $scope = self::USER_SCOPE ) {
+        if ( ! self::$haveDB ) {
+            return;
+        }
+
         $uid = self::getScope( $scope );
 
         if ( ( $serializedValue = DB::oneValue( DB::DEF, self::SELECT_SQL, [ $key, $uid ] ) ) !== false ) {
