@@ -225,7 +225,10 @@ SQL;
     }
 
     public static function initSession() {
-        session_start();
+        if ( ! isset( $_SESSION ) ) {
+            session_start();
+        }
+        
         if ( !isset( $_SESSION[G::SESS] ) )
             $_SESSION[G::SESS] = [];
 
