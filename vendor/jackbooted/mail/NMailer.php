@@ -14,7 +14,7 @@ namespace Jackbooted\Mail;
  */
 class NMailer extends \Jackbooted\Util\JB {
 
-    function send( $mailTo, $fromMail, $fromName, $subject, $message, $replyTo=null, $filePath=null ) {
+    public static function send( $mailTo, $fromMail, $fromName, $subject, $message, $replyTo=null, $filePath=null ) {
 
         $LE = "\r\n";
         $uid = md5( uniqid( time() ) );
@@ -31,19 +31,19 @@ class NMailer extends \Jackbooted\Util\JB {
         $header = "From: " . $fromName . " <" . $fromMail . ">$LE";
         if ( $replyTo != null ) $header .= "Reply-To: " . $replyTo . "$LE";
         $header .= "MIME-Version: 1.0$LE";
-        $header .= "Content-Type: multipart/mixed; boundary=\"" . $uid . "\"$LE$LE";
+        $header .= "Content-Type: multipart/mixed; boundary=\"" . $uid . "\"$LE";
         $header .= "This is a multi-part message in MIME format.$LE";
         $header .= "--" . $uid . "$LE";
         $header .= "Content-type:text/html; charset=UTF-8$LE";
-        $header .= "Content-Transfer-Encoding: 7bit$LE$LE";
-        $header .= $message . "$LE$LE";
+        $header .= "Content-Transfer-Encoding: 7bit$LE";
+        $header .= $message . "$LE";
 
         if ( $withAttachment ) {
             $header .= "--" . $uid . "$LE";
             $header .= "Content-Type: application/octet-stream; name=\"" . $fileName . "\"$LE";
             $header .= "Content-Transfer-Encoding: base64$LE";
-            $header .= "Content-Disposition: attachment; filename=\"" . $fileName . "\"$LE$LE";
-            $header .= $content . "$LE$LE";
+            $header .= "Content-Disposition: attachment; filename=\"" . $fileName . "\"$LE";
+            $header .= $content . "$LE";
             $header .= "--" . $uid . "--";
         }
         return mail( $mailTo, $subject, strip_tags( $message ), $header );
