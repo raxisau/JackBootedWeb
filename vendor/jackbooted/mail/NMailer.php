@@ -14,7 +14,7 @@ namespace Jackbooted\Mail;
  */
 class NMailer extends \Jackbooted\Util\JB {
 
-    function send( $mailTo, $message, $subject, $fromMail, $fromName, $replyTo=null, $filePath=null ) {
+    function send( $mailTo, $fromMail, $fromName, $subject, $message, $replyTo=null, $filePath=null ) {
 
         $LE = "\r\n";
         $uid = md5( uniqid( time() ) );
