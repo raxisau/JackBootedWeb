@@ -46,6 +46,6 @@ class NMailer extends \Jackbooted\Util\JB {
             $header .= $content . "$LE";
             $header .= "--" . $uid . "--";
         }
-        return mail( $mailTo, $subject, strip_tags( $message ), $header );
+        return mail( $mailTo, $subject, "", $header );
     }
 }
