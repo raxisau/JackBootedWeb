@@ -89,7 +89,19 @@ class Request extends PipeLine {
         if ( get_magic_quotes_gpc() ) {
             $this->stripSlashes( $vars );
         }
+        $this->removeHtml( $vars );
         return $vars;
+    }
+
+    private function removeHtml( &$arr ) {
+        foreach ( $arr as $key => $val ) {
+            if ( is_string( $arr[$key] ) ) {
+                $arr[$key] = htmlspecialchars_decode( $arr[$key] );
+            }
+            else if ( is_array( $arr[$key] ) ) {
+                $this->removeHtml( $arr[$key] );
+            }
+        }
     }
 
     private function stripSlashes( &$arr ) {
