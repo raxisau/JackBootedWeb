@@ -91,10 +91,7 @@ class Tag extends \Jackbooted\Util\JB {
             unset( $attribs['submitmsg'] );
         }
         else {
-            //$submitMsg = 'Submitting...';
-            $submitMsg = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>';
-            $html .= JS::library( 'submit.css' );
-
+            $submitMsg = 'Submitting...';
         }
 
         if ( isset( $attribs['onsubmit'] ) ) {
