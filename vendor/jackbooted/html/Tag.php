@@ -77,6 +77,8 @@ class Tag extends \Jackbooted\Util\JB {
     private static $formCount = 0;
 
     public static function form( $attribs = [], $doubleClickProtection = true ) {
+        $html = '';
+
         if ( !isset( $attribs['action'] ) )
             $attribs['action'] = '?';
         if ( !isset( $attribs['method'] ) )
@@ -89,16 +91,16 @@ class Tag extends \Jackbooted\Util\JB {
             unset( $attribs['submitmsg'] );
         }
         else {
-            $submitMsg = 'Submitting...';
-        }
+            //$submitMsg = 'Submitting...';
+            $submitMsg = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>';
+            $html .= JS::library( 'submit.css' );
 
+        }
 
         if ( isset( $attribs['onsubmit'] ) ) {
             $attribs['onSubmit'] = $attribs['onsubmit'];
             unset( $attribs['onsubmit'] );
         }
-
-        $html = '';
 
         if ( $doubleClickProtection ) {
             $killDblClk = "$('#{$attribs['id']} input[type=submit]').val('{$submitMsg}').attr('disabled',true);";
