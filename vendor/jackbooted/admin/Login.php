@@ -132,8 +132,11 @@ class Login extends WebPage {
             return self::$log->error( 'Incorrect username' );
         else if ( $hashArray[1] != $password )
             return self::$log->error( 'Incorrect password' );
-        else if ( $hashArray[2] != $_SERVER['REMOTE_ADDR'] )
-            return self::$log->error( 'Login from different IP' );
+        // Sorry to comment out code in production, but this is getting tiresome as
+        // my internet provider is changing IPs every 5 minutes
+        // This check will force a user to login again if they change location
+        // else if ( $hashArray[2] != $_SERVER['REMOTE_ADDR'] )
+        //    return self::$log->error( 'Login from different IP' );
         else if ( time() - $hashArray[3] > Cfg::get( 'session_timeout', 604800 ) ) {
             return self::$log->error( 'Session timeout' );
         }
