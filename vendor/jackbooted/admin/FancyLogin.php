@@ -61,26 +61,26 @@ JS;
         $html = JS::library( JS::JQUERY ) .
                 JS::javaScript( $jQuery ) .
                 Tag::table() .
-                Tag::tr() .
-                Tag::td( [ 'id' => 'hoverimage', 'class' => 'logindetails', 'nowrap' => 'nowrap' ] ) .
-                'Welcome ' . $this->getDisplayName() . Gravatar::icon( G::get( 'fldUser' ) ) .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td( [ 'id' => 'extralinks', 'style' => 'display: none;' ] ) .
-                Tag::ul( [ 'id' => 'vertMenu' ] ) .
-                Tag::li() .
-                Tag::hRef( 'ajax.php?' . $resp->action( '\Jackbooted\Admin\Login->logout()' )->toUrl(), 'Logout' ) .
-                Tag::_li();
+                  Tag::tr() .
+                    Tag::td( [ 'id' => 'hoverimage', 'class' => 'logindetails', 'nowrap' => 'nowrap' ] ) .
+                      'Welcome ' . $this->getDisplayName() . Gravatar::icon( G::get( 'fldUser' ) ) .
+                    Tag::_td() .
+                  Tag::_tr() .
+                  Tag::tr() .
+                    Tag::td( [ 'id' => 'extralinks', 'style' => 'display: none;' ] ) .
+                      Tag::ul( [ 'id' => 'vertMenu' ] ) .
+                        Tag::li() .
+                          Tag::hRef( 'ajax.php?' . $resp->action( '\Jackbooted\Admin\Login->logout()' )->toUrl(), 'Logout' ) .
+                        Tag::_li();
         foreach ( $this->loggedInMenuItems as $name => $act ) {
-            $html .= Tag::li() .
-                    Tag::hRef( '?' . $resp->action( $act )->toUrl(), $name ) .
-                    Tag::_li();
+            $html .=    Tag::li() .
+                          Tag::hRef( '?' . $resp->action( $act )->toUrl(), $name ) .
+                        Tag::_li();
         }
 
-        $html .= Tag::_ul() .
-                Tag::_td() .
-                Tag::_tr() .
+        $html .=      Tag::_ul() .
+                    Tag::_td() .
+                  Tag::_tr() .
                 Tag::_table();
 
         return $html;
@@ -108,43 +108,43 @@ JS;
                 JS::libraryWithDependancies( JS::FACEBOX ) .
                 JS::javaScript( $jQuery ) .
                 Tag::table() .
-                Tag::tr() .
-                Tag::td( [ 'id' => 'hoverimage', 'class' => 'login', 'nowrap' => 'nowrap' ] ) .
-                $valid->toHtml() .
-                Tag::form( [ 'id' => $formName, 'name' => $formName, 'onSubmit' => $valid->onSubmit() ] ) .
-                $resp->set( self::ACTION, __CLASS__ . '->checkLogin()' )->toHidden() .
-                Tag::table() .
-                Tag::tr() .
-                Tag::td() . 'Email' . Tag::_td() .
-                Tag::td() .
-                Tag::text( self::LOGIN_FNAME, [ 'size' => 10, 'style' => 'opacity:0.5;filter:alpha(opacity=50)' ] ) .
-                Tag::_td() .
-                Tag::td() . 'Password:' . Tag::_td() .
-                Tag::td() .
-                Tag::password( self::PASSW_FNAME, [ 'size' => 10, 'style' => 'opacity:0.5;filter:alpha(opacity=50)' ] ) .
-                Tag::_td() .
-                Tag::td() . Tag::submit( 'Go' ) . Tag::_td() .
-                Tag::_tr() .
-                Tag::_table() .
-                Tag::_form() .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td( [ 'id' => 'extralinks', 'style' => 'display: none;' ] ) .
-                Tag::ul( [ 'id' => 'vertMenu' ] );
+                  Tag::tr() .
+                    Tag::td( [ 'id' => 'hoverimage', 'class' => 'login', 'nowrap' => 'nowrap' ] ) .
+                      $valid->toHtml() .
+                      Tag::form( [ 'id' => $formName, 'name' => $formName, 'onSubmit' => $valid->onSubmit() ] ) .
+                        $resp->set( self::ACTION, __CLASS__ . '->checkLogin()' )->toHidden() .
+                        Tag::table() .
+                          Tag::tr() .
+                            Tag::td() . 'Email' . Tag::_td() .
+                            Tag::td() .
+                              Tag::text( self::LOGIN_FNAME, [ 'size' => 10, 'style' => 'opacity:0.5;filter:alpha(opacity=50)' ] ) .
+                            Tag::_td() .
+                            Tag::td() . 'Password:' . Tag::_td() .
+                            Tag::td() .
+                              Tag::password( self::PASSW_FNAME, [ 'size' => 10, 'style' => 'opacity:0.5;filter:alpha(opacity=50)' ] ) .
+                            Tag::_td() .
+                            Tag::td() . Tag::submit( 'Go' ) . Tag::_td() .
+                          Tag::_tr() .
+                        Tag::_table() .
+                      Tag::_form() .
+                    Tag::_td() .
+                  Tag::_tr() .
+                  Tag::tr() .
+                    Tag::td( [ 'id' => 'extralinks', 'style' => 'display: none;' ] ) .
+                      Tag::ul( [ 'id' => 'vertMenu' ] );
 
         if ( Cfg::get( 'jb_self_register', false ) ) {
-            $html .= Tag::li() .
-                    Tag::hRef( 'ajax.php?' . $resp->action( __CLASS__ . '->newRegistration()' )->toUrl(), 'Register New Account', [ 'class' => 'facebox' ] ) .
-                    Tag::_li();
+            $html .=    Tag::li() .
+                          Tag::hRef( 'ajax.php?' . $resp->action( __CLASS__ . '->newRegistration()' )->toUrl(), 'Register New Account', [ 'class' => 'facebox' ] ) .
+                        Tag::_li();
         }
 
-        $html .= Tag::li() .
-                Tag::hRef( 'ajax.php?' . $resp->action( __CLASS__ . '->forgotPassword()' )->toUrl(), 'Forgot My Password', [ 'class' => 'facebox' ] ) .
-                Tag::_li() .
-                Tag::_ul() .
-                Tag::_td() .
-                Tag::_tr() .
+        $html .=        Tag::li() .
+                          Tag::hRef( 'ajax.php?' . $resp->action( __CLASS__ . '->forgotPassword()' )->toUrl(), 'Forgot My Password', [ 'class' => 'facebox' ] ) .
+                        Tag::_li() .
+                      Tag::_ul() .
+                    Tag::_td() .
+                  Tag::_tr() .
                 Tag::_table();
 
         return $html;
@@ -170,45 +170,45 @@ JS;
                         ->set( self::ACTION, __CLASS__ . '->signUp()' )
                         ->set( '_CAP', $cap->getValue() )
                         ->toHidden() .
-                Tag::table( [ 'align' => 'center', 'border' => 0, 'cellspacing' => 0, 'cellpadding' => 2 ] ) .
-                Tag::tr() .
-                Tag::td() . 'Email:' . Tag::_td() .
-                Tag::td() . Tag::text( 'fldEmail', Request::get( 'fldEmail' ) ) . Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td() . 'First&nbsp;Name:' . Tag::_td() .
-                Tag::td() . Tag::text( 'fldFirstName', Request::get( 'fldFirstName' ) ) . Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td() . 'Last&nbsp;Name:' . Tag::_td() .
-                Tag::td() . Tag::text( 'fldLastName', Request::get( 'fldLastName' ) ) . Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td() . Tag::img( $cap->imageUrl() ) . Tag::_td() .
-                Tag::td() . Tag::text( 'fldCaptcha' ) . Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td( [ 'colspan' => 2, 'nowrap' => 'nowrap', 'valign' => 'top' ] ) .
-                'Please Read Disclaimer:' .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td( [ 'colspan' => 2 ] ) .
-                Tag::hTag( 'iframe', [ 'src' => $disclaimer, 'width' => '100%' ] ) .
-                Tag::_hTag( 'iframe' ) .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td( [ 'colspan' => 2, 'align' => 'center' ] ) .
-                'By clicking below, you are stating that you understand and agree to the Disclamer above' .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td( [ 'colspan' => 2, 'align' => 'center' ] ) .
-                Tag::submit( 'New Account' ) .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::_table() .
+                  Tag::table( [ 'align' => 'center', 'border' => 0, 'cellspacing' => 0, 'cellpadding' => 2 ] ) .
+                    Tag::tr() .
+                      Tag::td() . 'Email:' . Tag::_td() .
+                      Tag::td() . Tag::text( 'fldEmail', Request::get( 'fldEmail' ) ) . Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td() . 'First&nbsp;Name:' . Tag::_td() .
+                      Tag::td() . Tag::text( 'fldFirstName', Request::get( 'fldFirstName' ) ) . Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td() . 'Last&nbsp;Name:' . Tag::_td() .
+                      Tag::td() . Tag::text( 'fldLastName', Request::get( 'fldLastName' ) ) . Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td() . Tag::img( $cap->imageUrl() ) . Tag::_td() .
+                      Tag::td() . Tag::text( 'fldCaptcha' ) . Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td( [ 'colspan' => 2, 'nowrap' => 'nowrap', 'valign' => 'top' ] ) .
+                        'Please Read Disclaimer:' .
+                      Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td( [ 'colspan' => 2 ] ) .
+                        Tag::hTag( 'iframe', [ 'src' => $disclaimer, 'width' => '100%' ] ) .
+                        Tag::_hTag( 'iframe' ) .
+                      Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td( [ 'colspan' => 2, 'align' => 'center' ] ) .
+                        'By clicking below, you are stating that you understand and agree to the Disclamer above' .
+                      Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td( [ 'colspan' => 2, 'align' => 'center' ] ) .
+                        Tag::submit( 'New Registration' ) .
+                      Tag::_td() .
+                    Tag::_tr() .
+                  Tag::_table() .
                 Tag::_form();
 
         return $html;

@@ -231,7 +231,7 @@ SQL;
         if ( ! isset( $_SESSION ) ) {
             session_start();
         }
-        
+
         if ( !isset( $_SESSION[G::SESS] ) )
             $_SESSION[G::SESS] = [];
 
@@ -295,30 +295,28 @@ SQL;
         $html = '<h2>Login</h2>' .
                 $valid->toHtml() .
                 Tag::form( [ 'action' => 'ajax.php', 'name' => $formName, 'onSubmit' => $valid->onSubmit() ] ) .
-                $resp->action( __CLASS__ . '->checkLogin()' )->toHidden() .
-                Tag::table() .
-                Tag::tr() .
-                Tag::td() . 'Email' . Tag::_td() .
-                Tag::td() .
-                Tag::text( self::LOGIN_FNAME, $mobileAttribs ) .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td() . 'Password:' . Tag::_td() .
-                Tag::td() .
-                Tag::password( self::PASSW_FNAME ) .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td() .
-                Tag::submit( 'Login' ) .
-                Tag::_td() .
-                Tag::td( [ 'align' => 'right' ] ) .
-                Tag::linkButton( '?' . $resp->action( __CLASS__ . '->forgotPassword()' )->toUrl(), 'Forgot Password' ) .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::_table() .
-                Tag::_form();
+                  $resp->action( __CLASS__ . '->checkLogin()' )->toHidden() .
+                  Tag::table() .
+                    Tag::tr() .
+                      Tag::td() . 'Email' . Tag::_td() .
+                      Tag::td() .
+                        Tag::text( self::LOGIN_FNAME, $mobileAttribs ) .
+                      Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td() . 'Password:' . Tag::_td() .
+                      Tag::td() .
+                        Tag::password( self::PASSW_FNAME ) .
+                      Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td([ 'colspan' => 3, 'aligh' => 'right' ]) .
+                        Tag::submit( 'Login' ) .
+                      Tag::_td() .
+                    Tag::_tr() .
+                  Tag::_table() .
+                Tag::_form() .
+                Tag::linkButton( '?' . $resp->action( __CLASS__ . '->forgotPassword()' )->toUrl(), 'Forgot Password' );
 
         return $html;
     }
@@ -334,24 +332,22 @@ SQL;
         $html = '<h2>Password Reset</h2>' .
                 $valid->toHtml() .
                 Tag::form( [ 'id' => $formName, 'name' => $formName, 'onSubmit' => $valid->onSubmit() ] ) .
-                Response::factory()->action( __CLASS__ . '->sendPW()' )->toHidden() .
-                Tag::table() .
-                Tag::tr() .
-                Tag::td() . 'Email' . Tag::_td() .
-                Tag::td() .
-                Tag::text( 'fldEmail', [ 'title' => 'Your Password will be reset and sent to you via email you have provided' ] ) .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td( [ 'align' => 'left' ] ) .
-                Tag::submit( 'Reset PW' ) .
-                Tag::_td() .
-                Tag::td( [ 'align' => 'right' ] ) .
-                Tag::linkButton( '?' . Response::factory()->action( __CLASS__ . '->index()' )->toUrl(), 'Back to Login' ) .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::_table() .
-                Tag::_form();
+                  Response::factory()->action( __CLASS__ . '->sendPW()' )->toHidden() .
+                  Tag::table() .
+                    Tag::tr() .
+                      Tag::td() . 'Email' . Tag::_td() .
+                      Tag::td() .
+                        Tag::text( 'fldEmail', [ 'title' => 'Your Password will be reset and sent to you via email you have provided' ] ) .
+                      Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td( [ 'align' => 'right' ] ) .
+                        Tag::submit( 'Reset PW' ) .
+                      Tag::_td() .
+                    Tag::_tr() .
+                  Tag::_table() .
+                Tag::_form() .
+                Tag::linkButton( '?' . Response::factory()->action( __CLASS__ . '->index()' )->toUrl(), 'Back to Login' );
 
         return $html;
     }
@@ -381,25 +377,18 @@ SQL;
 
         // create the email message to notify about a password request
         $body = '<h3>User requested password<br>Email: <b>%s</b></h3><br>From %s';
-        Mailer::envelope()->format( Mailer::HTML_TEXT )
+        Mailer::envelope()
+                ->format( Mailer::HTML_TEXT )
                 ->from( Request::get( 'fldEmail' ) )
                 ->to( $boss )
                 ->subject( 'User requested password' )
                 ->body( sprintf( $body, Request::get( 'fldEmail' ), $desc ) )
                 ->send();
 
-        $body = <<<TXT
-Message from %s
-
-Here is your new password
-
-Password: %s
-
-Regards
-%s
-TXT;
         // create the email message to notify the user of his/her login details
-        Mailer::envelope()->from( $boss )
+        $body = "Message from %s\r\n\r\nHere is your new password\r\n\r\nPassword: %s\r\n\r\nRegards\r\n%s\r\n";
+        Mailer::envelope()
+                ->from( $boss )
                 ->to( Request::get( 'fldEmail' ) )
                 ->subject( 'Login Request ' . $desc )
                 ->body( sprintf( $body, $desc, $pw, $desc ) )
@@ -443,5 +432,4 @@ TXT;
         }
         return $uName;
     }
-
 }
