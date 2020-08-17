@@ -224,23 +224,23 @@ JS;
 
         $html = $valid->toHtml() .
                 Tag::form( [ 'id' => $formName, 'name' => $formName, 'onSubmit' => $valid->onSubmit() ] ) .
-                Response::factory()->set( self::ACTION, __CLASS__ . '->sendPW()' )->toHidden() .
-                Tag::table( [ 'align' => 'center', 'border' => 0, 'cellspacing' => 0, 'cellpadding' => 2 ] ) .
-                Tag::tr() .
-                Tag::td() . 'Email' . Tag::_td() .
-                Tag::td() . Tag::text( 'fldEmail' ) . Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td( [ 'colspan' => 2, 'align' => 'center' ] ) .
-                'Your Password will be reset and sent to you via email you have provided' .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::tr() .
-                Tag::td( [ 'colspan' => 2, 'align' => 'center' ] ) .
-                Tag::submit( 'Send Password' ) .
-                Tag::_td() .
-                Tag::_tr() .
-                Tag::_table() .
+                  Response::factory()->set( self::ACTION, __CLASS__ . '->sendPW()' )->toHidden() .
+                  Tag::table( [ 'align' => 'center', 'border' => 0, 'cellspacing' => 0, 'cellpadding' => 2 ] ) .
+                    Tag::tr() .
+                      Tag::td() . 'Email' . Tag::_td() .
+                      Tag::td() . Tag::text( 'fldEmail' ) . Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td( [ 'colspan' => 2, 'align' => 'center' ] ) .
+                        'Your Password will be reset and sent to you via email you have provided' .
+                      Tag::_td() .
+                    Tag::_tr() .
+                    Tag::tr() .
+                      Tag::td( [ 'colspan' => 2, 'align' => 'center' ] ) .
+                        Tag::submit( 'Send Password' ) .
+                      Tag::_td() .
+                    Tag::_tr() .
+                  Tag::_table() .
                 Tag::_form();
 
         return $html;
