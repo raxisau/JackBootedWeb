@@ -247,6 +247,10 @@ JS;
     }
 
     public function signUp() {
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+
         $checkIdSql = 'SELECT COUNT(*) FROM tblUser WHERE fldUser=?';
 
         if ( Request::get( '_CAP' ) != Request::get( 'fldCaptcha' ) ) {
