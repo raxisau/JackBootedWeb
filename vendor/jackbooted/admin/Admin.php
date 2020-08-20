@@ -16,6 +16,7 @@ use \Jackbooted\Html\Validator;
 use \Jackbooted\Html\WebPage;
 use \Jackbooted\Html\JS;
 use \Jackbooted\Security\Privileges;
+use \Jackbooted\Security\Password;
 
 /**
  * @copyright Confidential and copyright (c) 2020 Jackbooted Software. All rights reserved.
