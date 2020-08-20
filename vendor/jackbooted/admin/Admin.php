@@ -17,6 +17,8 @@ use \Jackbooted\Html\WebPage;
 use \Jackbooted\Html\JS;
 use \Jackbooted\Security\Privileges;
 use \Jackbooted\Security\Password;
+use \Jackbooted\DB\DBMaintenance;
+use \Jackbooted\Mail\Mailer;
 
 /**
  * @copyright Confidential and copyright (c) 2020 Jackbooted Software. All rights reserved.
