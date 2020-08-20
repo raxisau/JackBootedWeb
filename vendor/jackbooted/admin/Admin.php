@@ -326,7 +326,7 @@ JS;
         if ( G::accessLevel( Privileges::getSecurityLevel( 'SITE ADMIN' ) ) ) {
             $html .=       Tag::tr() .
                              Tag::td( [ 'colspan' => 2 ] ) .
-                               Tag::hRef( 'ajax.php?' . $resp->action( 'FancyLogin->newRegistration()' )->toUrl(), 'Create New User', [ 'class' => 'facebox' ] ) .
+                               Tag::hRef( 'ajax.php?' . $resp->action( '\Jackbooted\Admin\FancyLogin->newRegistration()' )->toUrl(), 'Create New User', [ 'class' => 'facebox' ] ) .
                              Tag::_td() .
                            Tag::_tr();
         }
