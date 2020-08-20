@@ -326,7 +326,7 @@ JS;
         if ( G::accessLevel( Privileges::getSecurityLevel( 'SITE ADMIN' ) ) ) {
             $html .=       Tag::tr() .
                              Tag::td( [ 'colspan' => 2 ] ) .
-                               Tag::hRef( 'ajax.php?' . $resp->action( '\Jackbooted\Admin\FancyLogin->newRegistration()' )->toUrl(), 'Create New User', [ 'class' => 'facebox' ] ) .
+                               Tag::hRef( 'ajax.php?' . $resp->action( __CLASS__ . '->newUser()' )->toUrl(), 'Create New User', [ 'class' => 'facebox' ] ) .
                              Tag::_td() .
                            Tag::_tr();
         }
@@ -378,7 +378,6 @@ JS;
                           ->addExists( 'fldEmail', 'Email field is empty. Please insert valid email and resubmit' )
                           ->addEmail( 'fldEmail', 'Email needs to exist and be correct format' )
                           ->addExists( 'fldFirstName', 'First Name must exist' )
-                          ->addExists( 'fldCaptcha', 'You must enter Captcha Code' )
                           ->addExists( 'fldLastName', 'Last Name must exist' );
 
         $html = $valid->toHtml() .
@@ -408,6 +407,85 @@ JS;
                 Tag::_form();
 
         return $html;
+    }
+
+    public function newUserSave() {
+        $checkIdSql = 'SELECT COUNT(*) FROM tblUser WHERE fldUser=?';
+
+        if ( DB::oneValue( DB::DEF, $checkIdSql, Request::get( 'fldEmail' ) ) != 0 ) {
+            return  'A user with email: ' . Request::get( 'fldEmail' ) . ' currently exists on this system<br/>' .
+                    'Either choose a new email address or request a new password.' .
+                    $this->newUser();
+        }
+        // Generate a password for the user
+        $pw = Password::passGen( 10, Password::MEDIUM );
+
+        // Add the User to the Database
+        $now = time();
+        if ( DB::driver() == DB::MYSQL ) {
+            $sql = <<<SQL
+                INSERT INTO tblUser
+                       (fldUserID,fldUser,fldFirstName,fldLastName,fldPassword,fldDomain,fldCreated,      fldLevel)
+                VALUES ( ?,       ?,      ?,           ?,          PASSWORD(?),?,        $now,            ? )
+SQL;
+        }
+        else {
+            $sql = <<<SQL
+                INSERT INTO tblUser
+                       (fldUserID,fldUser,fldFirstName,fldLastName,fldPassword,fldDomain,fldCreated,      fldLevel)
+                VALUES ( ?,       ?,      ?,           ?,          ?,          ?,        $now,            ? )
+SQL;
+            $pw = hash( 'md5', $pw );
+        }
+        $params = [ DBMaintenance::dbNextNumber( DB::DEF, 'tblUser' ),
+                    Request::get( 'fldEmail' ),
+                    Request::get( 'fldFirstName' ),
+                    Request::get( 'fldLastName' ),
+                    $pw,
+                    Cfg::get( 'server' ),
+                    Privileges::getSecurityLevel( 'USER' ) ];
+        DB::exec( DB::DEF, $sql, $params );
+
+        $boss = Cfg::get( 'boss' );
+        $desc = Cfg::get( 'desc' );
+
+        $body = '<h3>New User: <b>%s %s</b><br>Email: <b>%s</b></h3><br>Has joined %s';
+
+        // create the email message to notify about a new user
+        Mailer::envelope()
+              ->format( Mailer::HTML_TEXT )
+              ->from( Request::get( 'fldEmail' ) )
+              ->to( $boss )
+              ->subject( 'New user has joined ' . $desc )
+              ->body( sprintf( $body, Request::get( 'fldFirstName' ), Request::get( 'fldLastName' ), Request::get( 'fldEmail' ), $desc ) )
+              ->send();
+
+        $body = <<<TXT
+Thanks for signing up for %s
+
+Here are your login details
+
+Username: %s
+Password: %s
+
+Regards
+%s
+TXT;
+        // create the email message to notify the new user of his/her login details
+        Mailer::envelope()
+              ->from( $boss )
+              ->to( Request::get( 'fldEmail' ) )
+              ->subject( 'Welcome to ' . $desc )
+              ->body( sprintf( $body, $desc, Request::get( 'fldEmail' ), $pw, $desc ) )
+              ->send();
+
+        // Let the user know that the registration was succesful
+        $msg = 'Congratulations you have been signed up for ' . $desc . '<br>' .
+               'Soon you will receive a confirmation email that will contain' .
+               'your login details.';
+
+        return $msg .
+               $this->editAccount();
     }
 
     public function loginAs() {
