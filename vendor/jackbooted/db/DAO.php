@@ -242,8 +242,13 @@ abstract class DAO extends \Jackbooted\Util\JB {
         }
 
         if ( Cfg::get( 'jb_db', false ) ) {
-            $pKey = DBMaintenance::dbNextNumber( $this->db, $this->tableName );
-            $row[$this->primaryKey] = $pKey;
+            if ( ! isset( $row[$this->primaryKey] ) ) {
+                $pKey = DBMaintenance::dbNextNumber( $this->db, $this->tableName );
+                $row[$this->primaryKey] = $pKey;
+            }
+            else {
+                $pKey = $row[$this->primaryKey];
+            }
         }
 
         $keys = array_keys( $row );

@@ -129,10 +129,17 @@ abstract class ORM extends \Jackbooted\Util\JB {
             return self::UPDATE;
         }
         else {
-            $this->data[$this->dao->primaryKey] = $this->dao->insert( $this->data );
-            $this->clearDirty();
+            $this->insert();
             return self::INSERT;
         }
+    }
+
+    public function insert() {
+        $pKey = $this->dao->insert( $this->data );
+        if ( ! isset( $this->data[$this->dao->primaryKey] ) ) {
+            $this->data[$this->dao->primaryKey] = $pKey;
+        }
+        $this->clearDirty();
     }
 
     public function delete() {
