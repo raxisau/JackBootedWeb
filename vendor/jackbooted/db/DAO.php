@@ -266,6 +266,7 @@ abstract class DAO extends \Jackbooted\Util\JB {
         $sql = $insertMethod . ' INTO ' . $this->tableName . ' (' . join( ',', $keys ) . ') VALUES (' . DB::in( $values ) . ')';
         $this->debugSQL = $sql;
         $this->debugParams = $values;
+        echo '<pre>'; print_r( $this ); echo '</pre>';
         if ( DB::exec( $this->db, $sql, $values ) != 1 )
             return false;
 
