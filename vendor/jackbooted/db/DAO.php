@@ -27,6 +27,8 @@ abstract class DAO extends \Jackbooted\Util\JB {
     public $titles = []; // Array of all the column titles Automatically replaces ID for primary key
     public $keyFormat = 'XX000000';
     public $ignoreCols = [];
+    public $debugSQL = null;
+    public $debugParams = null;
 
     /**
      * @return void
@@ -154,7 +156,10 @@ abstract class DAO extends \Jackbooted\Util\JB {
                 'SET ' . join( '=?, ', array_keys( $sets ) ) . '=? ' .
                 $whereSql;
 
-        return DB::exec( $this->db, $sql, array_merge( array_values( $sets ), $params ) );
+        $finalParams = array_merge( array_values( $sets ), $params );
+        $this->debugSQL = $sql;
+        $this->debugParams = $finalParams;
+        return DB::exec( $this->db, $sql, $finalParams );
     }
 
     /**
@@ -212,6 +217,9 @@ abstract class DAO extends \Jackbooted\Util\JB {
         else if ( is_integer( $params['limit'] ) ) {
             $sql .= ' LIMIT ' . $params['limit'];
         }
+
+        $this->debugSQL = $sql;
+        $this->debugParams = $whereParams;
         return new DBTable( $this->db, $sql, $whereParams, $fetch );
     }
 
@@ -221,8 +229,9 @@ abstract class DAO extends \Jackbooted\Util\JB {
      */
     public function delete( $row ) {
         $sql = 'DELETE FROM ' . $this->tableName . $this->toWhere( $row, $params );
-        //echo $sql . "\n";
-        //print_r ( $params );
+
+        $this->debugSQL = $sql;
+        $this->debugParams = $params;
         return DB::exec( $this->db, $sql, $params );
     }
 
@@ -255,6 +264,8 @@ abstract class DAO extends \Jackbooted\Util\JB {
         $values = array_values( $row );
 
         $sql = $insertMethod . ' INTO ' . $this->tableName . ' (' . join( ',', $keys ) . ') VALUES (' . DB::in( $values ) . ')';
+        $this->debugSQL = $sql;
+        $this->debugParams = $values;
         if ( DB::exec( $this->db, $sql, $values ) != 1 )
             return false;
 
