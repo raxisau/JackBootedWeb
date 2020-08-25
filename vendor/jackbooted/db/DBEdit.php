@@ -42,6 +42,7 @@ class DBEdit extends \Jackbooted\Util\JB {
     const TINYMCE   = 'TINYMCE';
     const CHECKBOX  = 'CHECKBOX';
     const TIMESTAMP = 'TIMESTAMP';
+    const DATE      = 'DATE';
 
     private $db;
     private $dbType;
@@ -190,6 +191,7 @@ class DBEdit extends \Jackbooted\Util\JB {
     private function renderValue( $colName, $value ) {
         $html = '';
         $tinyMCEJS = '';
+        $dateJS = '';
 
         $type = $this->getColumnType( $colName );
         $updCheckAttrib = [];
@@ -259,6 +261,14 @@ class DBEdit extends \Jackbooted\Util\JB {
                 $value = Cryptography::de( (string) $value );
                 // Fall through to output text field
 
+            case self::DATE:
+                if ( $dateJS == '' ) {
+                    $dateJS = Widget::datePickerJS( 'input.datepicker' );
+                }
+                $updCheckAttrib['class'] = 'datepicker';
+                $html .= Tag::text( $colName, array_merge( $updCheckAttrib, $this->cellAttributes[$colName] ) );
+                break;
+
             case self::TEXT:
             default:
                 $updCheckAttrib['value'] = (string) $value;
@@ -275,6 +285,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         }
 
         return $tinyMCEJS .
+               $dateJS .
                $html;
     }
 
