@@ -413,15 +413,31 @@ JS;
     }
 
     public function newUserSave() {
-        ini_set('display_errors', 1);
-        ini_set('display_startup_errors', 1);
-        error_reporting(E_ALL);
+        $result = self::newUserFromRequest();
+        if ( isset( $result['error'] ) ) {
+            return  $result['error'] . '<br/>' .
+                    'Either choose a new email address or request a new password.' .
+                    $this->newUser();
+        }
+        else {
+            $desc = Cfg::get( 'desc' );
+            $msg = 'Congratulations you have been signed up for ' . $desc . '<br>' .
+                   'Soon you will receive a confirmation email that will contain' .
+                   'your login details.';
+
+            return $msg .
+                   $this->editAccount();
+        }
+    }
+
+    public static function newUserFromRequest() {
+        //ini_set('display_errors', 1);
+        //ini_set('display_startup_errors', 1);
+        //error_reporting(E_ALL);
         $checkIdSql = 'SELECT COUNT(*) FROM tblUser WHERE fldUser=?';
 
         if ( DB::oneValue( DB::DEF, $checkIdSql, Request::get( 'fldEmail' ) ) != 0 ) {
-            return  'A user with email: ' . Request::get( 'fldEmail' ) . ' currently exists on this system<br/>' .
-                    'Either choose a new email address or request a new password.' .
-                    $this->newUser();
+            return [ 'error' => 'A user with email: ' . Request::get( 'fldEmail' ) . ' currently exists on this system' ];
         }
         // Generate a password for the user
         $pw = Password::passGen( 10, Password::MEDIUM );
@@ -443,7 +459,8 @@ SQL;
 SQL;
             $pw = hash( 'md5', $pw );
         }
-        $params = [ DBMaintenance::dbNextNumber( DB::DEF, 'tblUser' ),
+        $userID = DBMaintenance::dbNextNumber( DB::DEF, 'tblUser' );
+        $params = [ $userID,
                     Request::get( 'fldEmail' ),
                     Request::get( 'fldFirstName' ),
                     Request::get( 'fldLastName' ),
@@ -485,13 +502,7 @@ TXT;
               ->body( sprintf( $body, $desc, Request::get( 'fldEmail' ), $pw, $desc ) )
               ->send();
 
-        // Let the user know that the registration was succesful
-        $msg = 'Congratulations you have been signed up for ' . $desc . '<br>' .
-               'Soon you will receive a confirmation email that will contain' .
-               'your login details.';
-
-        return $msg .
-               $this->editAccount();
+        return [ 'success' => $userID ];
     }
 
     public function loginAs() {
