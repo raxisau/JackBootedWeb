@@ -125,13 +125,16 @@ class DBEdit extends \Jackbooted\Util\JB {
                     Tag::td( [ 'widdth' => '100%' ] ) .
                       $this->indexItem( $id ) .
                     Tag::_td() .
-                  Tag::_tr() .
+                  Tag::_tr();
+        if ( $this->canInsert ) {
+            $html .=
                   Tag::tr() .
                     Tag::td( ['colspan' => '10'] ) .
                       Tag::linkButton( $this->formAction . $this->resp->set( $this->action, 'insertBlank' )->toUrl(), 'Insert Blank' ) .
                     Tag::_td() .
-                  Tag::_tr() .
-                Tag::_table();
+                  Tag::_tr();
+        }
+        $html .=Tag::_table();
 
         return Widget::styleTable( '#DBEdit' . $this->suffix ) .
                $html;
@@ -169,10 +172,14 @@ class DBEdit extends \Jackbooted\Util\JB {
 
         $html .=    Tag::tr() .
                       Tag::td([ 'colspan' => 10]) .
-                        Tag::submit( 'Save' ) .
-                        Tag::linkButton( $this->formAction . $this->resp->set( $this->action, 'dup' )->toUrl(), 'Dup' ) .
-                        Tag::linkButton( $this->formAction . $this->resp->set( $this->action, 'del' )->toUrl(), 'Del' ) .
-                      Tag::_td() .
+                        Tag::submit( 'Save' );
+        if ( $this->canInsert ) {
+            $html .=    Tag::linkButton( $this->formAction . $this->resp->set( $this->action, 'dup' )->toUrl(), 'Dup' );
+        }
+        if ( $this->canDelete ) {
+            $html .=    Tag::linkButton( $this->formAction . $this->resp->set( $this->action, 'del' )->toUrl(), 'Del' );
+        }
+        $html .=      Tag::_td() .
                     Tag::_tr() .
                   Tag::_table() .
                 Tag::_form ();
