@@ -40,20 +40,27 @@ JS;
         $html .= Tag::div( [ 'id' => $id, 'style' => 'font-size: 0.8em; width:250px; text-align:left; display:none;' ] );
         foreach ( self::getMenuItems( $menuClasses ) as $header => $menuList ) {
             $html .= Tag::hTag( 'h3' ) . Tag::hRef( '#', $header ) . Tag::_hTag( 'h3' ) .
-                    Tag::div() .
-                    Tag::ul();
+                     Tag::div() .
+                       Tag::ul();
             foreach ( $menuList as $row ) {
-                $html .= Tag::li();
-                if ( isset( $row['slug'] ) ) {
-                    $html .= Tag::hRef( Cfg::siteUrl() . '/menu.php?S=' . $row['slug'], $row['name'], $row['attribs'] );
+                if ( $row['name'] == '--' ) {
+                    $html .= Tag::_ul() .
+                             Tag::hTag( 'hr' ) .
+                             Tag::ul();
                 }
                 else {
-                    $html .= Tag::hRef( $row['url'], $row['name'], $row['attribs'] );
+                    $html .= Tag::li();
+                    if ( isset( $row['slug'] ) ) {
+                        $html .= Tag::hRef( Cfg::siteUrl() . '/menu.php?S=' . $row['slug'], $row['name'], $row['attribs'] );
+                    }
+                    else {
+                        $html .= Tag::hRef( $row['url'], $row['name'], $row['attribs'] );
+                    }
+                    $html .= Tag::_li();
                 }
-                $html .= Tag::_li();
             }
-            $html .= Tag::_ul() .
-                    Tag::_div();
+            $html .=   Tag::_ul() .
+                     Tag::_div();
         }
         $html .= Tag::_div();
 
