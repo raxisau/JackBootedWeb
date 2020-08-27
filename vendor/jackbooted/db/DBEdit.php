@@ -404,11 +404,13 @@ class DBEdit extends \Jackbooted\Util\JB {
     }
 
     public static function colorPicker ( $name, $colorList, $default ) {
+        // TODO The style does not work. The nest thing to do would be create jquery that
+        // will update an example.
         $html = "<select name=\"$name\">";
         foreach ( $colorList as $colItem ) {
             $colName = $colItem[0] . "|" . $colItem[1];
             $selected = ( $colName == $default ) ? 'selected="selected"' : '';
-            $html .= "<option value=\"{$colName}\"  style=\"color:{$colItem[0]}; background:{$colItem[1]};\" $selected>{$colName}</option>";
+            $html .= "<option value=\"{$colName}\"  style=\"color:{$colItem[0]}; background-color:{$colItem[1]};\" $selected>{$colName}</option>";
         }
         $html .= '</select>';
 
