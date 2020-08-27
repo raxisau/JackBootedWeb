@@ -123,7 +123,7 @@ class DBEdit extends \Jackbooted\Util\JB {
                                         [ 'size' => $this->displayRows,'onClick' => 'submit();', 'default' => $id ] ) .
                       Tag::_form () .
                     Tag::_td() .
-                    Tag::td( [ 'widdth' => '100%' ] ) .
+                    Tag::td( [ 'widdth' => '100%', 'valign' => 'top' ] ) .
                       $this->indexItem( $id ) .
                     Tag::_td() .
                   Tag::_tr();
