@@ -230,6 +230,7 @@ class DBEdit extends \Jackbooted\Util\JB {
                 break;
 
             case self::COLORPICK:
+                $dispList  = ( isset( $this->displayType[$colName][1] ) ) ? $this->displayType[$colName][1] : null;
                 $html .= self::colorPicker( $colName, $dispList, $value );
                 break;
 
