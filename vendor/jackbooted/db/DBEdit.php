@@ -411,7 +411,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         $exampleStyle = '';
 
         //$html = "<select name=\"$name\" onchange=\"$('#{$id}').attr('style',$(this).attr('style'))\">";
-        $html = "<select id=\"$idSel\" name=\"$name\" onchange=\"alert($('#{$idSel} option:selected').attr('style'))\">";
+        $html = "<select id=\"$idSel\" name=\"$name\" onchange=\"$('#{$id}').attr('style', $('#{$idSel} option:selected').attr('style'))\">";
         foreach ( $colorList as $colItem ) {
             $colName = $colItem[0] . "|" . $colItem[1];
             if ( $colName == $default ) {
