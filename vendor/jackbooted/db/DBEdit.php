@@ -43,6 +43,7 @@ class DBEdit extends \Jackbooted\Util\JB {
     const CHECKBOX  = 'CHECKBOX';
     const TIMESTAMP = 'TIMESTAMP';
     const DATE      = 'DATE';
+    const COLORPICK = 'COLORPICK';
 
     private $db;
     private $dbType;
@@ -228,6 +229,10 @@ class DBEdit extends \Jackbooted\Util\JB {
                 $html .= Lists::select( $colName, $dispList, $updCheckAttrib );
                 break;
 
+            case self::COLORPICK:
+                $html .= self::colorPicker( $colName, $dispList, $value );
+                break;
+
             case self::CHECKBOX:
                 $checkValue = ( isset( $this->displayType[$colName][1] ) ) ? $this->displayType[$colName][1] : 'YES';
                 $html .= Tag::checkBox( $colName, $checkValue, $value == $checkValue );
@@ -395,6 +400,18 @@ class DBEdit extends \Jackbooted\Util\JB {
 
     private function setupDefaultStyle() {
         $this->styles[self::TABLE_C] = [ 'cellpadding' => 1, 'cellspacing' => 0, 'border' => 1 ];
+    }
+
+    public static function colorPicker ( $name, $colorList, $default ) {
+        $html = "<select name=\"$name\">";
+        foreach ( $colorList as $colItem ) {
+            $colName = $colItem[0] . "|" . $colItem[1];
+            $selected = ( $colName == $default ) ? 'selected="selected"' : '';
+            $html .= "<option value=\"{$colName}\"  style=\"color:{$colItem[0]}; background:{$colItem[1]};\" $selected>{$colName}</option>";
+        }
+        $html .= '</select>';
+
+        return $html;
     }
 
     private function convertColumnToTitle( $col ) {
