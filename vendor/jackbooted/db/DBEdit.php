@@ -407,10 +407,11 @@ class DBEdit extends \Jackbooted\Util\JB {
         // TODO The style does not work. The nest thing to do would be create jquery that
         // will update an example.
         $id = 'colorPicker_' . Invocation::next();
+        $idSel = 'colorPickerSel_' . Invocation::next();
         $exampleStyle = '';
 
         //$html = "<select name=\"$name\" onchange=\"$('#{$id}').attr('style',$(this).attr('style'))\">";
-        $html = "<select name=\"$name\" onchange=\"alert($(this).attr('style'))\">";
+        $html = "<select id=\"$idSel\" name=\"$name\" onchange=\"alert($('#{$idSel} option:selected').attr('style'))\">";
         foreach ( $colorList as $colItem ) {
             $colName = $colItem[0] . "|" . $colItem[1];
             if ( $colName == $default ) {
