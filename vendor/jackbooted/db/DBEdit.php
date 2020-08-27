@@ -406,10 +406,10 @@ class DBEdit extends \Jackbooted\Util\JB {
     public static function colorPicker ( $name, $colorList, $default ) {
         // TODO The style does not work. The nest thing to do would be create jquery that
         // will update an example.
-        $html = "<select name=\"$name\" onchange=\"$('$id').attr('style',$(this).attr('style'))\">";
-        $exampleStyle = '';
         $id = 'colorPicker_' . Invocation::next();
+        $exampleStyle = '';
 
+        $html = "<select name=\"$name\" onchange=\"$('{$id}').attr('style',$(this).attr('style'))\">";
         foreach ( $colorList as $colItem ) {
             $colName = $colItem[0] . "|" . $colItem[1];
             if ( $colName == $default ) {
