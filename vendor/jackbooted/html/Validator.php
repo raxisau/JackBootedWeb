@@ -837,6 +837,7 @@ JS;
             if ( isNaN( Date.parse( element.val().substring(0, 10) + "T" + element.val().substring(11) ) ) ) {
                 alert ( "%s" );
                 element.focus();
+                return false;
             }
         }
 
