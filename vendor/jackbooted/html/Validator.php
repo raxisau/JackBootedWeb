@@ -145,6 +145,11 @@ class Validator extends \Jackbooted\Util\JB {
      */
     const FN_24HRTIME = '24HRTIME';
 
+    /**
+     * Validates if the field is MySQL date time.
+     */
+    const FN_MYSQLDATETIME = 'MYSQLDATETIME';
+
     public static function factory( $formName, $suffix = '' ) {
         return new Validator( $formName, $suffix );
     }
@@ -206,6 +211,7 @@ class Validator extends \Jackbooted\Util\JB {
     private $validateFunctionJS;
     private $case24HrTimeJS;
     private $t24HrTimeJS;
+    private $caseMySQLDateTimeJS;
 
     /**
      * Creates the Validation object.
@@ -358,6 +364,22 @@ class Validator extends \Jackbooted\Util\JB {
     }
 
     /**
+     * Add a test for this form variable - mysql database date time .
+     *
+     * Tests for valid mysql database date time YYYY-MM-DD HH:MM:SS
+     *
+     * @param string $fv   The form variable name to test.
+     * @param string $desc The description of the error.
+     *
+     * @since 2.0
+     * @return void
+     */
+    public function addMySQLDateTime( $fv, $desc ) {
+        $this->usedFunct[self::FN_MYSQLDATETIME] = 'YES';
+        return $this->add( $fv, $desc, self::FN_MYSQLDATETIME );
+    }
+
+    /**
      * Add a test for this form variable.
      *
      * Tests for 2 form variables
@@ -477,6 +499,9 @@ class Validator extends \Jackbooted\Util\JB {
             case self::FN_24HRTIME:
                 return sprintf( $this->case24HrTimeJS, $desc, $val['XTRA'], $val['XTRA'] );
 
+            case self::FN_MYSQLDATETIME:
+                return sprintf( $this->caseMySQLDateTimeJS, $desc );
+
             case self::FN_EQUAL:
                 return sprintf( $this->caseEqualJS, $val['XTRA'], $desc );
 
@@ -592,7 +617,7 @@ class Validator extends \Jackbooted\Util\JB {
     }
 
     private function setUpJavaScriptFunctions() {
-        $this->headerJS = <<<EOT1
+        $this->headerJS = <<<JS
 function isEmpty{$this->id}( s ) {
     return ( ( s == null ) || ( s.length == 0 ) );
 }
@@ -607,14 +632,14 @@ function isWhitespace{$this->id} ( s ) {
     return true;
 }
 
-EOT1;
-        $this->existsJS = <<<EOT2
+JS;
+        $this->existsJS = <<<JS
 function doesExist{$this->id} ( s ) {
     return ( ! isEmpty{$this->id}( s ) && ! isWhitespace{$this->id} ( s ) );
 }
 
-EOT2;
-        $this->emailJS = <<<EOT3
+JS;
+        $this->emailJS = <<<JS
 function isEmail{$this->id} ( s ) {
     if ( isEmpty{$this->id}( s ) ) return true;
     if ( isWhitespace{$this->id}( s ) ) return false;
@@ -628,8 +653,8 @@ function isEmail{$this->id} ( s ) {
     else return true;
 }
 
-EOT3;
-        $this->integerJS = <<<EOT4
+JS;
+        $this->integerJS = <<<JS
 function isDigit{$this->id}( num ) {
     if ( num.length > 1 ) return false;
     var string = "1234567890";
@@ -649,67 +674,67 @@ function isInteger{$this->id}( val ) {
     return true;
 }
 
-EOT4;
-        $this->validateHeaderJS = <<<EOT5
+JS;
+        $this->validateHeaderJS = <<<JS
 function validateForm{$this->id}() {
     var formName='%s';
 
-EOT5;
-        $this->testCaseHeaderJS = <<<EOT6
+JS;
+        $this->testCaseHeaderJS = <<<JS
     var fieldName = '%s';
     var element = $('form[name=' + formName + '] input[name=' + fieldName + ']');
     if ( element.length == 1 ) {
 
-EOT6;
-        $this->caseExistsJS = <<<EOT7
+JS;
+        $this->caseExistsJS = <<<JS
         if ( ! doesExist{$this->id} ( element.val() ) ) {
             alert ( "%s" );
             element.focus();
             return false;
         }
 
-EOT7;
-        $this->caseLenEqJS = <<<EOT8
+JS;
+        $this->caseLenEqJS = <<<JS
         if ( ! ( ( element.val().length == 0 && %s ) || element.val().length == %s ) ) {
             alert ( "%s" );
             element.focus();
             return false;
         }
 
-EOT8;
-        $this->caseLenBetweenJS = <<<EOT9
+JS;
+        $this->caseLenBetweenJS = <<<JS
         if ( ! ( ( element.val().length == 0 && %s ) || ( element.val().length >= %s && element.val().length <= %s ) ) ) {
             alert ( "%s" );
             element.focus();
             return false;
         }
 
-EOT9;
-        $this->caseLenGTJS = <<<EOT10
+JS;
+        $this->caseLenGTJS = <<<JS
         if ( ! ( ( element.val().length == 0 && %s ) || element.val().length >= %s ) ) {
             alert ( "%s" );
             element.focus();
             return false;
         }
 
-EOT10;
-        $this->caseLenLTJS = <<<EOT11
+JS;
+        $this->caseLenLTJS = <<<JS
         if ( ! ( ( element.val().length == 0 && %s ) || element.val().length <= %s ) ) {
             alert ( "%s" );
             element.focus();
             return false;
         }
 
-EOT11;
-        $this->caseIntegerJS = <<<EOT12
+JS;
+        $this->caseIntegerJS = <<<JS
         if ( ! isInteger{$this->id} ( element.val() ) ) {
             alert ( "%s" );
             element.focus();
             return false ;
         }
 
-EOT12;
-        $this->caseRangeBetweenJS = <<<EOT13
+JS;
+        $this->caseRangeBetweenJS = <<<JS
         if ( ! isEmpty{$this->id} ( element.val() ) ) {
             if ( parseInt ( element.val() ) < %s || parseInt ( element.val() ) > %s ) {
                 alert ( "%s" );
@@ -718,8 +743,8 @@ EOT12;
             }
         }
 
-EOT13;
-        $this->caseRangeGTJS = <<<EOT14
+JS;
+        $this->caseRangeGTJS = <<<JS
         if ( ! isEmpty{$this->id} ( element.val() ) ) {
             if ( parseInt ( element.val() ) < %s ) {
                 alert ( "%s" );
@@ -728,8 +753,8 @@ EOT13;
             }
         }
 
-EOT14;
-        $this->caseRangeLTJS = <<<EOT15
+JS;
+        $this->caseRangeLTJS = <<<JS
         if ( ! isEmpty{$this->id} ( element.val() ) ) {
             if ( parseInt ( element.val() ) > %s ) {
                 alert ( "%s" );
@@ -738,16 +763,16 @@ EOT14;
             }
         }
 
-EOT15;
-        $this->caseEmailJS = <<<EOT16
+JS;
+        $this->caseEmailJS = <<<JS
         if ( ! isEmail{$this->id} ( element.val() ) ) {
             alert ( "%s" );
             element.focus();
             return false;
         }
 
-EOT16;
-        $this->caseEqualJS = <<<EOT17
+JS;
+        $this->caseEqualJS = <<<JS
         var fieldName2='%s';
         var element2 = $('form[name=' + formName + '] input[name=' + fieldName2 + ']');
         if ( element.val() != element2.val() ) {
@@ -756,32 +781,32 @@ EOT16;
             return false;
         }
 
-EOT17;
-        $this->caseCopyJS = <<<EOT18
+JS;
+        $this->caseCopyJS = <<<JS
         var fieldName2 = '%s';
         var element2 = $('form[name=' + formName + '] input[name=' + fieldName2 + ']');
         if ( ! doesExist{$this->id} ( element2.val() ) ) {
             element2.val( element.val() );
         }
 
-EOT18;
-        $this->validateFooterJS = <<<EOT20
+JS;
+        $this->validateFooterJS = <<<JS
     }
 
-EOT20;
-        $this->caseAlertMissingJS = <<<EOT19
+JS;
+        $this->caseAlertMissingJS = <<<JS
     else {
         alert ( "Form variable '%s' does not exist in this form" );
         return false;
     }
 
-EOT19;
-        $this->validateFunctionJS = <<<EOT21
+JS;
+        $this->validateFunctionJS = <<<JS
     return true;
 }
 
-EOT21;
-        $this->case24HrTimeJS = <<<EOT22
+JS;
+        $this->case24HrTimeJS = <<<JS
         if ( ! is24HrTime{$this->id} ( element.val() ) ) {
             alert ( "%s" );
             if ( "%s" != "" ) element.val ( "%s" );
@@ -789,8 +814,8 @@ EOT21;
             return false;
         }
 
-EOT22;
-        $this->t24HrTimeJS = <<<EOT23
+JS;
+        $this->t24HrTimeJS = <<<JS
 function is24HrTime{$this->id} ( s ) {
     s = $.trim ( s );
     if ( s.length == 0 ) return true;
@@ -805,7 +830,17 @@ function is24HrTime{$this->id} ( s ) {
     return true;
 }
 
-EOT23;
+JS;
+
+        $this->caseMySQLDateTimeJS = <<<JS
+        if ( ! isEmpty{$this->id}( element.val() ) ) {
+            if ( NaN == Date.parse( element.val().substring(0, 10) + "T" + element.val().substring(11) ) ) {
+                alert ( "%s" );
+                element.focus();
+            }
+        }
+
+JS;
     }
 
 }
