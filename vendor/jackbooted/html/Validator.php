@@ -834,7 +834,7 @@ JS;
 
         $this->caseMySQLDateTimeJS = <<<JS
         if ( ! isEmpty{$this->id}( element.val() ) ) {
-            if ( NaN == Date.parse( element.val().substring(0, 10) + "T" + element.val().substring(11) ) ) {
+            if ( isNaN( Date.parse( element.val().substring(0, 10) + "T" + element.val().substring(11) ) ) ) {
                 alert ( "%s" );
                 element.focus();
             }
