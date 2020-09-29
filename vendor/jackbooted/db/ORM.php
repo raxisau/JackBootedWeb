@@ -159,12 +159,13 @@ abstract class ORM extends \Jackbooted\Util\JB {
     }
 
     public function copyFromRequest( ) {
+        $formVars = Request::get();
+
         foreach ( $this->getData() as $key => $value ) {
-            if ( ( $requestValue = Request::get( $key ) ) != '' ) {
-                if ( $requestValue != $value ) {
-                    $this->$key = $requestValue;
-                }
-            }
+            if ( ! isset( $formVars[$key] ) ) continue;
+            if ( $formVars[$key] == $value ) continue;
+
+            $this->$key = $formVars[$key];
         }
         return $this;
     }
