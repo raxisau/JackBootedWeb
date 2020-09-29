@@ -65,6 +65,7 @@ class DBEdit extends \Jackbooted\Util\JB {
     private $daoObject;
     private $selectSQL;
     private $defaultID;
+    private $descCol;
 
     public static function factory( $ormClass, $selectSQL, $extraArgs = [] ) {
         return new DBEdit( $ormClass, $selectSQL, $extraArgs );
@@ -91,6 +92,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         $this->canDelete   = ( isset( $extraArgs['canDelete'] ) )   ? $extraArgs['canDelete']   : true;
         $this->canUpdate   = ( isset( $extraArgs['canUpdate'] ) )   ? $extraArgs['canUpdate']   : true;
         $this->canInsert   = ( isset( $extraArgs['canInsert'] ) )   ? $extraArgs['canInsert']   : true;
+        $this->descCol     = ( isset( $extraArgs['descCol'] ) )     ? $extraArgs['descCol']     : 'fldDescription';
 
         $this->ormClass    = $ormClass;
         $daoClass          = $ormClass . 'DAO';
@@ -323,7 +325,11 @@ class DBEdit extends \Jackbooted\Util\JB {
         }
 
         $ormClass = $this->ormClass;
-        $ormObject = $ormClass::create( $ormClass::load( $id )->getData() );
+        $data = $ormClass::load( $id )->getData();
+        if ( isset( $data[$this->descCol] ) ) {
+            $data[$this->descCol] .= ' Copy';
+        }
+        $ormObject = $ormClass::create( $data );
         Request::set( $this->daoObject->primaryKey, $ormObject->id );
         return Widget::popupWrapper( "Created duplicate row {$ormObject->id}" );
     }
