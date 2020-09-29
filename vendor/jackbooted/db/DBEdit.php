@@ -92,7 +92,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         $this->canDelete   = ( isset( $extraArgs['canDelete'] ) )   ? $extraArgs['canDelete']   : true;
         $this->canUpdate   = ( isset( $extraArgs['canUpdate'] ) )   ? $extraArgs['canUpdate']   : true;
         $this->canInsert   = ( isset( $extraArgs['canInsert'] ) )   ? $extraArgs['canInsert']   : true;
-        $this->descCol     = ( isset( $extraArgs['descCol'] ) )     ? $extraArgs['descCol']     : 'fldDescription';
+        $this->descCol     = ( isset( $extraArgs['descCol'] ) )     ? $extraArgs['descCol']     : 'fldDesc';
 
         $this->ormClass    = $ormClass;
         $daoClass          = $ormClass . 'DAO';
