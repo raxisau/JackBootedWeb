@@ -330,6 +330,7 @@ class DBEdit extends \Jackbooted\Util\JB {
             $data[$this->descCol] .= ' Copy';
         }
         $ormObject = $ormClass::create( $data );
+        $ormObject->commit();
         Request::set( $this->daoObject->primaryKey, $ormObject->id );
         return Widget::popupWrapper( "Created duplicate row {$ormObject->id}" );
     }
@@ -342,6 +343,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         $ormClass = $this->ormClass;
         $ormObject = $ormClass::load( $id );
         $ormObject->delete();
+        $ormObject->commit();
         Request::set( $this->daoObject->primaryKey, $this->getDefaultID() );
         return Widget::popupWrapper( "Deleted row {$ormObject->id}" );
     }
@@ -351,7 +353,9 @@ class DBEdit extends \Jackbooted\Util\JB {
         }
 
         $ormClass = $this->ormClass;
-        $ormClass::load( $id )->copyFromRequest()->save();
+        $ormObject = $ormClass::load( $id );
+        $ormObject->copyFromRequest()->save();
+        $ormObject->commit();
 
         return Widget::popupWrapper( 'Saved Item ' . $id );
     }

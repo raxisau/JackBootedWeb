@@ -227,6 +227,10 @@ abstract class DAO extends \Jackbooted\Util\JB {
         return DB::exec( $this->db, $sql, $params );
     }
 
+    public function commit() {
+        DB::exec( $this->db, 'COMMIT' );
+    }
+
     /**
      * @param  $row
      * @return bool|mixed

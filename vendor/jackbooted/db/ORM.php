@@ -169,4 +169,8 @@ abstract class ORM extends \Jackbooted\Util\JB {
         }
         return $this;
     }
+
+    public function commit() {
+        $this->dao->commit();
+    }
 }
