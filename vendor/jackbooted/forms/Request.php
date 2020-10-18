@@ -86,7 +86,9 @@ class Request extends PipeLine {
 
     private function getRequestVars() {
         $vars = array_merge( $_GET, $_POST );
-        $this->stripSlashes( $vars );
+        // Sorry if this is commented out
+        // This is commented out because it used to check for magic mpc
+        // $this->stripSlashes( $vars );
         $this->removeHtml( $vars );
         return $vars;
     }
