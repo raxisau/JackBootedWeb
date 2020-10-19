@@ -86,9 +86,6 @@ class Request extends PipeLine {
 
     private function getRequestVars() {
         $vars = array_merge( $_GET, $_POST );
-        // Sorry if this is commented out
-        // This is commented out because it used to check for magic mpc
-        // $this->stripSlashes( $vars );
         $this->removeHtml( $vars );
         return $vars;
     }
@@ -100,17 +97,6 @@ class Request extends PipeLine {
             }
             else if ( is_array( $arr[$key] ) ) {
                 $this->removeHtml( $arr[$key] );
-            }
-        }
-    }
-
-    private function stripSlashes( &$arr ) {
-        foreach ( $arr as $key => $val ) {
-            if ( is_string( $arr[$key] ) ) {
-                $arr[$key] = stripslashes( $arr[$key] );
-            }
-            else if ( is_array( $arr[$key] ) ) {
-                $this->stripSlashes( $arr[$key] );
             }
         }
     }
