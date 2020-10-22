@@ -231,6 +231,10 @@ abstract class DAO extends \Jackbooted\Util\JB {
         DB::exec( $this->db, 'COMMIT' );
     }
 
+    public function quote( $value ) {
+        return DB::quote( $this->db, $value );
+    }
+
     /**
      * @param  $row
      * @return bool|mixed

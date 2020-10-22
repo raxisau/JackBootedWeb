@@ -413,6 +413,13 @@ class DB extends \Jackbooted\Util\JB {
         return $dbh;
     }
 
+    public static function quote( $dbh, $value ) {
+        if ( ( $dbResource = self::connectionFactory( $dbh ) ) === false ) {
+            return $value;
+        }
+
+        return $dbResource->quote( $value );
+    }
     /**
      * Executes a query and returns a PDOStatement that you can iterate over.
      *
