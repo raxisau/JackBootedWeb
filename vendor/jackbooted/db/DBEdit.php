@@ -114,12 +114,11 @@ class DBEdit extends \Jackbooted\Util\JB {
         $htmlController = $this->controller();
 
         if ( ( $id = Request::get( $this->daoObject->primaryKey, $this->defaultID ) ) == '' ) {
-            return 'No Default ID';
+            return 'No Default ID ({$this->daoObject->primaryKey})';
         }
 
-        $tmpTable = 't_' . md5(mt_rand());
         $listSelect = Lists::select ( $this->daoObject->primaryKey,
-                                      "SELECT * FROM ( {$this->selectSQL} ) {$tmpTable}",
+                                      $this->selectSQL,
                                       [ 'size' => $this->displayRows,'onClick' => 'submit();', 'default' => $id ] );
 
         $html = Tag::table( array_merge( [ 'id' => 'DBEdit' . $this->suffix ], $this->styles[self::TABLE_C] ) ) .
