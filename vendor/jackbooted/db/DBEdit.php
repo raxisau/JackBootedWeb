@@ -109,21 +109,23 @@ class DBEdit extends \Jackbooted\Util\JB {
 
     public function index() {
 
-        $html = $this->controller();
+        $htmlController = $this->controller();
 
         if ( ( $id = Request::get( $this->daoObject->primaryKey, $this->defaultID ) ) == '' ) {
             return 'No Default ID';
         }
 
-        $html .=Tag::table( array_merge( [ 'id' => 'DBEdit' . $this->suffix ], $this->styles[self::TABLE_C] ) ) .
+        $listSelect = Lists::select ( $this->daoObject->primaryKey,
+                                      $this->selectSQL,
+                                      [ 'size' => $this->displayRows,'onClick' => 'submit();', 'default' => $id ] );
+
+        $html = Tag::table( array_merge( [ 'id' => 'DBEdit' . $this->suffix ], $this->styles[self::TABLE_C] ) ) .
                   Tag::tr() .
                     Tag::td( ['valign' => 'top'] ) .
                       '<H4>Click on item</h4>' .
                       Tag::form( [ 'method' => 'get' ] ) .
                         $this->resp->set( $this->action, 'dummyClick' )->toHidden ( false ) .
-                        Lists::select ( $this->daoObject->primaryKey,
-                                        $this->selectSQL,
-                                        [ 'size' => $this->displayRows,'onClick' => 'submit();', 'default' => $id ] ) .
+                        $listSelect .
                       Tag::_form () .
                     Tag::_td() .
                     Tag::td( [ 'widdth' => '100%', 'valign' => 'top' ] ) .
@@ -141,6 +143,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         $html .=Tag::_table();
 
         return Widget::styleTable( '#DBEdit' . $this->suffix ) .
+               $htmlController.
                $html;
     }
 
