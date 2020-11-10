@@ -115,8 +115,9 @@ class DBEdit extends \Jackbooted\Util\JB {
             return 'No Default ID';
         }
 
+        $tmpTable = 't_' . md5(mt_rand());
         $listSelect = Lists::select ( $this->daoObject->primaryKey,
-                                      $this->selectSQL,
+                                      "SELECT * FROM ( {$this->selectSQL} ) {$tmpTable}",
                                       [ 'size' => $this->displayRows,'onClick' => 'submit();', 'default' => $id ] );
 
         $html = Tag::table( array_merge( [ 'id' => 'DBEdit' . $this->suffix ], $this->styles[self::TABLE_C] ) ) .
