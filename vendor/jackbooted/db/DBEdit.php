@@ -108,6 +108,8 @@ class DBEdit extends \Jackbooted\Util\JB {
     }
 
     public function index() {
+        error_reporting( -1 );
+        ini_set("display_errors", 1);
 
         $htmlController = $this->controller();
 
