@@ -114,7 +114,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         $htmlController = $this->controller();
 
         if ( ( $id = Request::get( $this->daoObject->primaryKey, $this->defaultID ) ) == '' ) {
-            return 'No Default ID ({$this->daoObject->primaryKey})';
+            return "No Default ID ({$this->daoObject->primaryKey})";
         }
 
         $listSelect = Lists::select ( $this->daoObject->primaryKey,
