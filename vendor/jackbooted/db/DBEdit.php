@@ -351,11 +351,16 @@ class DBEdit extends \Jackbooted\Util\JB {
         $ormClass = $this->ormClass;
         $oldAttribute = DB::setBuffered( $this->db, false );
         $ormObject = $ormClass::load( $id );
-        $ormObject->delete();
-        $ormObject->commit();
+        if ( $ormObject->delete() !== false ) {
+            $ormObject->commit();
+            Request::set( $this->daoObject->primaryKey, $this->getDefaultID() );
+            $html = Widget::popupWrapper( "Sucessfully deleted row {$ormObject->id}" );
+        }
+        else {
+            $html = Widget::popupWrapper( "ERROR: Unable to delete row {$ormObject->id}" );
+        }
         DB::setBuffered( $this->db, $oldAttribute );
-        Request::set( $this->daoObject->primaryKey, $this->getDefaultID() );
-        return Widget::popupWrapper( "Deleted row {$ormObject->id}" );
+        return $html;
     }
     public function save( ) {
         if ( ( $id = Request::get( $this->daoObject->primaryKey ) ) == '' ) {

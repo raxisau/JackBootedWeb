@@ -222,7 +222,16 @@ abstract class DAO extends \Jackbooted\Util\JB {
      * @return int
      */
     public function delete( $row ) {
-        $sql = 'DELETE FROM ' . $this->tableName . $this->toWhere( $row, $params );
+        
+        // Get the Where part of the delete. Do not allow a delete with 
+        // no args or you will delete a whole table
+        $params = null;
+        $where = trim(  $this->toWhere( $row, $params ) );
+        if ( $where == 'WHERE' || $where == '' ) {
+            return false;
+        }
+        
+        $sql = "DELETE FROM {$this->tableName} {$where}";
 
         return DB::exec( $this->db, $sql, $params );
     }
