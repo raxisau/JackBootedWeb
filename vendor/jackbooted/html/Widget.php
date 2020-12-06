@@ -102,6 +102,10 @@ JS;
     }
 
     public static function tinyMCE( $selector, $apikey='no-api-key' ) {
+        if ( $apikey == 'no-api-key' ) {
+            $apikey = Cfg::get('tinymce_api', 'no-api-key');
+        }
+        
         if ( $apikey == '' || $apikey == null ) {
             $apikey = 'no-api-key';
         }
