@@ -125,7 +125,8 @@ JS;
 JS;
 
         return JS::library ( JS::JQUERY ) .
-               "<script src='//cdn.tinymce.com/4/tinymce.min.js'></script>" .
+               "<script src='//cdn.tiny.cloud/1/6k69mh8ydv36yteh9stl4ot7ljy9ny9xtbu8kll3sgzsirqk/tinymce/5/tinymce.min.js' referrerpolicy='origin'></script>" .
+               // "<script src='//cdn.tinymce.com/4/tinymce.min.js'></script>" .
                JS::javaScript ( $js );
     }
 
