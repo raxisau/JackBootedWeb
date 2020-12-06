@@ -101,32 +101,31 @@ JS;
                 JS::javaScript( $js );
     }
 
-    public static function tinyMCE( $selector ) {
+    public static function tinyMCE( $selector, $apikey='no-api-key' ) {
+        if ( $apikey == '' || $apikey == null ) {
+            $apikey = 'no-api-key';
+        }
 
         $js = <<<JS
-    $().ready(function() {
-        // From Here https://www.tinymce.com/docs/demo/full-featured/
-        tinymce.init({
-            selector: '$selector',
-            theme: 'modern',
-            plugins: [
-              'advlist autolink lists link image charmap print preview hr anchor pagebreak',
-              'searchreplace wordcount visualblocks visualchars code fullscreen',
-              'insertdatetime media nonbreaking save table contextmenu directionality',
-              'emoticons template paste textcolor colorpicker textpattern imagetools'
-            ],
-            toolbar1: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
-            image_advtab: true,
-            content_css: [
-              '//www.tinymce.com/css/codepen.min.css'
-            ]
-        });
-    });
+            $().ready(function() {
+                tinymce.init({
+                    selector: '$selector',
+                    theme: 'silver',
+                    plugins: [
+                      'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                      'searchreplace wordcount visualblocks visualchars code fullscreen',
+                      'insertdatetime media nonbreaking save table contextmenu directionality',
+                      'emoticons template paste textcolor colorpicker textpattern imagetools'
+                    ],
+                    toolbar1: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+                    image_advtab: true,
+                    convert_urls: false
+                });
+            });
 JS;
 
         return JS::library ( JS::JQUERY ) .
-               "<script src='//cdn.tiny.cloud/1/6k69mh8ydv36yteh9stl4ot7ljy9ny9xtbu8kll3sgzsirqk/tinymce/5/tinymce.min.js' referrerpolicy='origin'></script>" .
-               // "<script src='//cdn.tinymce.com/4/tinymce.min.js'></script>" .
+               "<script src='//cdn.tiny.cloud/1/$apikey/tinymce/5/tinymce.min.js' referrerpolicy='origin'></script>" .
                JS::javaScript ( $js );
     }
 
