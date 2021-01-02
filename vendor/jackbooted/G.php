@@ -4,7 +4,7 @@ namespace Jackbooted;
 
 /** GlobalFunctions.php - Common functions that are required by other systems
  *
- * @copyright Confidential and copyright (c) 2020 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2021 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
