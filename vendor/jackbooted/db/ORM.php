@@ -22,19 +22,25 @@ abstract class ORM extends \Jackbooted\Util\JB {
     const UPDATE = 'update';
     const INSERT = 'insert';
 
-    public static function init() {
-    }
+    /*
+     * init must be implemented and should look something like this
+     * public static function init() {
+     *     self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
+     *     self::$dao = new EmailQueueDAO ();
+     * }
+     */
+    public static function init() {}
+    
+    /*
+     * Factory must be implenebted and should look something like this:
+     * public static function factory( $data ) {
+     *     return new EmailQueue( $data );
+     * }
+     */
+    public abstract static function factory( $data );
 
     public static function create( $data ) {
-        if ( function_exists( 'get_called_class' ) ) {
-            $clazz = get_called_class();
-        }
-        else {
-            $bt = debug_backtrace();
-            $clazz = $bt[1]['class'];
-        }
-
-        $obj = new $clazz( $data );
+        $obj = self::factory( $data );
 
         // remove the primary key from the update
         if ( isset( $obj->data[$obj->dao->primaryKey] ) ) {
@@ -44,31 +50,18 @@ abstract class ORM extends \Jackbooted\Util\JB {
         return $obj;
     }
 
-    public static function factory( $data ) {
-        if ( function_exists( 'get_called_class' ) ) {
-            $clazz = get_called_class();
+    public static function load ( $id ) {
+        if ( ( $row = self::$dao->oneRow( $id ) ) === false ) {
+            return false;
         }
-        else {
-            $bt = debug_backtrace();
-            $clazz = $bt[1]['class'];
-        }
-
-        return new $clazz( $data );
+        return self::factory( $row );
     }
 
     protected static function tableToObjectList( $table ) {
-        if ( function_exists( 'get_called_class' ) ) {
-            $clazz = get_called_class();
-        }
-        else {
-            $bt = debug_backtrace();
-            $clazz = $bt[1]['class'];
-        }
-
         $objList = [];
         foreach ( $table as $row ) {
-            $ormObject = new $clazz( $row );
-            $objList[$ormObject->id] = $ormObject;
+            $obj = self::factory( $row );
+            $objList[$obj->id] = $obj;
         }
         return $objList;
     }
@@ -76,8 +69,6 @@ abstract class ORM extends \Jackbooted\Util\JB {
     protected $data;
     protected $dirty;
     private   $dao;
-
-    public abstract static function load( $id );
 
     public function __construct( DAO $dao, $data ) {
         parent::__construct();
@@ -129,17 +120,21 @@ abstract class ORM extends \Jackbooted\Util\JB {
             return self::UPDATE;
         }
         else {
-            $this->insert();
-            return self::INSERT;
+            return ( $this->insert() === false ) ? false : self::INSERT;
         }
     }
 
     public function insert() {
-        $pKey = $this->dao->insert( $this->data );
+        if ( ( $pKey = $this->dao->insert( $this->data ) ) === false ) {
+            return false;
+        }
+
         if ( ! isset( $this->data[$this->dao->primaryKey] ) ) {
             $this->data[$this->dao->primaryKey] = $pKey;
         }
         $this->clearDirty();
+
+        return $pKey;
     }
 
     public function delete() {
@@ -172,5 +167,16 @@ abstract class ORM extends \Jackbooted\Util\JB {
 
     public function commit() {
         $this->dao->commit();
+    }
+
+    public function equals( $other ) {
+        $match = true;
+        foreach ( $this->getData() as $key => $val ) {
+            if ( $val != $other->$key ) {
+                $match = false;
+                break;
+            }
+        }
+        return $match;
     }
 }

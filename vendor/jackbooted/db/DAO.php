@@ -3,7 +3,6 @@
 namespace Jackbooted\DB;
 
 use \Jackbooted\Config\Cfg;
-use \Jackbooted\Util\Log4PHP;
 
 /**
  * @copyright Confidential and copyright (c) 2021 Jackbooted Software. All rights reserved.
@@ -17,23 +16,24 @@ use \Jackbooted\Util\Log4PHP;
  */
 abstract class DAO extends \Jackbooted\Util\JB {
 
-    private static $log;
     private static $tableList = [];
-    protected $db = null;
+    public static $log;
+    public $db = null;
     public $primaryKey = null;
     public $tableName = null;
-    protected $tableStructure = null;
+    public $tableStructure = null;
     public $orm = []; // Mapping of the variable to the column name. automatically adds 0 and 'id' => primaryKey
     public $titles = []; // Array of all the column titles Automatically replaces ID for primary key
     public $keyFormat = 'XX000000';
     public $ignoreCols = [];
 
-    /**
-     * @return void
+    /*
+     * init must be implemented and should look something like this
+     * public static function init() {
+     *     self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
+     * }
      */
-    public static function init() {
-        self::$log = Log4PHP::logFactory( __CLASS__ );
-    }
+    public static function init() {}
 
     /**
      * @return void

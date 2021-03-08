@@ -184,11 +184,13 @@ class DB extends \Jackbooted\Util\JB {
             return self::$lastDB;
         }
         else {
-            $dbConnection = [ 'hostname' => Cfg::get( $db . '-host' ),
-                'dbname' => Cfg::get( $db . '-db' ),
+            $dbConnection = [
+                'hostname' => Cfg::get( $db . '-host' ),
+                'dbname'   => Cfg::get( $db . '-db' ),
                 'username' => Cfg::get( $db . '-user' ),
                 'password' => Cfg::get( $db . '-pass' ),
-                'driver' => Cfg::get( $db . '-driver', DB::MYSQL ) ];
+                'driver'   => Cfg::get( $db . '-driver', DB::MYSQL ),
+            ];
 
             if ( $dbConnection['hostname'] != '' ) {
                 return self::connectionFactoryFromArray( $dbConnection, $db );
