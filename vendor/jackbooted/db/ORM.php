@@ -40,7 +40,8 @@ abstract class ORM extends \Jackbooted\Util\JB {
     public abstract static function factory( $data );
 
     public static function create( $data ) {
-        $obj = self::factory( $data );
+        $clazz = get_called_class();
+        $obj = new $clazz( $data );
 
         // remove the primary key from the update
         if ( isset( $obj->data[$obj->dao->primaryKey] ) ) {
@@ -54,13 +55,15 @@ abstract class ORM extends \Jackbooted\Util\JB {
         if ( ( $row = self::$dao->oneRow( $id ) ) === false ) {
             return false;
         }
-        return self::factory( $row );
+        $clazz = get_called_class();
+        return new $clazz( $row );
     }
 
     protected static function tableToObjectList( $table ) {
+        $clazz = get_called_class();
         $objList = [];
         foreach ( $table as $row ) {
-            $obj = self::factory( $row );
+            $obj = new $clazz( $row );
             $objList[$obj->id] = $obj;
         }
         return $objList;
