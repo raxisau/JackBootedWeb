@@ -53,7 +53,7 @@ class WebPage extends \Jackbooted\Util\JB {
             eval( '$html = $obj->' . $rest . ';' );
         }
         else {
-            $cName = ( function_exists( 'get_called_class' ) ) ? get_called_class() : __CLASS__;
+            $cName = static::class;
             $object = new $cName ();
 
             if ( method_exists( $object, $action ) ) {
