@@ -93,8 +93,10 @@ abstract class ORM extends \Jackbooted\Util\JB {
             $key = $this->dao->orm[$key];
         }
 
-        $this->dirty[$key] = 1; // Set this to be updated
-        $this->data[$key] = $value;
+        if ( ! isset( $this->data[$key] ) || $this->data[$key] != $value ) {
+            $this->dirty[$key] = 1; // Set this to be updated
+            $this->data[$key] = $value;
+        }
     }
 
     public function getData() {
@@ -169,7 +171,7 @@ abstract class ORM extends \Jackbooted\Util\JB {
         $this->dao->commit();
     }
 
-    public function equals( $other ) {
+    public function equals(self $other): bool {
         $match = true;
         foreach ( $this->getData() as $key => $val ) {
             if ( $val != $other->$key ) {
@@ -178,5 +180,21 @@ abstract class ORM extends \Jackbooted\Util\JB {
             }
         }
         return $match;
+    }
+
+    public function refresh() {
+        if ( ! isset( $this->data[$this->dao->primaryKey] ) ) {
+            return $this;
+        }
+
+        foreach ( $this->dao->search(  [ 'where' => [ $this->dao->primaryKey => $this->data[$this->dao->primaryKey] ] ] ) as $row ) {
+            foreach ( $row as $key => $val ) {
+                $this->data[$key] = $val;
+            }
+            $this->clearDirty();
+            return $this;
+        }
+
+        return $this;
     }
 }

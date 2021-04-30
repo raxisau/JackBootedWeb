@@ -212,7 +212,8 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      */
     public function &getTable() {
         if ( !$this->ok() ) {
-            return null;
+            $ret = null;
+            return $ret;
         }
 
         return $this->table;

@@ -19,12 +19,12 @@ abstract class DAO extends \Jackbooted\Util\JB {
     private static $tableList = [];
     public static $log;
     public $db = null;
-    public $primaryKey = null;
-    public $tableName = null;
-    public $tableStructure = null;
+    public $primaryKey = '';
+    public $tableName = '';
+    public $tableStructure = '';
+    public $keyFormat = '';
     public $orm = []; // Mapping of the variable to the column name. automatically adds 0 and 'id' => primaryKey
     public $titles = []; // Array of all the column titles Automatically replaces ID for primary key
-    public $keyFormat = 'XX000000';
     public $ignoreCols = [];
 
     /*
@@ -35,9 +35,6 @@ abstract class DAO extends \Jackbooted\Util\JB {
      */
     public static function init() {}
 
-    /**
-     * @return void
-     */
     public function __construct() {
         parent::__construct();
         if ( Cfg::get( 'jb_audit_tables', true ) ) {
@@ -259,7 +256,8 @@ abstract class DAO extends \Jackbooted\Util\JB {
             }
         }
 
-        if ( Cfg::get( 'jb_db', false ) ) {
+        $jbDB = Cfg::get( 'jb_db', false );
+        if ( $jbDB ) {
             if ( ! isset( $row[$this->primaryKey] ) ) {
                 $pKey = DBMaintenance::dbNextNumber( $this->db, $this->tableName );
                 $row[$this->primaryKey] = $pKey;
@@ -273,10 +271,11 @@ abstract class DAO extends \Jackbooted\Util\JB {
         $values = array_values( $row );
 
         $sql = $insertMethod . ' INTO ' . $this->tableName . ' (' . join( ',', $keys ) . ') VALUES (' . DB::in( $values ) . ')';
-        if ( DB::exec( $this->db, $sql, $values ) != 1 )
+        if ( DB::exec( $this->db, $sql, $values ) != 1 ) {
             return false;
+        }
 
-        if ( !Cfg::get( 'jb_db', false ) ) {
+        if ( !$jbDB ) {
             $pKey = DB::lastInsertId( $this->db );
         }
 
