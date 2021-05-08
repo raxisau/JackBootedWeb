@@ -118,8 +118,16 @@ class DBEdit extends \Jackbooted\Util\JB {
         }
 
         $tmpTable = 't_' . md5(mt_rand());
-        $listSelect = Lists::select ( $this->daoObject->primaryKey,
-                                      "SELECT * FROM ( {$this->selectSQL} ) {$tmpTable}",
+        if ( stripos( $this->selectSQL, 'ORDER BY' ) === false ) {
+            $sql = 'SELECT * FROM ( ' . str_ireplace('ORDER BY', ") {$tmpTable} ORDER BY", $this->selectSQL );
+        }
+        else {
+            $sql = "SELECT * FROM ( {$this->selectSQL} ) {$tmpTable}";
+        }
+
+
+
+        $listSelect = Lists::select ( $this->daoObject->primaryKey, $sql,
                                       [ 'size' => $this->displayRows,'onClick' => 'submit();', 'default' => $id ] );
 
         $html = Tag::table( array_merge( [ 'id' => 'DBEdit' . $this->suffix ], $this->styles[self::TABLE_C] ) ) .
