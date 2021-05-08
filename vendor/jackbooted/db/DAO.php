@@ -145,8 +145,15 @@ abstract class DAO extends \Jackbooted\Util\JB {
             }
         }
 
+        if ( count( $sets ) == 0 ) {
+            return false;
+        }
+
         $params = [];
-        if ( ( $whereSql = $this->toWhere( $where, $params ) ) == '' ) return false;
+        if ( ( $whereSql = $this->toWhere( $where, $params ) ) == '' ) {
+            return false;
+        }
+
         $sql = 'UPDATE ' . $this->tableName . ' ' .
                 'SET ' . join( '=?, ', array_keys( $sets ) ) . '=? ' .
                 $whereSql;
