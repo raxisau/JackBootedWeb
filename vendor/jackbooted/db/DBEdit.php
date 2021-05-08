@@ -118,7 +118,7 @@ class DBEdit extends \Jackbooted\Util\JB {
         }
 
         $tmpTable = 't_' . md5(mt_rand());
-        if ( stripos( $this->selectSQL, 'ORDER BY' ) === false ) {
+        if ( stripos( $this->selectSQL, 'ORDER BY' ) !== false ) {
             $sql = 'SELECT * FROM ( ' . str_ireplace('ORDER BY', ") {$tmpTable} ORDER BY", $this->selectSQL );
         }
         else {
