@@ -125,7 +125,7 @@ class DBEdit extends \Jackbooted\Util\JB {
             $sql = "SELECT * FROM ( {$this->selectSQL} ) {$tmpTable}";
         }
 
-
+        echo '<pre>' . $sql . "</pre>\n";
 
         $listSelect = Lists::select ( $this->daoObject->primaryKey, $sql,
                                       [ 'size' => $this->displayRows,'onClick' => 'submit();', 'default' => $id ] );
