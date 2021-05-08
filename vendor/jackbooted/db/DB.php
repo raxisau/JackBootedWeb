@@ -510,7 +510,7 @@ class DB extends \Jackbooted\Util\JB {
             }
             else {
                 if ( ( $newResource = $dbResource->prepare( $qry ) ) === false ) {
-                    return self::logError( $qry, $dbResource );
+                    return self::logError( $qry . ' ' . print_r( $params, true ), $dbResource );
                 }
                 else {
                     $dbResource = $newResource;
@@ -525,7 +525,7 @@ class DB extends \Jackbooted\Util\JB {
 
             if ( Cfg::get( 'quercus', false ) ) {
                 if ( $result < 0 ) {
-                    return self::logError( $qry, $dbResource );
+                    return self::logError( $qry . ' ' . print_r( $params, true ), $dbResource );
                 }
                 else {
                     return (int) $result;
@@ -533,7 +533,7 @@ class DB extends \Jackbooted\Util\JB {
             }
             else {
                 if ( $result === false ) {
-                    return self::logError( $qry, $dbResource );
+                    return self::logError( $qry . ' ' . print_r( $params, true ), $dbResource );
                 }
                 else if ( is_int( $result ) ) {
                     return $result;
@@ -544,7 +544,7 @@ class DB extends \Jackbooted\Util\JB {
             }
         }
         catch ( Exception $ex ) {
-            return self::logError( 'E: ' . $ex->getMessage() . ': ' . $qry, $dbResource );
+            return self::logError( 'E: ' . $ex->getMessage() . ': ' . $qry . ' ' . print_r( $params, true ), $dbResource );
         }
     }
 
