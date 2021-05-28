@@ -2,7 +2,7 @@
 
 namespace Jackbooted\Mail;
 
-class SMTPSendMail extends \PHPMailer {
+class SMTPSendMail extends \PHPMailer\PHPMailer\PHPMailer {
 
     public function __construct( $host = 'localhost', $exceptions = false ) {
         parent::__construct( $exceptions );

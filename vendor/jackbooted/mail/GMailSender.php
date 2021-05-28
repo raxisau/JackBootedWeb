@@ -12,10 +12,8 @@ namespace Jackbooted\Mail;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-use \Jackbooted\Config\Config;
-use \Jackbooted\Security\Cryptography;
 
-class GMailSender extends \PHPMailer {
+class GMailSender extends \PHPMailer\PHPMailer\PHPMailer {
 
     public function __construct( $exceptions = false ) {
         parent::__construct( $exceptions );
