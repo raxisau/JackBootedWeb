@@ -3,4 +3,4 @@
 config.env.php
 test.php
 error_log
-
+.well-known
