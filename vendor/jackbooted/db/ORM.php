@@ -51,7 +51,7 @@ abstract class ORM extends \Jackbooted\Util\JB {
     }
 
     public static function load ( $id ) {
-        if ( ( $row = self::$dao->oneRow( $id ) ) === false ) {
+        if ( ( $row = static::$dao->oneRow( $id ) ) === false ) {
             return false;
         }
         return static::factory( $row );
@@ -184,17 +184,17 @@ abstract class ORM extends \Jackbooted\Util\JB {
 
     public function refresh() {
         if ( ! isset( $this->data[$this->dao->primaryKey] ) ) {
+                return $this;
+        }
+
+        if ( ( $row = static::$dao->oneRow( $this->data[$this->dao->primaryKey] ) ) === false ) {
             return $this;
         }
 
-        foreach ( $this->dao->search(  [ 'where' => [ $this->dao->primaryKey => $this->data[$this->dao->primaryKey] ] ] ) as $row ) {
-            foreach ( $row as $key => $val ) {
-                $this->data[$key] = $val;
-            }
-            $this->clearDirty();
-            return $this;
+        foreach ( $row as $key => $val ) {
+            $this->data[$key] = $val;
         }
-
+        $this->clearDirty();
         return $this;
     }
 }
