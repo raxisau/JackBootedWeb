@@ -41,6 +41,7 @@ class Cfg {
         self::setUpLogging();
         self::setUpAutoLoader();
         self::setUpDebugFriendlyClassSwitches();
+        self::setUpSession();
         self::ensureNoForgery();
         self::setErrorLevel();
         self::setUpDates();
@@ -152,6 +153,17 @@ HTML;
             exit;
         }
     }
+
+    private static function setUpSession() {
+        Login::initSession();
+
+        // See if we can log the user in
+        if ( !Login::loadPreferencesFromCookies() ) {
+            if ( G::isLoggedIn() )
+                Login::logOut();
+        }
+    }
+
 
     private static function setUpDebugFriendlyClassSwitches() {
         if ( !self::get( 'debug' ) )
