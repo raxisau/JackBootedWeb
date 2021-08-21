@@ -41,7 +41,6 @@ class Cfg {
         self::setUpLogging();
         self::setUpAutoLoader();
         self::setUpDebugFriendlyClassSwitches();
-        self::setUpSession();
         self::ensureNoForgery();
         self::setErrorLevel();
         self::setUpDates();
@@ -151,16 +150,6 @@ HTML;
 
             echo sprintf( $message, Cfg::get( 'version' ), Cfg::get( 'boss' ), $location, $seconds, $seconds, $location );
             exit;
-        }
-    }
-
-    private static function setUpSession() {
-        Login::initSession();
-
-        // See if we can log the user in
-        if ( !Login::loadPreferencesFromCookies() ) {
-            if ( G::isLoggedIn() )
-                Login::logOut();
         }
     }
 

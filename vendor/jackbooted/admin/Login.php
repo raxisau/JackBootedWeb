@@ -231,16 +231,7 @@ SQL;
         if ( ! isset( $_SESSION ) ) {
             session_start();
         }
-
-        if ( !isset( $_SESSION[G::SESS] ) )
-            $_SESSION[G::SESS] = [];
-
-        // See if there is an encryption key set for this session
-        // If not then set it up
-        if ( !isset( $_SESSION[G::SESS][G::CRYPTO] ) ) {
-            $iv = str_shuffle( Cfg::get( 'crypto_key', G::IV ) );
-            $_SESSION[G::SESS][G::CRYPTO] = Config::get( 'session.crypto.key', $iv, Config::GLOBAL_SCOPE );
-        }
+        if ( !isset( $_SESSION[G::SESS] ) ) $_SESSION[G::SESS] = [];
     }
 
     public static function killSession() {

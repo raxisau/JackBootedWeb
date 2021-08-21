@@ -3,6 +3,7 @@
 namespace Jackbooted\Security;
 
 use \Jackbooted\Config\Cfg;
+use \Jackbooted\Config\Config;
 use \Jackbooted\G;
 use \Jackbooted\Util\Log4PHP;
 use \Defuse\Crypto\Key;
@@ -40,6 +41,11 @@ class Cryptography extends \Jackbooted\Util\JB {
     private static $old = false;
 
     public static function init() {
+        if ( !isset( $_SESSION[G::SESS] ) ) $_SESSION[G::SESS] = [];
+        if ( ! isset( $_SESSION[G::SESS][G::CRYPTO] ) ) {
+            $iv = str_shuffle( Cfg::get( 'crypto_key', G::IV ) );
+            $_SESSION[G::SESS][G::CRYPTO] = Config::get( 'session.crypto.key', $iv, Config::GLOBAL_SCOPE );
+        }
         self::$log = Log4PHP::logFactory( __CLASS__ );
         self::$encryptionOff = Cfg::get( 'encrypt_override' );
         self::$old = Cfg::get( 'mcrypt', false );

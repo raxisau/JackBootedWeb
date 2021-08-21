@@ -51,10 +51,15 @@ abstract class ORM extends \Jackbooted\Util\JB {
     }
 
     public static function load ( $id ) {
-        if ( ( $row = static::$dao->oneRow( $id ) ) === false ) {
+        $obj = static::factory( [] );
+
+        if ( ( $row = $obj->dao->oneRow( $id ) ) === false ) {
             return false;
         }
-        return static::factory( $row );
+        
+        $obj->data = $obj->dao->objToRel( $row );
+        $obj->clearDirty();
+        return $obj;
     }
 
     protected static function tableToObjectList( $table ) {
@@ -85,6 +90,14 @@ abstract class ORM extends \Jackbooted\Util\JB {
         if ( isset( $this->dao->orm[$key] ) ) {
             $key = $this->dao->orm[$key];
         }
+
+        if ( ! isset( $this->data[$key] ) ) {
+            //echo "Trying to access key: $key and it does not appear\n";
+            //print_r( $this->dao->orm );
+            //print_r( debug_backtrace( ) );
+            return '';
+        }
+
         return $this->data[$key];
     }
 

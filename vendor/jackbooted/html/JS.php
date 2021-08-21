@@ -28,19 +28,13 @@ class JS extends \Jackbooted\Util\JB {
     const JQUERY_TIPTIP = 'jquery.tipTip.minified.js';
     const JQUERY_BUBBLEPOPUP = 'jquery.bubblepopup.min.js';
 
-    private static $JS_DEPEND = [ self::JQUERY_UI => [ self::JQUERY,
-            self::JQUERY_UI_CSS,
-            'jquery-ui.custom.css' ],
-        self::JQUERY_UI_DATETIME => [ self::JQUERY_UI,
-            'jquery-ui-timepicker-addon.css' ],
-        self::FACEBOX => [ 'facebox.css',
-            self::JQUERY ],
-        self::JQUERY_TIPTIP => [ 'tipTip.css',
-            self::JQUERY ],
-        self::JQUERY_BUBBLEPOPUP => [ 'jquery.bubblepopup.css',
-            self::JQUERY ],
-        self::JQUERY_MOB => [ 'jquery.mobile.min.css',
-            'jquery-1.8.2.min.js' ],
+    private static $JS_DEPEND = [
+        self::JQUERY_UI          => [ self::JQUERY, self::JQUERY_UI_CSS, 'jquery-ui.custom.css' ],
+        self::JQUERY_UI_DATETIME => [ self::JQUERY_UI, 'jquery-ui-timepicker-addon.css' ],
+        self::FACEBOX            => [ 'facebox.css', self::JQUERY ],
+        self::JQUERY_TIPTIP      => [ 'tipTip.css',  self::JQUERY ],
+        self::JQUERY_BUBBLEPOPUP => [ 'jquery.bubblepopup.css', self::JQUERY ],
+        self::JQUERY_MOB         => [ 'jquery.mobile.min.css', 'jquery-1.8.2.min.js' ],
     ];
     private static $LF = "\n";
 
