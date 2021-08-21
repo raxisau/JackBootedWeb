@@ -155,12 +155,15 @@ HTML;
     }
 
     private static function setUpSession() {
-        Login::initSession();
+        if ( ! Cfg::get( 'jb_db' ) ) return;
+
+        \Jackbooted\Admin\Login::initSession();
 
         // See if we can log the user in
-        if ( !Login::loadPreferencesFromCookies() ) {
-            if ( G::isLoggedIn() )
-                Login::logOut();
+        if ( ! \Jackbooted\Admin\Login::loadPreferencesFromCookies() ) {
+            if ( G::isLoggedIn() ) {
+                \Jackbooted\Admin\Login::logOut();
+            }
         }
     }
 

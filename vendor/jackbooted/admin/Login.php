@@ -145,7 +145,8 @@ class Login extends WebPage {
     }
 
     public static function checkAuthenticated( $username, $password, $hash = null ) {
-        if ( ! isset( $username ) || ! isset( $password ) || $username == false || $password == false || $username == '' || $password == '' ) {
+        if ( ! isset( $username ) || $username == false || $username == '' ||
+             ! isset( $password ) || $password == false || $password == '' ) {
             return false;
         }
 
