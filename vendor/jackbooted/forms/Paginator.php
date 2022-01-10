@@ -36,8 +36,8 @@ class Paginator extends Navigator {
 
     const BUT_LAST  = '&nbsp;<i class="fas fa-fast-forward"></i>&nbsp;';
     const BUT_FIRST = '&nbsp;<i class="fas fa-fast-backward"></i>&nbsp;';
-    const BUT_NEXT  = '&nbsp;<i class="fas fa-caret-right"></i>&nbsp;';
-    const BUT_PREV  = '&nbsp;<i class="fas fa-caret-left"></i>&nbsp;';
+    const BUT_NEXT  = '&nbsp;<i class="fas fa-step-forward"></i></i>&nbsp;';
+    const BUT_PREV  = '&nbsp;<i class="fas fa-step-backward"></i>&nbsp;';
 
     /**
      * @var integer Counts the number of times that this class is invoked so
@@ -89,7 +89,7 @@ class Paginator extends Navigator {
     public function __construct( $props = [] ) {
         parent::__construct();
 
-        $this->attribs = ( isset( $props['attribs'] ) ) ? $props['attribs'] : [];
+        $this->attribs = ( isset( $props['attribs'] ) ) ? $props['attribs'] : [ 'style' => 'text-decoration: none;'];
         $suffix = ( isset( $props['suffix'] ) ) ? $props['suffix'] : Invocation::next();
         $this->navVar = self::navVar( $suffix );
         $initPattern = ( isset( $props['request_vars'] ) ) ? $props['request_vars'] : '';
