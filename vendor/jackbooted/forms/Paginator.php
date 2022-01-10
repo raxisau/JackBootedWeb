@@ -34,15 +34,10 @@ class Paginator extends Navigator {
     const PAGE_LINK_CLASS = 'PAGE_LINK_CLASS';
     const PAGE_BUTTON_CLASS = 'PAGE_BUTTON_CLASS';
 
-    const BUT_LAST  = '&nbsp;<i class="fal fa-chevron-double-right"></i>&nbsp;';
-    const BUT_FIRST = '&nbsp;<i class="fal fa-chevron-double-left"></i>&nbsp;';
-    const BUT_NEXT  = '&nbsp;<i class="fal fa-chevron-right"></i>&nbsp;';
-    const BUT_PREV  = '&nbsp;<i class="fal fa-chevron-left"></i>&nbsp;';
-
-    //const BUT_LAST  = '&nbsp;>>&nbsp;';
-    //const BUT_FIRST = '&nbsp;<<&nbsp;';
-    //const BUT_NEXT  = '&nbsp;>&nbsp;';
-    //const BUT_PREV  = '&nbsp;<&nbsp;';
+    const BUT_LAST  = '&nbsp;<i class="fas fa-fast-forward"></i>&nbsp;';
+    const BUT_FIRST = '&nbsp;<i class="fas fa-fast-backward"></i>&nbsp;';
+    const BUT_NEXT  = '&nbsp;<i class="fas fa-step-forward"></i>&nbsp;';
+    const BUT_PREV  = '&nbsp;<i class="fas fa-step-backward"></i>&nbsp;';
 
     /**
      * @var integer Counts the number of times that this class is invoked so
