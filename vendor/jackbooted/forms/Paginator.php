@@ -36,8 +36,8 @@ class Paginator extends Navigator {
 
     const BUT_LAST  = '&nbsp;<i class="fas fa-fast-forward"></i>&nbsp;';
     const BUT_FIRST = '&nbsp;<i class="fas fa-fast-backward"></i>&nbsp;';
-    const BUT_NEXT  = '&nbsp;<i class="fas fa-step-forward"></i>&nbsp;';
-    const BUT_PREV  = '&nbsp;<i class="fas fa-step-backward"></i>&nbsp;';
+    const BUT_NEXT  = '&nbsp;<i class="fas fa-caret-right"></i>&nbsp;';
+    const BUT_PREV  = '&nbsp;<i class="fas fa-caret-left"></i>&nbsp;';
 
     /**
      * @var integer Counts the number of times that this class is invoked so
