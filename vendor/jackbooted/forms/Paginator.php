@@ -39,6 +39,11 @@ class Paginator extends Navigator {
     const BUT_NEXT  = '&nbsp;<i class="fal fa-chevron-right"></i>&nbsp;';
     const BUT_PREV  = '&nbsp;<i class="fal fa-chevron-left"></i>&nbsp;';
 
+    //const BUT_LAST  = '&nbsp;>>&nbsp;';
+    //const BUT_FIRST = '&nbsp;<<&nbsp;';
+    //const BUT_NEXT  = '&nbsp;>&nbsp;';
+    //const BUT_PREV  = '&nbsp;<&nbsp;';
+
     /**
      * @var integer Counts the number of times that this class is invoked so
      * that each invokation can have a unique id
@@ -282,21 +287,21 @@ SQL;
             $currentPageDisplay = $currentPage + 1;
             $this->set( self::STARTING_ROW, $startingRowForThisPage );
             $html[1][] = Tag::hRef( $this->toUrl(), number_format( $currentPageDisplay ), [ 'title' => 'Go to Page ' . $currentPageDisplay,
-                        'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
+                                                                                            'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
             $incr *= count( $html[1] );
         }
 
         // This is the navigation for next and last page
         if ( $pageContainingStartRow + 1 < $numberOfPages ) {
             $this->setStart( $rowsPerPage * ( $numberOfPages - 1 ) );
-            $lastPage = Tag::button( '>> ' . number_format( $numberOfPages ), [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
-                        'title' => 'Go to Last Page - ' . $numberOfPages,
-                        'class' => $this->styles[self::PAGE_BUTTON_CLASS] ] );
+            $lastPage = Tag::button( self::BUT_LAST . number_format( $numberOfPages ), [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                                                                         'title'   => 'Go to Last Page - ' . $numberOfPages,
+                                                                                         'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
 
             $this->setStart( $rowsPerPage * ( $pageContainingStartRow + 1 ) );
-            $nextPage = Tag::button( '>', [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
-                        'title' => 'Go to Next Page - ' . ( $pageContainingStartRow + 2 ),
-                        'class' => $this->styles[self::PAGE_BUTTON_CLASS] ] );
+            $nextPage = Tag::button( self::BUT_NEXT, [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                                       'title'   => 'Go to Next Page - ' . ( $pageContainingStartRow + 2 ),
+                                                       'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
         }
 
         // Navigation for the current page nackwards
@@ -305,7 +310,7 @@ SQL;
             $currentPageDisplay = $currentPage + 1;
             $this->setStart( $startingRowForThisPage );
             $html[0][] = Tag::hRef( $this->toUrl(), number_format( $currentPageDisplay ), [ 'title' => 'Go to Page ' . $currentPageDisplay,
-                        'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
+                                                                                            'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
             $incr *= count( $html[0] );
         }
         // Reverse the array so that it appears in correct order for pagination
@@ -315,15 +320,15 @@ SQL;
         if ( $pageContainingStartRow != 0 ) {
             // Calculate navigation for first page
             $this->setStart( 0 );
-            $firstPage = Tag::button( '<< 1', [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
-                        'title' => 'Go to First Page - 1',
-                        'class' => $this->styles[self::PAGE_BUTTON_CLASS] ] );
+            $firstPage = Tag::button( self::BUT_FIRST . '1', [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                                               'title'   => 'Go to First Page - 1',
+                                                               'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
 
             // Calculate navigation for previous page
             $this->setStart( $rowsPerPage * ( $pageContainingStartRow - 1 ) );
-            $previousPage = Tag::button( '< ', [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
-                        'title' => 'Go to Previous Page - ' . ( $pageContainingStartRow - 1 ),
-                        'class' => $this->styles[self::PAGE_BUTTON_CLASS] ] );
+            $previousPage = Tag::button( self::BUT_PREV, [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                                           'title'   => 'Go to Previous Page - ' . ( $pageContainingStartRow - 1 ),
+                                                           'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
         }
 
 
@@ -335,9 +340,9 @@ SQL;
         if ( $this->dispPageSize ) {
             $exemptVars[] = self::ROWS_PER_PAGE;
             $pageSizeHtml = '&nbsp;Rows:&nbsp;' .
-                    Lists::select( $this->toFormName( self::ROWS_PER_PAGE ), self::$itemsPerPageList, [ 'default' => $rowsPerPage,
-                        'title' => 'This changes the number of rows to display',
-                        'onChange' => 'submit();' ] );
+                    Lists::select( $this->toFormName( self::ROWS_PER_PAGE ), self::$itemsPerPageList, [ 'default'  => $rowsPerPage,
+                                                                                                        'title'    => 'This changes the number of rows to display',
+                                                                                                        'onChange' => 'submit();' ] );
         }
 
         return JS::library( 'fontawesome-all.min.css' ) .
