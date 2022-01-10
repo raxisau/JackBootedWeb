@@ -38,6 +38,7 @@ class Paginator extends Navigator {
     const BUT_FIRST = '&nbsp;<i class="fas fa-fast-backward"></i>&nbsp;';
     const BUT_NEXT  = '&nbsp;<i class="fas fa-step-forward"></i></i>&nbsp;';
     const BUT_PREV  = '&nbsp;<i class="fas fa-step-backward"></i>&nbsp;';
+    const BUT_STYLE = 'font: bold 11px Arial;text-decoration: none;background-color: #EEEEEE;color: #333333;padding: 2px 6px 2px 6px;border-top: 1px solid #CCCCCC;border-right: 1px solid #333333;border-bottom: 1px solid #333333;border-left: 1px solid #CCCCCC;';
 
     /**
      * @var integer Counts the number of times that this class is invoked so
@@ -283,7 +284,7 @@ SQL;
             $currentPageDisplay = $currentPage + 1;
             $this->set( self::STARTING_ROW, $startingRowForThisPage );
             $html[1][] = Tag::hRef( $this->toUrl(), number_format( $currentPageDisplay ), [ 'title' => 'Go to Page ' . $currentPageDisplay,
-                                                                                            'style' => 'text-decoration: none;',
+                                                                                            'style' => self::BUT_STYLE,
                                                                                             'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
             $incr *= count( $html[1] );
         }
@@ -293,13 +294,13 @@ SQL;
             $this->setStart( $rowsPerPage * ( $numberOfPages - 1 ) );
             $lastPage = Tag::hRef( '#', self::BUT_LAST . number_format( $numberOfPages ), [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
                                                                                             'title'   => 'Go to Last Page - ' . $numberOfPages,
-                                                                                            'style'   => 'text-decoration: none;',
+                                                                                            'style'   => self::BUT_STYLE,
                                                                                             'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
 
             $this->setStart( $rowsPerPage * ( $pageContainingStartRow + 1 ) );
             $nextPage = Tag::hRef( '#', self::BUT_NEXT, [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
                                                           'title'   => 'Go to Next Page - ' . ( $pageContainingStartRow + 2 ),
-                                                          'style'   => 'text-decoration: none;',
+                                                          'style'   => self::BUT_STYLE,
                                                           'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
         }
 
@@ -309,7 +310,7 @@ SQL;
             $currentPageDisplay = $currentPage + 1;
             $this->setStart( $startingRowForThisPage );
             $html[0][] = Tag::hRef( $this->toUrl(), number_format( $currentPageDisplay ), [ 'title' => 'Go to Page ' . $currentPageDisplay,
-                                                                                            'style' => 'text-decoration: none;',
+                                                                                            'style' => self::BUT_STYLE,
                                                                                             'class' => $this->styles[self::PAGE_LINK_CLASS] ] );
             $incr *= count( $html[0] );
         }
@@ -322,14 +323,14 @@ SQL;
             $this->setStart( 0 );
             $firstPage = Tag::hRef( '#', self::BUT_FIRST . '1', [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
                                                                   'title'   => 'Go to First Page - 1',
-                                                                  'style'   => 'text-decoration: none;',
+                                                                  'style'   => self::BUT_STYLE,
                                                                   'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
 
             // Calculate navigation for previous page
             $this->setStart( $rowsPerPage * ( $pageContainingStartRow - 1 ) );
             $previousPage = Tag::hRef( '#', self::BUT_PREV, [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
                                                               'title'   => 'Go to Previous Page - ' . ( $pageContainingStartRow - 1 ),
-                                                              'style'   => 'text-decoration: none;',
+                                                              'style'   => self::BUT_STYLE,
                                                               'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
         }
 
