@@ -3,6 +3,7 @@
 namespace Jackbooted\Forms;
 
 use \Jackbooted\Html\Tag;
+use \Jackbooted\Html\JS;
 use \Jackbooted\Util\Invocation;
 
 /**
@@ -98,8 +99,9 @@ class Columnator extends Navigator {
      * @return string
      */
     public function toHtml( $columnName, $columnDisplay = null ) {
-        if ( $columnDisplay == null )
+        if ( $columnDisplay == null ) {
             $columnDisplay = $columnName;
+        }
         $savedFormVars = $this->formVars;
 
         $this->set( self::SORT_COL, $columnName );
@@ -108,28 +110,24 @@ class Columnator extends Navigator {
             $this->set( self::SORT_ORDER, ( $this->sortOrder == 'ASC' ) ? 'DESC' : 'ASC'  );
             $sortDirectionName = ( $this->sortOrder == 'ASC' ) ? 'Decending' : 'Ascending';
             $title = 'Click here to sort ' . $sortDirectionName . ' By ' . $columnDisplay;
-
-            $button = ( $this->sortOrder == 'ASC' ) ? '^' : 'v';
+            $button = ( $this->sortOrder == 'ASC' ) ? ' <i class="fal fa-sort-amount-up-alt"></i>' : ' <i class="fal fa-sort-amount-down"></i>';
 
             $url = $this->toUrl();
-            $html = Tag::hTag( 'a', array_merge( $this->attribs, [ 'href' => $url,
-                        'class' => $this->styles[self::COL_LINK_CLASS],
-                        'title' => $title ] ) ) .
-                    $columnDisplay .
-                    Tag::_hTag( 'a' ) .
-                    Tag::linkButton( $url, $button, array_merge( $this->attribs, [ 'class' => $this->styles[self::COL_BUTTON_CLASS],
-                        'title' => $title ] ) );
+            $html = JS::library( 'fontawesome-all.min.css' ) .
+                    Tag::hTag( 'a', array_merge( $this->attribs, [ 'href' => $url, 'class' => $this->styles[self::COL_LINK_CLASS], 'title' => $title ] ) ) .
+                      $columnDisplay . $button .
+                    Tag::_hTag( 'a' );
         }
         else {
             $this->set( self::SORT_ORDER, $this->sortOrder );
             $sortDirectionName = ( $this->sortOrder == 'ASC' ) ? 'Decending' : 'Ascending';
             $title = 'Sort ' . $sortDirectionName . ' By ' . $columnDisplay;
-
+            $button = ' <i class="fal fa-sort-alt"></i>';
             $url = $this->toUrl();
-            $html = Tag::hTag( 'a', array_merge( $this->attribs, [ 'href' => $url,
-                        'class' => $this->styles[self::COL_LINK_CLASS],
-                        'title' => $title ] ) ) .
-                    $columnDisplay .
+
+            $html = JS::library( 'fontawesome-all.min.css' ) .
+                    Tag::hTag( 'a', array_merge( $this->attribs, [ 'href' => $url, 'class' => $this->styles[self::COL_LINK_CLASS], 'title' => $title ] ) ) .
+                      $columnDisplay . $button .
                     Tag::_hTag( 'a' );
         }
 

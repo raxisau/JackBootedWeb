@@ -5,6 +5,7 @@ namespace Jackbooted\Forms;
 use \Jackbooted\Html\Lists;
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Util\Invocation;
+use \Jackbooted\Html\JS;
 use \Jackbooted\DB\DB;
 
 /**
@@ -32,6 +33,11 @@ class Paginator extends Navigator {
     const SUBMIT = 'S';
     const PAGE_LINK_CLASS = 'PAGE_LINK_CLASS';
     const PAGE_BUTTON_CLASS = 'PAGE_BUTTON_CLASS';
+
+    const BUT_LAST  = '&nbsp;<i class="fal fa-chevron-double-right"></i>&nbsp;';
+    const BUT_FIRST = '&nbsp;<i class="fal fa-chevron-double-left"></i>&nbsp;';
+    const BUT_NEXT  = '&nbsp;<i class="fal fa-chevron-right"></i>&nbsp;';
+    const BUT_PREV  = '&nbsp;<i class="fal fa-chevron-left"></i>&nbsp;';
 
     /**
      * @var integer Counts the number of times that this class is invoked so
@@ -334,7 +340,8 @@ SQL;
                         'onChange' => 'submit();' ] );
         }
 
-        return Tag::div( $this->attribs ) .
+        return JS::library( 'fontawesome-all.min.css' ) .
+               Tag::div( $this->attribs ) .
                  Tag::form( [ 'method' => 'get' ] ) .
                    $this->toHidden( $exemptVars ) .
                    $firstPage .
