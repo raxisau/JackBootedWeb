@@ -19,6 +19,8 @@ $pageTimer = new \Jackbooted\Time\Stopwatch( 'Page Load' );
         <link rel="shortcut icon" href="<?= Cfg::get( 'favicon' ) ?>" type="image/x-icon">
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" >
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+        <?= JS::libraryWithDependancies( JS::JQUERY ); ?>
+        <?= JS::library( 'fontawesome-all.min.css' ); ?>
     </head>
     <body>
         <table width="100%" cellpadding="5" cellspacing="0" class="table table-bordered">

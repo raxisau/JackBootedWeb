@@ -14,7 +14,8 @@ $pageTimer = new \Jackbooted\Time\Stopwatch( "Page Load" );
         <link type="text/css" rel="stylesheet" media="screen" href="style.css" />
         <?php /* <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" > */ ?>
         <?php /* <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"> */ ?>
-<?= JS::libraryWithDependancies( JS::JQUERY ); ?>
+        <?= JS::libraryWithDependancies( JS::JQUERY ); ?>
+        <?= JS::library( 'fontawesome-all.min.css' ); ?>
     </head>
     <body>
         <table width="100%" cellpadding="5" cellspacing="0" border="1">
