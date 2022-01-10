@@ -352,7 +352,7 @@ SQL;
                Tag::div( $this->attribs ) .
                  Tag::form( [ 'method' => 'get' ] ) .
                    $this->toHidden( $exemptVars ) .
-                   $firstPage .
+                   $firstPage . '&nbsp;' .
                    $previousPage .
                    '&nbsp;' . join( '&nbsp;&#183;&nbsp;', $html[0] ) .
                    '&nbsp;' . Tag::text( $this->toFormName( self::STARTING_PAGE ),
@@ -364,7 +364,7 @@ SQL;
                     '&nbsp;' . join( '&nbsp;&#183;&nbsp;', $html[1] ) .
                     '&nbsp;' .
                     $nextPage .
-                    $lastPage .
+                    '&nbsp;' . $lastPage .
                     $pageSizeHtml .
                   Tag::_form() .
                 Tag::_div();
