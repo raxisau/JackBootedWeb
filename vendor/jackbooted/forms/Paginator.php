@@ -354,15 +354,13 @@ SQL;
                    $this->toHidden( $exemptVars ) .
                    $firstPage . '&nbsp;' .
                    $previousPage .
-                   '&nbsp;' . join( '&nbsp;&#183;&nbsp;', $html[0] ) .
-                   '&nbsp;' . Tag::text( $this->toFormName( self::STARTING_PAGE ),
-                                         [ 'value' => $curPage,
-                                           'align' => 'middle',
-                                           'size' => 1 + max( 1, strlen( $curPage ) - 1 ),
-                                           'title' => 'Manually enter the page number that you want and press enter',
-                                           'style' => 'font-weight:bold;' ] ) .
-                    '&nbsp;' . join( '&nbsp;&#183;&nbsp;', $html[1] ) .
-                    '&nbsp;' .
+                   '&nbsp;' . join( '&nbsp;', $html[0] ) . '&nbsp;' .
+                   Tag::text( $this->toFormName( self::STARTING_PAGE ), [ 'value' => $curPage,
+                                                                          'align' => 'middle',
+                                                                          'size' => 1 + max( 1, strlen( $curPage ) - 1 ),
+                                                                          'title' => 'Manually enter the page number that you want and press enter',
+                                                                          'style' => 'font-weight:bold;' ] ) .
+                    '&nbsp;' . join( '&nbsp;', $html[1] ) . '&nbsp;' .
                     $nextPage .
                     '&nbsp;' . $lastPage .
                     $pageSizeHtml .
