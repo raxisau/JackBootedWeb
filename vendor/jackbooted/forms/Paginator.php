@@ -292,10 +292,10 @@ SQL;
         // This is the navigation for next and last page
         if ( $pageContainingStartRow + 1 < $numberOfPages ) {
             $this->setStart( $rowsPerPage * ( $numberOfPages - 1 ) );
-            $lastPage = Tag::hRef( '#', self::BUT_LAST . number_format( $numberOfPages ), [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
-                                                                                            'title'   => 'Go to Last Page - ' . $numberOfPages,
-                                                                                            'style'   => self::BUT_STYLE,
-                                                                                            'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
+            $lastPage = Tag::hRef( '#', self::BUT_LAST, [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                                          'title'   => 'Go to Last Page - ' . $numberOfPages,
+                                                          'style'   => self::BUT_STYLE,
+                                                          'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
 
             $this->setStart( $rowsPerPage * ( $pageContainingStartRow + 1 ) );
             $nextPage = Tag::hRef( '#', self::BUT_NEXT, [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
@@ -321,10 +321,10 @@ SQL;
         if ( $pageContainingStartRow != 0 ) {
             // Calculate navigation for first page
             $this->setStart( 0 );
-            $firstPage = Tag::hRef( '#', self::BUT_FIRST . '1', [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
-                                                                  'title'   => 'Go to First Page - 1',
-                                                                  'style'   => self::BUT_STYLE,
-                                                                  'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
+            $firstPage = Tag::hRef( '#', self::BUT_FIRST, [ 'onclick' => "location.href='" . $this->toUrl() . "';return true;",
+                                                            'title'   => 'Go to First Page - 1',
+                                                            'style'   => self::BUT_STYLE,
+                                                            'class'   => $this->styles[self::PAGE_BUTTON_CLASS] ] );
 
             // Calculate navigation for previous page
             $this->setStart( $rowsPerPage * ( $pageContainingStartRow - 1 ) );
