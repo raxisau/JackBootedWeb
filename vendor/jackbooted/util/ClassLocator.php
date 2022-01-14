@@ -146,10 +146,12 @@ class ClassLocator extends \Jackbooted\Util\JB {
 
         $this->saveLocationArray();
         $timer->logLoadTime();
-        if ( isset( $this->locationArray[$className] ) )
+        if ( isset( $this->locationArray[$className] ) ) {
             return $this->locationArray[$className];
+        }
 
         self::$log->error( "$className not found. Continual calls to this class will affect system performance" );
+        self::$log->error( json_encode( debug_backtrace(), JSON_PRETTY_PRINT ) );
         return false;
     }
 
