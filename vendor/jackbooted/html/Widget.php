@@ -110,7 +110,7 @@ JS;
             $apikey = 'no-api-key';
         }
 
-        $mceHeight = ( $height != '' ) ? '' : "height: {$height},";
+        $mceHeight = ( $height == '' ) ? '' : "height: {$height},";
 
         $js = <<<JS
             $().ready(function() {
