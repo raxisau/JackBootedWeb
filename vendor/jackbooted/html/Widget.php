@@ -101,7 +101,7 @@ JS;
                 JS::javaScript( $js );
     }
 
-    public static function tinyMCE( $selector, $apikey='no-api-key' ) {
+    public static function tinyMCE( $selector, $apikey='no-api-key', $height='' ) {
         if ( $apikey == 'no-api-key' ) {
             $apikey = Cfg::get('tinymce_api', 'no-api-key');
         }
@@ -110,10 +110,13 @@ JS;
             $apikey = 'no-api-key';
         }
 
+        $mceHeight = ( $height != '' ) ? '' : "height: {$height},";
+
         $js = <<<JS
             $().ready(function() {
                 tinymce.init({
-                    selector: '$selector',
+                    {$mceHeight}
+                    selector: '{$selector}',
                     theme: 'silver',
                     plugins: [
                       'advlist autolink lists link image charmap print preview hr anchor pagebreak',
