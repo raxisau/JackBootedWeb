@@ -119,8 +119,8 @@ class Columnator extends Navigator {
                     Tag::_hTag( 'a' );
         }
         else {
-            $this->set( self::SORT_ORDER, $this->sortOrder );
-            $sortDirectionName = ( $this->sortOrder == 'ASC' ) ? 'Decending' : 'Ascending';
+            $this->set( self::SORT_ORDER, 'ASC' );
+            $sortDirectionName = 'Ascending';
             $title = 'Sort ' . $sortDirectionName . ' By ' . $columnDisplay;
             $button = ' <i class="fal fa-sort-alt"></i>';
             $url = $this->toUrl();
