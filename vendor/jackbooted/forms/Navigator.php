@@ -22,6 +22,7 @@ abstract class Navigator extends \Jackbooted\Util\JB {
     protected $attribs;
     protected $formVars;
     protected $navVar;
+    protected $action = '?';
 
     public function __construct() {
         parent::__construct();
@@ -63,7 +64,7 @@ abstract class Navigator extends \Jackbooted\Util\JB {
      */
     protected function toUrl() {
         $this->respVars->set( $this->navVar, $this->formVars );
-        return '?' . $this->respVars->toUrl();
+        return $this->action . $this->respVars->toUrl();
     }
 
     protected function toHidden( $exemptVars ) {

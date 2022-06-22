@@ -433,7 +433,7 @@ JS;
             $params = array_merge( $this->insDefaults, $this->where );
             $paramValues = null;
 
-            if ( Cfg::get( 'jb_db', false ) ) {
+            if ( Cfg::get( 'jb_db', false )  && $this->db == DB::DEF ) {
                 $params[$this->primaryKey] = DBMaintenance::dbNextNumber( $this->db, $this->tableName );
             }
             $sql = 'INSERT INTO ' . $this->tableName;

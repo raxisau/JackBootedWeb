@@ -263,7 +263,7 @@ abstract class DAO extends \Jackbooted\Util\JB {
             }
         }
 
-        $jbDB = Cfg::get( 'jb_db', false );
+        $jbDB = Cfg::get( 'jb_db', false ) && $this->db == DB::DEF;
         if ( $jbDB ) {
             if ( ! isset( $row[$this->primaryKey] ) ) {
                 $pKey = DBMaintenance::dbNextNumber( $this->db, $this->tableName );

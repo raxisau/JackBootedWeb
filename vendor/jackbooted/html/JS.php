@@ -85,6 +85,10 @@ class JS extends \Jackbooted\Util\JB {
      */
     private static $displayedLibraries = [];
 
+    static function already( $lib ) {
+        self::$displayedLibraries[$lib] = true;
+    }
+
     static function library( $lib, $force = false ) {
         if ( !$force && isset( self::$displayedLibraries[$lib] ) )
             return '';

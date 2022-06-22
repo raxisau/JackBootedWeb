@@ -23,15 +23,15 @@ use \Jackbooted\DB\DB;
  */
 class Paginator extends Navigator {
 
-    const STARTING_PAGE = 'G';
-    const STARTING_ROW = 'R';
-    const TOTAL_ROWS = 'T';
-    const SQL_START = 'Q';
-    const ROWS_PER_PAGE = 'P';
-    const LOG_THRESHOLD = 'L';
-    const PAGE_VAR = '_PG';
-    const SUBMIT = 'S';
-    const PAGE_LINK_CLASS = 'PAGE_LINK_CLASS';
+    const STARTING_PAGE     = 'G';
+    const STARTING_ROW      = 'R';
+    const TOTAL_ROWS        = 'T';
+    const SQL_START         = 'Q';
+    const ROWS_PER_PAGE     = 'P';
+    const LOG_THRESHOLD     = 'L';
+    const PAGE_VAR          = '_PG';
+    const SUBMIT            = 'S';
+    const PAGE_LINK_CLASS   = 'PAGE_LINK_CLASS';
     const PAGE_BUTTON_CLASS = 'PAGE_BUTTON_CLASS';
 
     const BUT_LAST  = '&nbsp;<i class="fas fa-fast-forward"></i>&nbsp;';
@@ -84,22 +84,25 @@ class Paginator extends Navigator {
      *                                        // Based on this number and the number of rows per page, the number of
      *                                        // pages are calculated
      *                  'def_num_rows'     => 15,  // Optional. Number of rows default on this pagination
+     *                  'action'           => '?module=regadmin&action=index&',  // Optional. Overrides current form and URL actions
      *                );
      * </pre>
      */
     public function __construct( $props = [] ) {
         parent::__construct();
 
-        $this->attribs = ( isset( $props['attribs'] ) ) ? $props['attribs'] : [ ];
-        $suffix = ( isset( $props['suffix'] ) ) ? $props['suffix'] : Invocation::next();
-        $this->navVar = self::navVar( $suffix );
-        $initPattern = ( isset( $props['request_vars'] ) ) ? $props['request_vars'] : '';
-        $this->respVars = new Response( $initPattern );
+        $this->attribs      = ( isset( $props['attribs'] ) ) ? $props['attribs'] : [];
+        $this->action       = ( isset( $props['action'] ) ) ? $props['action'] : '?';
+        $suffix             = ( isset( $props['suffix'] ) ) ? $props['suffix'] : Invocation::next();
+        $this->navVar       = self::navVar( $suffix );
+        $initPattern        = ( isset( $props['request_vars'] ) ) ? $props['request_vars'] : '';
+        $this->respVars     = new Response( $initPattern );
         $this->dispPageSize = ( isset( $props['display_pagesize'] ) ) ? $props['display_pagesize'] : true;
 
         $defPagination = array_merge( self::$pagination );
-        if ( isset( $props['def_num_rows'] ) )
+        if ( isset( $props['def_num_rows'] ) ) {
             $defPagination[self::ROWS_PER_PAGE] = $props['def_num_rows'];
+        }
         if ( !in_array( $defPagination[self::ROWS_PER_PAGE], self::$itemsPerPageList ) ) {
             self::$itemsPerPageList[] = $defPagination[self::ROWS_PER_PAGE];
             sort( self::$itemsPerPageList );
@@ -111,8 +114,9 @@ class Paginator extends Navigator {
             $this->set( $key, ( ( isset( $requestPageVars[$key] ) ) ? $requestPageVars[$key] : $val ) );
         }
 
-        if ( isset( $props['rows'] ) )
+        if ( isset( $props['rows'] ) ) {
             $this->setRows( (int) $props['rows'] );
+        }
 
         $this->styles[self::PAGE_LINK_CLASS] = 'jb-pagelink';
         $this->styles[self::PAGE_BUTTON_CLASS] = 'jb-pagebuton';
@@ -194,8 +198,9 @@ class Paginator extends Navigator {
         else if ( $dbType == DB::ORACLE ) {
             $lowLim = $this->getStart();
             $upLim = $this->getStart() + $this->getPageSize();
-            if ( $sql == '' )
+            if ( $sql == '' ) {
                 $sql = '%s';
+            }
             $qry = <<<SQL
                 SELECT * FROM (
                     SELECT t__.*,
@@ -237,16 +242,24 @@ SQL;
             $rowsPerPage = self::$pagination[self::ROWS_PER_PAGE];
         }
 
+        $actLen = strlen( $this->action );
+        if ( substr( $this->action, $actLen - 1 ) == '&' ) {
+            $action = substr( $this->action, 0, $actLen - 1 );
+        }
+        else {
+            $action = $this->action;
+        }
+
         // Not enough rows for pagination
         if ( $totalRows <= $rowsPerPage ) {
             if ( $this->dispPageSize && $totalRows > 10 ) {
                 return Tag::div( $this->attribs ) .
-                        Tag::form( [ 'method' => 'get' ] ) .
-                        $this->toHidden( [ self::ROWS_PER_PAGE ] ) .
-                        '&nbsp;Max Rows:&nbsp;' .
-                        Lists::select( $this->toFormName( self::ROWS_PER_PAGE ), self::$itemsPerPageList, [ 'default' => $rowsPerPage, 'onChange' => 'submit();' ] ) .
-                        Tag::_form() .
-                        Tag::_div();
+                         Tag::form( [ 'method' => 'get', 'action' => $action ] ) .
+                           $this->toHidden( [ self::ROWS_PER_PAGE ] ) .
+                           '&nbsp;Max Rows:&nbsp;' .
+                           Lists::select( $this->toFormName( self::ROWS_PER_PAGE ), self::$itemsPerPageList, [ 'default' => $rowsPerPage, 'onChange' => 'submit();' ] ) .
+                         Tag::_form() .
+                       Tag::_div();
             }
             else {
                 return '';
@@ -350,7 +363,7 @@ SQL;
 
         return JS::library( 'fontawesome-all.min.css' ) .
                Tag::div( $this->attribs ) .
-                 Tag::form( [ 'method' => 'get' ] ) .
+                 Tag::form( [ 'method' => 'POST', 'action' => $action ] ) .
                    $this->toHidden( $exemptVars ) .
                    $firstPage . '&nbsp;' .
                    $previousPage .

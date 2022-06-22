@@ -60,6 +60,7 @@ class Columnator extends Navigator {
      *                                        //  vars that are to be copied to the response vars (chained vars)
      *                  'init_column'      => 'fldDate', // Optional, Initial Coloumn to be sorted
      *                  'init_order'       => 'DESC', // Optional, initial direction
+     *                  'action'           => '?module=regadmin&action=index&',  // Optional. Overrides current form and URL actions
      *                );
      * </pre>
      */
@@ -67,6 +68,7 @@ class Columnator extends Navigator {
         parent::__construct();
 
         $this->attribs = ( isset( $props['attribs'] ) ) ? $props['attribs'] : [];
+        $this->action = ( isset( $props['action'] ) ) ? $props['action'] : '?';
         $suffix = ( isset( $props['suffix'] ) ) ? $props['suffix'] : Invocation::next();
         $this->navVar = self::navVar( $suffix );
         $initPattern = ( isset( $props['request_vars'] ) ) ? $props['request_vars'] : '';
@@ -119,8 +121,8 @@ class Columnator extends Navigator {
                     Tag::_hTag( 'a' );
         }
         else {
-            $this->set( self::SORT_ORDER, 'ASC' );
-            $sortDirectionName = 'Ascending';
+            $this->set( self::SORT_ORDER, $this->sortOrder );
+            $sortDirectionName = ( $this->sortOrder == 'ASC' ) ? 'Decending' : 'Ascending';
             $title = 'Sort ' . $sortDirectionName . ' By ' . $columnDisplay;
             $button = ' <i class="fal fa-sort-alt"></i>';
             $url = $this->toUrl();
