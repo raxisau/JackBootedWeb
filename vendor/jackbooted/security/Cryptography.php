@@ -100,7 +100,7 @@ class Cryptography extends \Jackbooted\Util\JB {
         $this->mcryptInit = true;
 
         if ( !self::$encryptionOff ) {
-            $algortithm = ( Cfg::get( 'quercus', false ) ) ? MCRYPT_TRIPLEDES : MCRYPT_RIJNDAEL_256;
+            $algortithm = MCRYPT_RIJNDAEL_256;
         }
 
         $plainTextKey = ( $this->encryptionKey == null ) ? $this->randKey : $this->encryptionKey;

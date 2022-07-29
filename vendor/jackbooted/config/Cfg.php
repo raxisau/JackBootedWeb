@@ -207,21 +207,7 @@ HTML;
         $inDevMode = self::get( 'debug' );
         //$inDevMode = true;
         Log4PHP::init( ( $inDevMode ) ? Log4PHP::DEBUG : Log4PHP::ERROR  );
-
-        if ( self::get( 'FireBug' ) && $inDevMode ) {
-            FB::setOptions( [ 'useNativeJsonEncode' => false ] );
-            ob_start();
-            Log4PHP::setOutput( Log4PHP::FIREBUG );
-        }
-        else {
-            if ( Cfg::get( 'quercus', false ) ) {
-                Log4PHP::setOutput( Log4PHP::FILE );
-            }
-            else {
-                Log4PHP::setOutput( Log4PHP::FILE );
-            }
-        }
-        //Log4PHP::setOutput ( Log4PHP::SCREEN );
+        Log4PHP::setOutput( Log4PHP::FILE );
         self::$log = Log4PHP::logFactory( __CLASS__ );
     }
 
@@ -243,10 +229,6 @@ HTML;
 
         error_reporting( $level );
         ini_set( 'display_errors', ( $errMode ) ? '1' : '0'  );
-        if ( Cfg::get( 'quercus', false ) ) {
-            set_error_handler( [ __CLASS__, 'errorHandler' ], $level );
-        }
-
         self::$errorLevel = $level;
     }
 

@@ -90,11 +90,6 @@ class Log4PHP extends \Jackbooted\Util\JB {
     const FILE = 'F';
 
     /**
-     * Logging to Firebug (not yet fully implemented).
-     */
-    const FIREBUG = 'B';
-
-    /**
      * @var array used to keep a cache of the classes that have a logger
      * created for them.
      */
@@ -134,14 +129,13 @@ class Log4PHP extends \Jackbooted\Util\JB {
      *
      * Can be one of the following:
      * Log4PHP::SCREEN, Log4PHP::RAW, Log4PHP::LOGFILE, Log4PHP::FILE,
-     * Log4PHP::FIREBUG
      *
      * Example:
      * <pre>
      * require_once ( Config::get ( 'classes_dir' ) . '/util/Log4PHP.inc' );
      * if ( Config::get ( 'development') ) {
      *     Log4PHP::setLogLevel ( Log4PHP::ALL );
-     *     Log4PHP::setOutput( ( Config::get ( 'fbDebugEnabled') ) ? Log4PHP::FIREBUG : Log4PHP::LOGFILE );
+     *     Log4PHP::setOutput( Log4PHP::LOGFILE );
      * }
      * </pre>
      *
@@ -247,7 +241,7 @@ class Log4PHP extends \Jackbooted\Util\JB {
      * Allows you to change the output device for a single class instance.
      *
      * Useful for debugging. A situation that this might be useful if you wanted to send all
-     * Database activity to firebug. eg.
+     * Database activity to SCREEN. eg.
      * <pre>
      *  $dbLogger = DB::getLogger ();
      *  $dbLogger->setClassOutputDevice ( Log4PHP::SCREEN );
@@ -304,11 +298,6 @@ class Log4PHP extends \Jackbooted\Util\JB {
 
             case self::FILE:
                 $this->messageToFile( $msg );
-                break;
-
-            case self::FIREBUG:
-                $func = ( isset( self::$FBMethods[$level] ) ) ? self::$FBMethods[$level] : self::$FBMethods[self::INFO];
-                call_user_func( $func, $msg );
                 break;
 
             case self::LOGFILE:

@@ -13,9 +13,9 @@ namespace Jackbooted\Util;
  * available to the general public.
  *
  */
+
 /*
  * Base class for all JackBooted classes.
- * This way the autoloader will work with no problems even in quercus
  */
 class JB {
 

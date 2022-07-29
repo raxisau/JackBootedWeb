@@ -2,8 +2,6 @@
 
 namespace Jackbooted\Util;
 
-use \Jackbooted\Config\Cfg;
-
 /**
  * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
  *
@@ -77,15 +75,11 @@ class AutoLoader extends \Jackbooted\Util\JB {
     /**
      * Adds a class to the ignore list.
      * @param String $className
-     * @param String $fullName This is the full Java class Name. If it exists then assumes quercus and
-     * imports the class
+     * @param String $fullName This is the full Java class Name.
      * @return void
      */
     public static function ignore( $className, $fullName = null ) {
         self::$ignoreList[$className] = true;
-        if ( $fullName != null && Cfg::get( 'quercus', false ) ) {
-            eval( 'import ' . $fullName . ';' );
-        }
     }
 
     /**
@@ -95,15 +89,17 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * @param string $className Class name that needs to be loaded
      */
     public static function autoload( $className ) {
-        if ( isset( self::$ignoreList[$className] ) )
+        if ( isset( self::$ignoreList[$className] ) ) {
             return;
+        }
 
-        $tries = self::locateClassFromFileAndLoad( $className );
-        if ( $tries === true )
-            return;
+        if ( preg_match( '/^(Jackbooted|App|Defuse|Beanstalk|Shuchkin|PHPMailer)\\\\.*$/', $className, $matches1 ) === 1 ||
+             preg_match( '/^(FPDF|FeedItem|FeedWriter|PHPLiveX|SiteMap|Upload|BAR_GRAPH)$/', $className, $matches2 ) === 1 ) {
 
-        // If made it to here then we have not loaded anything
-        self::$log->error( 'The system has attempted to autoload non existing class: ' . $className . ' tried: (' . implode( ', ', $tries ) . ')' );
+            if ( ( $tries = self::locateClassFromFileAndLoad( $className ) ) !== true ) {
+                self::$log->error( 'The system has attempted to autoload non existing class: ' . $className . ' tried: (' . implode( ', ', $tries ) . ')' );
+            }
+        }
     }
 
     /**
@@ -114,10 +110,14 @@ class AutoLoader extends \Jackbooted\Util\JB {
      */
     private static function locateClassFromFileAndLoad( $className ) {
         $fileToLoad = ClassLocator::getLocation( $className );
-        if ( $fileToLoad === false )
+        if ( $fileToLoad === false ) {
             return [ 'none found' ];
-        if ( self::loadClassFromFile( $className, $fileToLoad ) )
+        }
+
+        if ( self::loadClassFromFile( $className, $fileToLoad ) ) {
             return true;
+        }
+
         return [ $fileToLoad ];
     }
 
@@ -153,10 +153,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * @param string $className to initialise
      */
     private static function runClassInitialization( $className ) {
-        if ( Cfg::get( 'quercus', false ) ) {
-            @eval( $className . '::' . self::STATIC_INIT . '();' );
-        }
-        else if ( method_exists( $className, self::STATIC_INIT ) ) {
+        if ( method_exists( $className, self::STATIC_INIT ) ) {
             $classLevelInit = [ $className, self::STATIC_INIT ];
             call_user_func( $classLevelInit );
         }

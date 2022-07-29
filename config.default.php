@@ -4,8 +4,6 @@
  */
 $config['version']      = 'JACKBOOTWEB Version 12.0';
 $config['debug']        = ! isset ( $_SERVER['HTTP_HOST'] ) || strpos ( $_SERVER['HTTP_HOST'], 'local' ) !== false;
-$config['quercus']      = isset ( $_SERVER['SERVER_SOFTWARE'] ) && preg_match ( '/^.*Quercus.*$/', $_SERVER['SERVER_SOFTWARE'] );
-$config['FireBug']      = false;
 $config['cookie_path']  = '/';
 $config['LF']           = "\r\n";
 

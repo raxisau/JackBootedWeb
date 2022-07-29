@@ -447,22 +447,18 @@ class DB extends \Jackbooted\Util\JB {
         try {
             if ( $params == null ) {
                 // turn on emulating prepared statements because mysql gets confused on some statements
-                if ( !Cfg::get( 'quercus', false ) &&
-                        !in_array( self::driver( $dbh ), [ self::SQLSERVER, self::SQLITE ] ) ) {
+                if ( !in_array( self::driver( $dbh ), [ self::SQLSERVER, self::SQLITE ] ) ) {
                     $dbResource->setAttribute( \PDO::ATTR_EMULATE_PREPARES, true );
                 }
                 $result = $dbResource->query( $qry );
-                if ( !Cfg::get( 'quercus', false ) &&
-                        !in_array( self::driver( $dbh ), [ self::SQLSERVER, self::SQLITE ] ) ) {
+                if ( ! in_array( self::driver( $dbh ), [ self::SQLSERVER, self::SQLITE ] ) ) {
                     $dbResource->setAttribute( \PDO::ATTR_EMULATE_PREPARES, false );
                 }
                 return ( $result === FALSE ) ? self::logError( $qry, $dbResource ) : $result;
             }
             else {
                 $prepareParams = [];
-                if ( self::$directQuery === true &&
-                        !Cfg::get( 'quercus', false ) &&
-                        !in_array( self::driver( $dbh ), [ self::SQLSERVER, self::SQLITE ] ) ) {
+                if ( self::$directQuery === true && ! in_array( self::driver( $dbh ), [ self::SQLSERVER, self::SQLITE ] ) ) {
                     $prepareParams[\PDO::MYSQL_ATTR_DIRECT_QUERY] = true;
                 }
                 if ( ( $dbResource = $dbResource->prepare( $qry, $prepareParams ) ) === false ) {
@@ -523,24 +519,14 @@ class DB extends \Jackbooted\Util\JB {
                 $result = $dbResource->execute( $params );
             }
 
-            if ( Cfg::get( 'quercus', false ) ) {
-                if ( $result < 0 ) {
-                    return self::logError( $qry . ' ' . print_r( $params, true ), $dbResource );
-                }
-                else {
-                    return (int) $result;
-                }
+            if ( $result === false ) {
+                return self::logError( $qry . ' ' . print_r( $params, true ), $dbResource );
+            }
+            else if ( is_int( $result ) ) {
+                return $result;
             }
             else {
-                if ( $result === false ) {
-                    return self::logError( $qry . ' ' . print_r( $params, true ), $dbResource );
-                }
-                else if ( is_int( $result ) ) {
-                    return $result;
-                }
-                else {
-                    return $dbResource->rowCount();
-                }
+                return $dbResource->rowCount();
             }
         }
         catch ( Exception $ex ) {
