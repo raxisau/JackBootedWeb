@@ -54,8 +54,9 @@ class PHPExt extends \Jackbooted\Util\JB {
 
         // ensure that there is no trailing slash (Standard)
         $lastChar = substr( $tmpDir, -1 );
-        if ( $lastChar == '/' || $lastChar == '\\' )
+        if ( $lastChar == '/' || $lastChar == '\\' ) {
             $tmpDir = substr( $tmpDir, 0, -1 );
+        }
         return $tmpDir;
     }
 
@@ -63,10 +64,12 @@ class PHPExt extends \Jackbooted\Util\JB {
         $handle = opendir( $dir );
         $fileList = [];
         while ( false !== ( $file = readdir( $handle ) ) ) {
-            if ( strpos( $file, '.' ) === 0 )
+            if ( strpos( $file, '.' ) === 0 ) {
                 continue;
-            if ( $matchesExp != null && !preg_match( $matchesExp, $file ) )
+            }
+            if ( $matchesExp != null && !preg_match( $matchesExp, $file ) ) {
                 continue;
+            }
 
             $fullPathName = $dir . '/' . $file;
             if ( is_dir( $fullPathName ) ) {

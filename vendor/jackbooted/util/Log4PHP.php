@@ -58,16 +58,14 @@ class Log4PHP extends \Jackbooted\Util\JB {
      */
     const OFF = 0;
 
-    private static $FBMethods = [ self::INFO => [ 'FB', 'info' ],
-        self::ERROR => [ 'FB', 'error' ],
-        self::WARN => [ 'FB', 'warn' ],
-        self::TRACE => [ 'FB', 'trace' ] ];
-    private static $prefix = [ self::TRACE => 'TRACE',
+    private static $prefix = [
+        self::TRACE => 'TRACE',
         self::DEBUG => 'DEBUG',
-        self::INFO => 'INFO',
-        self::WARN => 'WARN',
+        self::INFO  => 'INFO',
+        self::WARN  => 'WARN',
         self::ERROR => 'ERROR',
-        self::FATAL => 'FATAL' ];
+        self::FATAL => 'FATAL'
+    ];
 
     /**
      * Logging device to screen (seperated by <br>).
@@ -159,8 +157,9 @@ class Log4PHP extends \Jackbooted\Util\JB {
      */
     public static function logFactory( $className = null ) {
         if ( $className == null || !isset( self::$logList[$className] ) ) {
-            if ( $className == null )
+            if ( $className == null ) {
                 $className = __CLASS__;
+            }
             self::$logList[$className] = new Log4PHP( $className );
         }
 

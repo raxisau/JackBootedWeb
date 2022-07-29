@@ -22,10 +22,12 @@ class XLS extends \Jackbooted\Util\JB {
         error_reporting( 0 );
         if ( !is_object( $table ) && !is_array( $table ) )
             exit;
-        if ( $name == '' )
+        if ( $name == '' ) {
             $name = 'output' . Invocation::next();
-        if ( !preg_match( '/^.*\.xls$/i', $name ) )
+        }
+        if ( !preg_match( '/^.*\.xls$/i', $name ) ) {
             $name .= '.xls';
+        }
 
         $fileName = PHPExt::getTempDir() . '/' . $name;
 

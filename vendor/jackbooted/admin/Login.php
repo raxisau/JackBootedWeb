@@ -3,7 +3,6 @@
 namespace Jackbooted\Admin;
 
 use \Jackbooted\Config\Cfg;
-use \Jackbooted\Config\Config;
 use \Jackbooted\Config\PreferenceLoader;
 use \Jackbooted\DB\DB;
 use \Jackbooted\DB\DBMaintenance;

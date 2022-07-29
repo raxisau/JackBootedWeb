@@ -12,11 +12,11 @@ namespace Jackbooted;
  */
 class G extends \Jackbooted\Util\JB {
 
-    const SESS = 'JACKBOOTWEB12';
-    const PREFS = 'PREFS12';
-    const LOGIN = 'loggedIn';
+    const SESS   = 'JACKBOOTWEB12';
+    const PREFS  = 'PREFS12';
+    const LOGIN  = 'loggedIn';
     const CRYPTO = 'CRYPTO_KEY';
-    const IV = 'PredefinedJackbootedEncryptionKey12345678901234567';
+    const IV     = 'PredefinedJackbootedEncryptionKey12345678901234567';
 
     /** This method gets the preference based on a name returns empty string if the variable
      * does not exist
@@ -24,8 +24,9 @@ class G extends \Jackbooted\Util\JB {
      * @returns String
      */
     public static function get( $s, $def = '' ) {
-        if ( !isset( $_SESSION[self::SESS][self::PREFS] ) )
+        if ( !isset( $_SESSION[self::SESS][self::PREFS] ) ) {
             return $def;
+        }
         return $_SESSION[self::SESS][self::PREFS]->get( $s, $def );
     }
 
@@ -39,8 +40,9 @@ class G extends \Jackbooted\Util\JB {
      * @returns void
      */
     public static function set( $key, $val, $persist = false, $type = 'DATA' ) {
-        if ( !isset( $_SESSION[self::SESS][self::PREFS] ) )
+        if ( !isset( $_SESSION[self::SESS][self::PREFS] ) ) {
             return;
+        }
         $_SESSION[self::SESS][self::PREFS]->put( $key, $val, $type );
     }
 
@@ -59,8 +61,9 @@ class G extends \Jackbooted\Util\JB {
      * @returns boolean
      */
     public static function isLoggedIn() {
-        if ( !isset( $_SESSION[self::SESS][self::LOGIN] ) )
+        if ( !isset( $_SESSION[self::SESS][self::LOGIN] ) ) {
             return false;
+        }
         return $_SESSION[self::SESS][self::LOGIN];
     }
 
@@ -69,8 +72,9 @@ class G extends \Jackbooted\Util\JB {
      * @param boolean $flag true if user is logged in
      */
     public static function setLoggedIn( $flag ) {
-        if ( !isset( $_SESSION[self::SESS] ) )
+        if ( !isset( $_SESSION[self::SESS] ) ) {
             $_SESSION[self::SESS] = [];
+        }
         $_SESSION[self::SESS][self::LOGIN] = $flag;
     }
 

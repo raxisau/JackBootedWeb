@@ -2,7 +2,6 @@
 
 namespace Jackbooted\Config;
 
-use \Jackbooted\Admin\Login;
 use \Jackbooted\Forms\Request;
 use \Jackbooted\Forms\Response;
 use \Jackbooted\G;

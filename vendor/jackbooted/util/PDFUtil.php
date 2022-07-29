@@ -129,10 +129,13 @@ class PDFUtil extends FPDF {
         $colCount = count( $tab[0] );
         $colNames = array_keys( $tab[0] );
 
-        if ( $x != 0 )
+        if ( $x != 0 ) {
             $this->SetX( $x );
-        if ( $y != 0 )
+        }
+
+        if ( $y != 0 ) {
             $this->SetY( $y );
+        }
 
         $topY = $this->GetY();
 
@@ -206,8 +209,9 @@ class PDFUtil extends FPDF {
                 $this->SetXY( $tabStops[$col], $y );
                 $colWidth = $tabStops[$col + 1] - $tabStops[$col];
                 $this->td( $tab[$row][$colNames[$col]], $colWidth );
-                if ( $nextRow < $this->GetY() )
+                if ( $nextRow < $this->GetY() ) {
                     $nextRow = $this->GetY();
+                }
             }
             if ( ( $border & 1 ) != 0 ) {
                 $this->Line( $tabStops[0], $nextRow, end( $tabStops ), $nextRow );

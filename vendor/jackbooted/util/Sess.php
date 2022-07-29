@@ -16,8 +16,9 @@ use \Jackbooted\G;
 class Sess extends \Jackbooted\Util\JB {
 
     public static function get( $key, $def = '' ) {
-        if ( !isset( $_SESSION[G::SESS][$key] ) )
+        if ( !isset( $_SESSION[G::SESS][$key] ) ) {
             return $def;
+        }
         return $_SESSION[G::SESS][$key];
     }
 
