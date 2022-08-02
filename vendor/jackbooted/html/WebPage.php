@@ -45,12 +45,26 @@ class WebPage extends \Jackbooted\Util\JB {
 
     protected static function execAction( $action ) {
         if ( strpos( $action, '::' ) !== false ) {
-            eval( '$html = ' . $action . ';' );
+            list ( $clazz, $rest ) = explode( '->', $action );
+            $className = str_replace( '\\\\', '\\', $clazz );
+            if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
+                $functionName = substr( $rest, 0, $idx );
+            }
+            else {
+                $functionName = $rest;
+            }
+            $html = call_user_func( [ $className, $functionName ] );
         }
         else if ( strpos( $action, '->' ) !== false ) {
             list ( $clazz, $rest ) = explode( '->', $action );
-            $obj = new $clazz ();
-            eval( '$html = $obj->' . $rest . ';' );
+            $className = str_replace( '\\\\', '\\', $clazz );
+            if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
+                $functionName = substr( $rest, 0, $idx );
+            }
+            else {
+                $functionName = $rest;
+            }
+            $html = call_user_func( [ new $className(), $functionName ] );
         }
         else {
             $cName = static::class;
