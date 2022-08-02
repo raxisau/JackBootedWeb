@@ -45,10 +45,10 @@ class WebPage extends \Jackbooted\Util\JB {
 
     protected static function execAction( $action ) {
         if ( strpos( $action, '::' ) !== false ) {
-            list ( $clazz, $rest ) = explode( '->', $action );
+            list ( $clazz, $rest ) = explode( '::', $action );
             $className = str_replace( '\\\\', '\\', $clazz );
             if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
-                $functionName = substr( $rest, 0, $idx );
+                $functionName = trim( substr( $rest, 0, $idx ) );
             }
             else {
                 $functionName = $rest;
@@ -59,7 +59,7 @@ class WebPage extends \Jackbooted\Util\JB {
             list ( $clazz, $rest ) = explode( '->', $action );
             $className = str_replace( '\\\\', '\\', $clazz );
             if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
-                $functionName = substr( $rest, 0, $idx );
+                $functionName = trim( substr( $rest, 0, $idx ) );
             }
             else {
                 $functionName = $rest;
