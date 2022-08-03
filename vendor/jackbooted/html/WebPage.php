@@ -39,12 +39,12 @@ class WebPage extends \Jackbooted\Util\JB {
     protected static function execAction( $action ) {
         if ( strpos( $action, '::' ) !== false ) {
             list ( $clazz, $rest ) = explode( '::', $action );
-            list ( $className, $functionName ) = $this->normalizeCall( $clazz, $rest );
+            list ( $className, $functionName ) = self::normalizeCall( $clazz, $rest );
             $html = call_user_func( [ $className, $functionName ] );
         }
         else if ( strpos( $action, '->' ) !== false ) {
             list ( $clazz, $rest ) = explode( '->', $action );
-            list ( $className, $functionName ) = $this->normalizeCall( $clazz, $rest );
+            list ( $className, $functionName ) = self::normalizeCall( $clazz, $rest );
             $html = call_user_func( [ new $className(), $functionName ] );
         }
         else {
@@ -61,7 +61,7 @@ class WebPage extends \Jackbooted\Util\JB {
         return $html;
     }
 
-    private function normalizeCall( $clazz, $rest ) {
+    static function normalizeCall( $clazz, $rest ) {
         $className = str_replace( '\\\\', '\\', $clazz );
         if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
             $functionName = trim( substr( $rest, 0, $idx ) );
@@ -93,5 +93,4 @@ class WebPage extends \Jackbooted\Util\JB {
             return 'Unknown Method Call: ' . $name;
         }
     }
-
 }
