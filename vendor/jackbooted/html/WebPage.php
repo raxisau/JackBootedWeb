@@ -4,7 +4,6 @@ namespace Jackbooted\Html;
 
 use \Jackbooted\Config\Cfg;
 use \Jackbooted\Forms\Request;
-use \Jackbooted\Security\Privileges;
 use \Jackbooted\Util\Log4PHP;
 
 /**
@@ -19,25 +18,19 @@ use \Jackbooted\Util\Log4PHP;
  */
 class WebPage extends \Jackbooted\Util\JB {
 
-    const ACTION = '_ACT';
+    const ACTION   = '_ACT';
     const SAVE_URL = '_SAVEURL';
 
     protected static $log;
 
     public static function init() {
-        self::$log = Log4PHP::logFactory( __CLASS__ );
+        self::$log = Log4PHP::logFactory( static::class );
     }
 
     public static function controller( $default = '', $actionKey = self::ACTION ) {
         $action = Request::get( $actionKey, $default );
-        if ( !isset( $action ) || $action == false )
+        if ( !isset( $action ) || $action == false ) {
             return false;
-
-        if ( ( $modifiedAction = self::checkPriviliages( $action ) ) === false ) {
-            return 'You do not have priviliages to perform action: ' . $action;
-        }
-        else {
-            $action = $modifiedAction;
         }
 
         return self::execAction( $action );
@@ -46,24 +39,12 @@ class WebPage extends \Jackbooted\Util\JB {
     protected static function execAction( $action ) {
         if ( strpos( $action, '::' ) !== false ) {
             list ( $clazz, $rest ) = explode( '::', $action );
-            $className = str_replace( '\\\\', '\\', $clazz );
-            if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
-                $functionName = trim( substr( $rest, 0, $idx ) );
-            }
-            else {
-                $functionName = $rest;
-            }
+            list ( $className, $functionName ) = $this->normalizeCall( $clazz, $rest );
             $html = call_user_func( [ $className, $functionName ] );
         }
         else if ( strpos( $action, '->' ) !== false ) {
             list ( $clazz, $rest ) = explode( '->', $action );
-            $className = str_replace( '\\\\', '\\', $clazz );
-            if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
-                $functionName = trim( substr( $rest, 0, $idx ) );
-            }
-            else {
-                $functionName = $rest;
-            }
+            list ( $className, $functionName ) = $this->normalizeCall( $clazz, $rest );
             $html = call_user_func( [ new $className(), $functionName ] );
         }
         else {
@@ -80,17 +61,15 @@ class WebPage extends \Jackbooted\Util\JB {
         return $html;
     }
 
-    private static function checkPriviliages( $action ) {
-        if ( !Cfg::get( 'check_priviliages', false ) )
-            return $action;
-
-        if ( ( $loginAction = Privileges::access( $action ) ) === false )
-            return false;
-        if ( is_string( $loginAction ) && isset( $_SERVER["REQUEST_URI"] ) ) {
-            Request::set( self::SAVE_URL, $_SERVER["REQUEST_URI"] );
-            $action = $loginAction;
+    private function normalizeCall( $clazz, $rest ) {
+        $className = str_replace( '\\\\', '\\', $clazz );
+        if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
+            $functionName = trim( substr( $rest, 0, $idx ) );
         }
-        return $action;
+        else {
+            $functionName = $rest;
+        }
+        return [ $className, $functionName ];
     }
 
     public function __construct() {
