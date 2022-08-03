@@ -61,7 +61,7 @@ class WebPage extends \Jackbooted\Util\JB {
         return $html;
     }
 
-    static function normalizeCall( $clazz, $rest ) {
+    private static function normalizeCall( $clazz, $rest ) {
         $className = str_replace( '\\\\', '\\', $clazz );
         if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
             $functionName = trim( substr( $rest, 0, $idx ) );
