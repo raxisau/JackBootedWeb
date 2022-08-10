@@ -30,7 +30,7 @@ abstract class ORM extends \Jackbooted\Util\JB {
      * }
      */
     public static function init() {}
-    
+
     /*
      * Factory must be implenebted and should look something like this:
      * public static function factory( $data ) {
@@ -56,7 +56,7 @@ abstract class ORM extends \Jackbooted\Util\JB {
         if ( ( $row = $obj->dao->oneRow( $id ) ) === false ) {
             return false;
         }
-        
+
         $obj->data = $obj->dao->objToRel( $row );
         $obj->clearDirty();
         return $obj;
@@ -197,10 +197,10 @@ abstract class ORM extends \Jackbooted\Util\JB {
 
     public function refresh() {
         if ( ! isset( $this->data[$this->dao->primaryKey] ) ) {
-                return $this;
+            return $this;
         }
 
-        if ( ( $row = static::$dao->oneRow( $this->data[$this->dao->primaryKey] ) ) === false ) {
+        if ( ( $row = $this->dao->oneRow( $this->data[$this->dao->primaryKey] ) ) === false ) {
             return $this;
         }
 
