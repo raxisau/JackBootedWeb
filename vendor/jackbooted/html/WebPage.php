@@ -1,10 +1,5 @@
 <?php
-
 namespace Jackbooted\Html;
-
-use \Jackbooted\Config\Cfg;
-use \Jackbooted\Forms\Request;
-use \Jackbooted\Util\Log4PHP;
 
 /**
  * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
@@ -24,12 +19,12 @@ class WebPage extends \Jackbooted\Util\JB {
     protected static $log;
 
     public static function init() {
-        self::$log = Log4PHP::logFactory( static::class );
+        self::$log = \Jackbooted\Util\Log4PHP::logFactory( static::class );
     }
 
     public static function controller( $default = '', $actionKey = self::ACTION ) {
-        $action = Request::get( $actionKey, $default );
-        if ( !isset( $action ) || $action == false ) {
+        $action = \Jackbooted\Forms\Request::get( $actionKey, $default );
+        if ( ! isset( $action ) || $action == false || $action == '' ) {
             return false;
         }
 
@@ -85,7 +80,7 @@ class WebPage extends \Jackbooted\Util\JB {
     }
 
     public function __call( $name, $arguments ) {
-        $fName = Cfg::get( 'site_path' ) . '/' . $name . '.html';
+        $fName = \Jackbooted\Config\Cfg::get( 'site_path' ) . '/' . $name . '.html';
         if ( file_exists( $fName ) ) {
             return file_get_contents( $fName );
         }
