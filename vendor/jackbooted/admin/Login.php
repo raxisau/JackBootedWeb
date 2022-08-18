@@ -30,47 +30,61 @@ use \Jackbooted\Mail\Mailer;
  */
 class Login extends WebPage {
 
-    const LOGIN_NAME = 'RW_4e832b50f61c5e87ec9e7264e6466e1f';
+    const LOGIN_NAME    = 'RW_4e832b50f61c5e87ec9e7264e6466e1f';
     const PASSWORD_NAME = 'RW_99cb4fc2271bcda4c9284aa7b2d8e262';
     const SESSHASH_NAME = 'RW_9289b6efa48c4e12633da5057107dfcb';
-    const LOGIN_FNAME = 'fldLoginID';
-    const PASSW_FNAME = 'fldPassword';
-    const DEF = '\Jackbooted\Admin\Login->index()';
+    const LOGIN_FNAME   = 'fldLoginID';
+    const PASSW_FNAME   = 'fldPassword';
+    const DEF           = '\Jackbooted\Admin\Login->index()';
 
     private static $completeMenu;
     private static $userMenu = null;
+    private static $log;
 
     public static function init() {
-        self::$completeMenu = [ 'Logout' => [ 'action' => __CLASS__ . '::logOut()', 'url' => 'ajax.php?' ],
-            Cfg::get( 'desc' ) => [ 'action' => __CLASS__ . '::home()', 'url' => '?' ] ];
+        self::$completeMenu = [ 
+            'Logout' => [
+                'action' => __CLASS__ . '::logOut()',
+                'url' => 'ajax.php?'
+            ],
+            Cfg::get( 'desc' ) => [
+                'action' => __CLASS__ . '::home()',
+                'url' => '?'
+            ]
+        ];
+        self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
     }
 
     public static function getMenu() {
-        if ( self::$userMenu != null )
+        if ( self::$userMenu != null ) {
             return self::$userMenu;
+        }
 
         self::$userMenu = [];
         foreach ( self::$completeMenu as $title => $action ) {
-            if ( G::isLoggedIn() )
+            if ( G::isLoggedIn() ) {
                 self::$userMenu[$title] = $action;
+            }
         }
         return self::$userMenu;
     }
 
     public static function menu() {
-        if ( Privileges::access( __METHOD__ ) !== true || !G::isLoggedIn() )
+        if ( Privileges::access( __METHOD__ ) !== true || !G::isLoggedIn() ) {
             return '';
-        if ( count( self::getMenu() ) <= 0 )
+        }
+        if ( count( self::getMenu() ) <= 0 ) {
             return '';
+        }
 
         $resp = new Response ();
-        $html = Tag::hTag( 'b' ) . 'Login Menu' . Tag::_hTag( 'b' ) .
+        $html = Tag::b() . 'Login Menu' . Tag::_b() .
                 Tag::ul( [ 'id' => 'menuList' ] );
 
         foreach ( self::getMenu() as $title => $action ) {
             $html .= Tag::li() .
-                    Tag::hRef( $action['url'] . $resp->action( $action['action'] )->toUrl(), $title ) .
-                    Tag::_li();
+                       Tag::hRef( $action['url'] . $resp->action( $action['action'] )->toUrl(), $title ) .
+                     Tag::_li();
         }
 
         $html .= Tag::_ul();
@@ -79,6 +93,7 @@ class Login extends WebPage {
     }
 
     public static function sendLoginCookie( $username, $password ) {
+        self::$log->error( __METHOD__ );
         $hash = self::calculateHash( $username, $password );
 
         if ( Cfg::get( 'save_cookies', false ) ) {
@@ -93,9 +108,10 @@ class Login extends WebPage {
     }
 
     public static function getLoginCookie() {
+        self::$log->error( __METHOD__ );
         $username = G::get( self::LOGIN_NAME, '' );
         $password = G::get( self::PASSWORD_NAME, '' );
-        $hash = G::get( self::SESSHASH_NAME, '' );
+        $hash     = G::get( self::SESSHASH_NAME, '' );
 
         if ( $username == '' || $password == '' || $hash == '' ) {
             $username = Cookie::get( self::LOGIN_NAME, '' );
@@ -106,9 +122,11 @@ class Login extends WebPage {
     }
 
     public static function loadPreferencesFromCookies() {
+        self::$log->error( __METHOD__ );
         list ( $username, $password, $hash ) = self::getLoginCookie();
-        if ( !self::checkAuthenticated( $username, $password, $hash ) )
+        if ( !self::checkAuthenticated( $username, $password, $hash ) ) {
             return false;
+        }
 
         if ( !isset( $_SESSION[G::SESS][G::PREFS] ) ||
                 !is_object( $_SESSION[G::SESS][G::PREFS] ) ) {
@@ -120,17 +138,23 @@ class Login extends WebPage {
     }
 
     public static function calculateHash( $username, $password ) {
+        self::$log->error( __METHOD__ );
         $hashArray = [ $username, $password, $_SERVER['REMOTE_ADDR'], time() ];
         return serialize( $hashArray );
     }
 
     public static function testHash( $username, $password, $hash ) {
-        if ( ( $hashArray = @unserialize( $hash ) ) === false )
+        self::$log->error( __METHOD__ );
+        if ( ( $hashArray = @unserialize( $hash ) ) === false ) {
             return false;
-        else if ( $hashArray[0] != $username )
+        }
+        else if ( $hashArray[0] != $username ) {
             return self::$log->error( 'Incorrect username' );
-        else if ( $hashArray[1] != $password )
+        }
+        else if ( $hashArray[1] != $password ) {
             return self::$log->error( 'Incorrect password' );
+        }
+
         // Sorry to comment out code in production, but this is getting tiresome as
         // my internet provider is changing IPs every 5 minutes
         // This check will force a user to login again if they change location
@@ -139,11 +163,13 @@ class Login extends WebPage {
         else if ( time() - $hashArray[3] > Cfg::get( 'session_timeout', 604800 ) ) {
             return self::$log->error( 'Session timeout' );
         }
-        else
+        else {
             return true;
+        }
     }
 
     public static function checkAuthenticated( $username, $password, $hash = null ) {
+        self::$log->error( __METHOD__ );
         if ( ! isset( $username ) || $username == false || $username == '' ||
              ! isset( $password ) || $password == false || $password == '' ) {
             return false;
@@ -195,11 +221,13 @@ SQL;
     }
 
     public static function updateLastLogin( $username ) {
+        self::$log->error( __METHOD__ );
         DB::exec( DB::DEF, 'UPDATE tblUser SET fldLastLogin=?,fldFails=0 WHERE fldUser=?', [ time(), $username ] );
         DB::exec( DB::DEF, 'DELETE FROM tblLoginAttempt WHERE fldUsername=?', [ $username ] );
     }
 
     public static function incrementFails( $username, $password ) {
+        self::$log->error( __METHOD__ );
         $params = [ DBMaintenance::dbNextNumber( DB::DEF, 'tblLoginAttempt' ),
                     $username,
                     $password,
@@ -211,30 +239,37 @@ SQL;
     }
 
     public static function clearFails() {
+        self::$log->error( __METHOD__ );
         $la = DB::exec( DB::DEF, 'DELETE FROM tblLoginAttempt WHERE fldUsername IN (SELECT fldUser FROM tblUser)' );
         $up = DB::exec( DB::DEF, 'UPDATE tblUser SET fldFails=0' );
         return [ 0, "Cleared: $up Login Attempts: $la" ];
     }
 
     public static function loadPreferences( $user ) {
+        self::$log->error( __METHOD__ );
         $prefLoader = new PreferenceLoader( null, $user );
         $_SESSION[G::SESS][G::PREFS] = $prefLoader->getPreferences();
         G::setLoggedIn( true );
     }
 
     public static function logOut() {
+        self::$log->error( __METHOD__ );
         self::killSession();
         self::doRedirect();
     }
 
     public static function initSession() {
+        self::$log->error( __METHOD__ );
         if ( ! isset( $_SESSION ) ) {
             session_start();
         }
-        if ( !isset( $_SESSION[G::SESS] ) ) $_SESSION[G::SESS] = [];
+        if ( !isset( $_SESSION[G::SESS] ) ) { 
+            $_SESSION[G::SESS] = [];
+        }
     }
 
     public static function killSession() {
+        self::$log->error( __METHOD__ );
         Cookie::clear( self::LOGIN_NAME );
         Cookie::clear( self::PASSWORD_NAME );
         Cookie::clear( self::SESSHASH_NAME );
@@ -250,11 +285,13 @@ SQL;
     }
 
     public static function home() {
+        self::$log->error( __METHOD__ );
         Request::set( WebPage::SAVE_URL, Cfg::siteUrl() );
         self::doRedirect();
     }
 
     public static function doRedirect() {
+        self::$log->error( __METHOD__ );
         $redirectTime = 0;
 
         if ( ( $index = Cfg::get( 'index' ) ) == '' ) {
@@ -272,6 +309,7 @@ SQL;
     }
 
     public function index() {
+        self::$log->error( __METHOD__ );
         $formName = 'Login_index';
         $valid = Validator::factory( $formName )
                 ->addExists( self::LOGIN_FNAME, 'Email field must not be empty' )
@@ -313,6 +351,7 @@ SQL;
     }
 
     public function forgotPassword() {
+        self::$log->error( __METHOD__ );
         // Initialise the $msg and $action and $disclaimer variables
         $formName = 'Login_forgotPassword';
 
@@ -344,6 +383,7 @@ SQL;
     }
 
     public function sendPW() {
+        self::$log->error( __METHOD__ );
         $sql = 'SELECT fldUserID FROM tblUser WHERE fldUser=?';
 
         if ( ( $id = DB::oneValue( DB::DEF, $sql, Request::get( 'fldEmail' ) ) ) === false ) {
@@ -392,12 +432,13 @@ SQL;
     }
 
     public function checkLogin() {
+        self::$log->error( __METHOD__ );
         $username = Request::get( self::LOGIN_FNAME );
         $password = Request::get( self::PASSW_FNAME );
 
-        if ( !isset( $username ) || $username == false ||
-                !isset( $password ) || $password == false )
+        if ( !isset( $username ) || $username == false || !isset( $password ) || $password == false ) {
             return false;
+        }
 
         if ( self::checkAuthenticated( $username, $password ) ) {
             self::$log->debug( 'Killing old session id: ' . session_id() );
@@ -413,6 +454,7 @@ SQL;
     }
 
     protected function getDisplayName() {
+        self::$log->error( __METHOD__ );
         $name = G::get( 'fldFirstName' ) . ' ' . G::get( 'fldLastName' );
         if ( G::isLoggedIn() &&
                 G::accessLevel( Privileges::getSecurityLevel( 'SITE ADMIN' ) ) ) {
