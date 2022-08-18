@@ -176,6 +176,8 @@ HTML;
         self::initSession();
         self::$log->trace( '**** HERE 2');
 
+        self::$log->trace( '**** HERE 2.3 ' . \Jackbooted\Admin\Login::DEF );
+
         // See if we can log the user in
         if ( ! \Jackbooted\Admin\Login::loadPreferencesFromCookies() ) {
             self::$log->trace( '**** HERE 3');
