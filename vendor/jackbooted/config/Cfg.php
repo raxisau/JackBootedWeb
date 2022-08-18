@@ -204,16 +204,21 @@ HTML;
     }
 
     private static function setUpLogging() {
-        $errorLogLocation = ini_get( 'error_log' );
-        if ( !isset( $errorLogLocation ) || $errorLogLocation == false ) {
-            ini_set( 'error_log', '/dev/stdout' );
-        }
-
-        $inDevMode = self::get( 'debug' );
-
-        Log4PHP::init( ( $inDevMode ) ? Log4PHP::DEBUG : Log4PHP::ERROR  );
+        Log4PHP::init( Log4PHP::ALL );
         Log4PHP::setOutput( Log4PHP::FILE );
         self::$log = Log4PHP::logFactory( __CLASS__ );
+        self::$log->debug( __METHOD__ . 'Logging set up' );
+
+//        $errorLogLocation = ini_get( 'error_log' );
+//        if ( !isset( $errorLogLocation ) || $errorLogLocation == false ) {
+//            ini_set( 'error_log', '/dev/stdout' );
+//        }
+//
+//        $inDevMode = self::get( 'debug' );
+//
+//        Log4PHP::init( ( $inDevMode ) ? Log4PHP::DEBUG : Log4PHP::ERROR  );
+//        Log4PHP::setOutput( Log4PHP::FILE );
+//        self::$log = Log4PHP::logFactory( __CLASS__ );
     }
 
     public static function turnOffErrorHandling() {
