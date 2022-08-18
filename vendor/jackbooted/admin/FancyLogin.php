@@ -45,11 +45,14 @@ class FancyLogin extends Login {
     }
 
     public function index() {
+        self::$log->trace( 'Entering ' . __METHOD__ );
         $html = ( G::isLoggedIn() ) ? $this->displayUserDetails() : $this->loginForm();
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $html;
     }
 
     private function displayUserDetails() {
+        self::$log->trace( 'Entering ' . __METHOD__ );
         $jQuery = <<<JS
             $().ready(function() {
                 $('#hoverimage').hover( function () { $('#extralinks').fadeIn('fast'); },
@@ -83,10 +86,12 @@ JS;
                   Tag::_tr() .
                 Tag::_table();
 
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $html;
     }
 
     private function loginForm() {
+        self::$log->trace( 'Entering ' . __METHOD__ );
         $jsUrl = Cfg::get( 'js_url' );
         $jQuery = <<<JS
     $().ready(function() {
@@ -147,6 +152,7 @@ JS;
                   Tag::_tr() .
                 Tag::_table();
 
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $html;
     }
 

@@ -39,7 +39,6 @@ class Login extends WebPage {
 
     private   static $completeMenu;
     private   static $userMenu = null;
-    protected static $log;
 
     public static function init() {
         self::$completeMenu = [
@@ -52,7 +51,6 @@ class Login extends WebPage {
                 'url' => '?'
             ]
         ];
-        self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
     }
 
     public static function getMenu() {
@@ -470,9 +468,9 @@ SQL;
 
     protected function getDisplayName() {
         self::$log->trace( 'Entering: ' . __METHOD__ );
+
         $name = G::get( 'fldFirstName' ) . ' ' . G::get( 'fldLastName' );
-        if ( G::isLoggedIn() &&
-                G::accessLevel( Privileges::getSecurityLevel( 'SITE ADMIN' ) ) ) {
+        if ( G::isLoggedIn() && G::accessLevel( Privileges::getSecurityLevel( 'SITE ADMIN' ) ) ) {
             $uName = Tag::hRef( 'superadmin.php', $name, [ 'class' => 'admin' ] );
         }
         else {
