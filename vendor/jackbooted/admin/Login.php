@@ -273,17 +273,6 @@ SQL;
         self::doRedirect();
     }
 
-    public static function initSession() {
-        self::$log->trace( 'Entering: ' . __METHOD__ );
-        if ( ! isset( $_SESSION ) ) {
-            session_start();
-        }
-        if ( !isset( $_SESSION[G::SESS] ) ) { 
-            $_SESSION[G::SESS] = [];
-        }
-        self::$log->trace( 'Exiting ' . __METHOD__ );
-    }
-
     public static function killSession() {
         self::$log->trace( 'Entering: ' . __METHOD__ );
         Cookie::clear( self::LOGIN_NAME );

@@ -172,7 +172,7 @@ HTML;
             return;
         }
 
-        \Jackbooted\Admin\Login::initSession();
+        self::initSession();
 
         // See if we can log the user in
         if ( ! \Jackbooted\Admin\Login::loadPreferencesFromCookies() ) {
@@ -181,6 +181,17 @@ HTML;
             }
         }
         self::$log->trace( 'Exiting: ' . __METHOD__ );
+    }
+
+    public static function initSession() {
+        self::$log->trace( 'Entering: ' . __METHOD__ );
+        if ( ! isset( $_SESSION ) ) {
+            session_start();
+        }
+        if ( !isset( $_SESSION[G::SESS] ) ) {
+            $_SESSION[G::SESS] = [];
+        }
+        self::$log->trace( 'Exiting ' . __METHOD__ );
     }
 
 
