@@ -79,7 +79,9 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * @return void
      */
     public static function ignore( $className, $fullName = null ) {
+        self::$log->trace( 'Entering ' . __METHOD__ . " Class: {$className}" );
         self::$ignoreList[$className] = true;
+        self::$log->trace( 'Exiting ' . __METHOD__ . " Class: {$className}" );
     }
 
     /**
@@ -102,7 +104,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
                 self::$log->error( 'The system has attempted to autoload non existing class: ' . $className . ' tried: (' . implode( ', ', $tries ) . ')' );
             }
         }
-        self::$log->trace( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ . " Class: {$className}");
     }
 
     /**
@@ -124,7 +126,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
             return true;
         }
 
-        self::$log->trace( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ . " Class: {$className}");
         return [ $fileToLoad ];
     }
 
@@ -138,23 +140,27 @@ class AutoLoader extends \Jackbooted\Util\JB {
         self::$log->trace( 'Entering ' . __METHOD__ . " Class: {$className}, File: {$fileToLoad}" );
         // If the file does not exist then get out
         if ( !file_exists( $fileToLoad ) ) {
-            self::$log->trace( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ . " Class: {$className}");
             return false;
         }
 
         // Everything good!
+        self::$log->trace( '***** HERE 1.1' );
         require_once $fileToLoad;
+        self::$log->trace( '***** HERE 1.2' );
 
         // RUn class level initialization only on classes that follow JackBoot Web standard
         if ( preg_match( self::THIRD_PARTY_REGEX, $fileToLoad ) ) {
             self::$log->trace( "Skipping class initialization for {$className} from " . $fileToLoad );
         }
         else {
+            self::$log->trace( '***** HERE 1.3' );
             self::runClassInitialization( $className );
+            self::$log->trace( '***** HERE 1.4' );
         }
 
         self::$log->trace( "Loaded {$className} from " . $fileToLoad );
-        self::$log->trace( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ . " Class: {$className}");
         return true;
     }
 
@@ -169,7 +175,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
             $classLevelInit = [ $className, self::STATIC_INIT ];
             call_user_func( $classLevelInit );
         }
-        self::$log->trace( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ . " Class: {$className}");
     }
 
 }
