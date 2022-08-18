@@ -89,7 +89,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * @param string $className Class name that needs to be loaded
      */
     public static function autoload( $className ) {
-        self::$log->trace( 'Entering ' . __METHOD__ );
+        self::$log->trace( 'Entering ' . __METHOD__ . " Class: {$className}" );
         if ( isset( self::$ignoreList[$className] ) ) {
             self::$log->trace( 'Exiting ' . __METHOD__ );
             return;
@@ -112,7 +112,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * that it tried to load from
      */
     private static function locateClassFromFileAndLoad( $className ) {
-        self::$log->trace( 'Entering ' . __METHOD__ );
+        self::$log->trace( 'Entering ' . __METHOD__ . " Class: {$className}"  );
         $fileToLoad = ClassLocator::getLocation( $className );
         if ( $fileToLoad === false ) {
             self::$log->trace( 'Exiting ' . __METHOD__ );
@@ -135,7 +135,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * @return boolean true on sucess
      */
     public static function loadClassFromFile( $className, $fileToLoad ) {
-        self::$log->trace( 'Entering ' . __METHOD__ );
+        self::$log->trace( 'Entering ' . __METHOD__ . " Class: {$className}, File: {$fileToLoad}" );
         // If the file does not exist then get out
         if ( !file_exists( $fileToLoad ) ) {
             self::$log->trace( 'Exiting ' . __METHOD__ );
@@ -164,7 +164,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
      * @param string $className to initialise
      */
     private static function runClassInitialization( $className ) {
-        self::$log->trace( 'Entering ' . __METHOD__ );
+        self::$log->trace( 'Entering ' . __METHOD__ . " Class: {$className}" );
         if ( method_exists( $className, self::STATIC_INIT ) ) {
             $classLevelInit = [ $className, self::STATIC_INIT ];
             call_user_func( $classLevelInit );
