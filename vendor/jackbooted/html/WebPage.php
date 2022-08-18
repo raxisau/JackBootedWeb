@@ -32,6 +32,9 @@ class WebPage extends \Jackbooted\Util\JB {
     }
 
     protected static function execAction( $action ) {
+        error_reporting( -1 );
+        ini_set("display_errors", 1);
+
         if ( strpos( $action, '::' ) !== false ) {
             list ( $clazz, $rest ) = explode( '::', $action );
             list ( $className, $functionName ) = self::normalizeCall( $clazz, $rest );
