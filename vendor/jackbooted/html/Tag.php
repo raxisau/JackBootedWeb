@@ -42,6 +42,8 @@ class Tag extends \Jackbooted\Util\JB {
      * Automatically handle opening and closing html
      */
     public static function __callStatic( $name, $arguments ) {
+        self::$log->trace( 'Entering: ' . __METHOD__ . "name: $name, arguments: " . print_r( $arguments, true ) );
+        
         if ( substr( $name, 0, 1 ) == '_' ) {
             return self::_hTag( strtolower( substr( $name, 1 ) ) );
         }
