@@ -32,13 +32,17 @@ class Privileges extends \Jackbooted\Util\JB {
     }
 
     public static function access( $action = null ) {
-        if ( !Cfg::get( 'check_priviliages' ) )
+        if ( !Cfg::get( 'check_priviliages' ) ) {
             return true;
+        }
 
-        if ( $action == null )
+        if ( $action == null ) {
             $action = Request::get( WebPage::ACTION );
-        if ( isset( self::$cache[$action] ) )
+        }
+        
+        if ( isset( self::$cache[$action] ) ) {
             return self::$cache[$action];
+        }
 
         if ( ( $priviliagesIDs = self::getPriviliageIDs( $action ) ) === false ) {
             self::$log->warn( 'No priviliages found for action: ' . $action );
@@ -100,17 +104,34 @@ SQL;
     private static function getPriviliageIDs( $action ) {
         $sql = 'SELECT fldSecPrivilegesID FROM tblSecPrivileges WHERE ? LIKE fldAction';
         $tab = new DBTable( DB::DEF, $sql, $action, DB::FETCH_NUM );
-        if ( $tab->isEmpty() )
+        if ( $tab->isEmpty() ) {
             return false;
+        }
         return $tab->getColumn( 0 );
     }
 
+
+
     public static function getSecurityLevel( $level ) {
         if ( self::$securityLevels == null ) {
-            $tab = new DBTable( DB::DEF, Admin::LEVEL_SQL, null, DB::FETCH_NUM );
-            $valCol = $tab->getColumn( 0 );
-            $namCol = $tab->getColumn( 1 );
-            self::$securityLevels = array_merge( array_combine( $valCol, $namCol ), array_combine( $namCol, $valCol ) );
+            self::$securityLevels = [
+                0                => 'God',
+                1                => 'Super Admin',
+                2                => 'Site Admin',
+                3                => 'Manager',
+                4                => 'Assist Manager',
+                5                => 'Staff',
+                6                => 'User',
+                7                => 'Guest',
+                'God'            => 0,
+                'Super Admin'    => 1,
+                'Site Admin'     => 2,
+                'Manager'        => 3,
+                'Assist Manager' => 4,
+                'Staff'          => 5,
+                'User'           => 6,
+                'Guest'          => 7,
+            ];
         }
         return self::$securityLevels[$level];
     }
