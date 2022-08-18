@@ -39,7 +39,7 @@ class Privileges extends \Jackbooted\Util\JB {
         if ( $action == null ) {
             $action = Request::get( WebPage::ACTION );
         }
-        
+
         if ( isset( self::$cache[$action] ) ) {
             return self::$cache[$action];
         }
@@ -115,22 +115,22 @@ SQL;
     public static function getSecurityLevel( $level ) {
         if ( self::$securityLevels == null ) {
             self::$securityLevels = [
-                0                => 'God',
-                1                => 'Super Admin',
-                2                => 'Site Admin',
-                3                => 'Manager',
-                4                => 'Assist Manager',
-                5                => 'Staff',
-                6                => 'User',
-                7                => 'Guest',
-                'God'            => 0,
-                'Super Admin'    => 1,
-                'Site Admin'     => 2,
-                'Manager'        => 3,
-                'Assist Manager' => 4,
-                'Staff'          => 5,
-                'User'           => 6,
-                'Guest'          => 7,
+                0                => 'GOD',
+                1                => 'SUPER ADMIN',
+                2                => 'SITE ADMIN',
+                3                => 'MANAGER',
+                4                => 'ASSIST MANAGER',
+                5                => 'STAFF',
+                6                => 'USER',
+                7                => 'GUEST',
+                'GOD'            => 0,
+                'SUPER ADMIN'    => 1,
+                'SITE ADMIN'     => 2,
+                'MANAGER'        => 3,
+                'ASSIST MANAGER' => 4,
+                'STAFF'          => 5,
+                'USER'           => 6,
+                'GUEST'          => 7,
             ];
         }
         return self::$securityLevels[$level];
