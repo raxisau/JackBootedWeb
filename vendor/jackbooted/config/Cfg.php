@@ -35,18 +35,35 @@ class Cfg {
         setlocale( LC_MONETARY, 'en_US' );
         ini_set( 'short_open_tag', '1' );
 
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
         self::checkForMaintenance();
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
         self::preLoadUsedClasses();
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
         self::setUpLogging();
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
         self::setUpAutoLoader();
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
         self::setUpDebugFriendlyClassSwitches();
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
         self::setUpSession();
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
         self::ensureNoForgery();
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
         self::setErrorLevel();
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
         self::setUpDates();
-
-        //error_reporting ( -1 );
-        //ini_set ( 'display_errors', '1' );
+        error_reporting ( -1 );
+        ini_set ( 'display_errors', '1' );
     }
 
     public static function get( $key = null, $def = '' ) {
@@ -84,16 +101,18 @@ class Cfg {
     }
 
     private static function checkForMaintenance() {
-        if ( !self::get( 'maintenance' ) )
+        if ( !self::get( 'maintenance' ) ) {
             return;
+        }
         $maint = Cfg::get( 'maintenance_url', self::siteUrl() . '/maintenance.php' );
         header( 'Location: ' . $maint );
         exit;
     }
 
     private static function ensureNoForgery() {
-        if ( !Cfg::get( 'jb_forgery_check', true ) )
+        if ( !Cfg::get( 'jb_forgery_check', true ) ) {
             return;
+        }
         // Check if the current script is exempt from forgery check
         $fileName = '';
         if ( isset( $_SERVER['SCRIPT_FILENAME'] ) ) {
@@ -106,8 +125,9 @@ class Cfg {
             return;
 
         // Add the known request variables to TamperGuard
-        foreach ( Cfg::get( 'known', [] ) as $val )
+        foreach ( Cfg::get( 'known', [] ) as $val ) {
             TamperGuard::known( $val );
+        }
         $message = null;
 
         if ( ( $tg = TimeGuard::check() ) !== TimeGuard::NOGUARD ) {
@@ -154,7 +174,9 @@ HTML;
     }
 
     private static function setUpSession() {
-        if ( ! Cfg::get( 'jb_db' ) ) return;
+        if ( ! Cfg::get( 'jb_db' ) ) {
+            return;
+        }
 
         \Jackbooted\Admin\Login::initSession();
 
@@ -168,8 +190,9 @@ HTML;
 
 
     private static function setUpDebugFriendlyClassSwitches() {
-        if ( !self::get( 'debug' ) )
+        if ( !self::get( 'debug' ) ) {
             return;
+        }
 
         // Add here if necessary
     }
@@ -257,8 +280,9 @@ HTML;
                             Tag::_tr();
 
                     foreach ( debug_backtrace() as $idx => $row ) {
-                        if ( $idx == 0 )
+                        if ( $idx == 0 ) {
                             continue;
+                        }
 
                         if ( isset( $row['file'] ) ) {
                             $file = basename( $row['file'] );
