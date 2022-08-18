@@ -67,10 +67,13 @@ class Cfg {
     }
 
     public static function get( $key = null, $def = '' ) {
-        if ( $key == null )
+        if ( $key == null ) {
             return self::$config;
-        if ( !isset( self::$config[$key] ) )
+        }
+        
+        if ( !isset( self::$config[$key] ) ) {
             return $def;
+        }
         return self::$config[$key];
     }
 
@@ -227,7 +230,7 @@ HTML;
         }
 
         $inDevMode = self::get( 'debug' );
-        //$inDevMode = true;
+
         Log4PHP::init( ( $inDevMode ) ? Log4PHP::DEBUG : Log4PHP::ERROR  );
         Log4PHP::setOutput( Log4PHP::FILE );
         self::$log = Log4PHP::logFactory( __CLASS__ );
