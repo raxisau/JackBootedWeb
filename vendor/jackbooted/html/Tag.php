@@ -21,7 +21,14 @@ class Tag extends \Jackbooted\Util\JB {
 
     private static $LF = '';
 
+    protected static $log;
+
+    public static function init() {
+        self::$log = \Jackbooted\Util\Log4PHP::logFactory( static::class );
+    }
+
     public function __call( $name, $arguments ) {
+        self::$log->trace( 'Entering: ' . __METHOD__ . "name: $name, arguments: " . print_r( $arguments, true ) );
         if ( substr( $name, 0, 1 ) == '_' ) {
             return self::_hTag( strtolower( substr( $name, 1 ) ) );
         }
