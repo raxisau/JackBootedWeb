@@ -93,12 +93,15 @@ class AutoLoader extends \Jackbooted\Util\JB {
             return;
         }
 
-        if ( preg_match( '/^(Jackbooted|App|Defuse|Beanstalk|Shuchkin|PHPMailer)\\\\.*$/', $className, $matches1 ) === 1 ||
+        if ( preg_match( '/^(Jackbooted|App|Defuse|Shuchkin|PHPMailer)\\\\.*$/', $className, $matches1 ) === 1 ||
              preg_match( '/^(FPDF|FeedItem|FeedWriter|PHPLiveX|SiteMap|Upload|BAR_GRAPH)$/', $className, $matches2 ) === 1 ) {
 
             if ( ( $tries = self::locateClassFromFileAndLoad( $className ) ) !== true ) {
                 self::$log->error( 'The system has attempted to autoload non existing class: ' . $className . ' tried: (' . implode( ', ', $tries ) . ')' );
             }
+        }
+        else {
+            self::$log->error( "Skipping {$className} because it is not in pregmatch" );
         }
     }
 
@@ -138,10 +141,7 @@ class AutoLoader extends \Jackbooted\Util\JB {
         require_once $fileToLoad;
 
         // RUn class level initialization only on classes that follow JackBoot Web standard
-        if ( preg_match( self::THIRD_PARTY_REGEX, $fileToLoad ) ) {
-            self::$log->trace( "Skipping class initialization for {$className} from $fileToLoad" );
-        }
-        else {
+        if ( ! preg_match( self::THIRD_PARTY_REGEX, $fileToLoad ) ) {
             self::runClassInitialization( $className );
         }
 
