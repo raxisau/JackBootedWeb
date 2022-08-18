@@ -23,6 +23,7 @@ class MenuUtils extends WebPage {
     const ACTIVE_MENU = 'ACTIVE_MENU';
 
     public static function display( $menuClasses = null ) {
+        self::$log->trace( 'Entering ' . __METHOD__ );
         $id = 'MenuUtils_display' . Invocation::next();
         $jsLibraries = JS::libraryWithDependancies( JS::JQUERY_UI );
         $activeMenu = Request::get( self::ACTIVE_MENU, 0 );
@@ -64,12 +65,14 @@ JS;
         }
         $html .= Tag::_div();
 
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $jsLibraries .
                 JS::javaScript( $js ) .
                 $html;
     }
 
     public static function getMenuItems( $menuClasses = null ) {
+        self::$log->trace( 'Entering ' . __METHOD__ );
         if ( $menuClasses == null ) {
             $menuClasses = Cfg::get( 'menu' );
         }
@@ -82,18 +85,22 @@ JS;
             $resp->set( self::ACTIVE_MENU, $menuBlock ++ );
             $menuOptions[$key] = $val::menu( $resp );
         }
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $menuOptions;
     }
 
     public static function slugRedirect( $slug, $menuClasses = null ) {
+        self::$log->trace( 'Entering ' . __METHOD__ );
         foreach ( self::getMenuItems( $menuClasses ) as $menuList ) {
             foreach ( $menuList as $row ) {
                 if ( isset( $row['slug'] ) && $row['slug'] == $slug ) {
+                    self::$log->trace( 'Exiting ' . __METHOD__ );
                     header( 'Location: ' . Cfg::siteUrl() . '/' . $row['url'] );
                     exit();
                 }
             }
         }
+        self::$log->trace( 'Exiting ' . __METHOD__ );
 
         // Default
         header( 'Location: ' . Cfg::siteUrl() );
@@ -101,7 +108,10 @@ JS;
     }
 
     public static function responseObject() {
-        return new Response( self::ACTIVE_MENU );
+        self::$log->trace( 'Entering ' . __METHOD__ );
+        $resp = new Response( self::ACTIVE_MENU );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
+        return $resp;
     }
 
 }
