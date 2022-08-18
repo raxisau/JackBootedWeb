@@ -28,12 +28,17 @@ class Tag extends \Jackbooted\Util\JB {
     }
 
     public function __call( $name, $arguments ) {
-        self::$log->trace( 'Entering: ' . __METHOD__ . "name: $name, arguments: " . print_r( $arguments, true ) );
         if ( substr( $name, 0, 1 ) == '_' ) {
             return self::_hTag( strtolower( substr( $name, 1 ) ) );
         }
         else {
-            return self::hTag( strtolower( $name ), ( count( $arguments ) > 0 ) ? $arguments[0] : [] );
+            if ( is_array( $arguments ) && count( $arguments ) > 0 ) {
+                $params = $arguments[0];
+            }
+            else {
+                $params = [];
+            }
+            return self::hTag( strtolower( $name ), $params );
         }
     }
 
@@ -42,13 +47,17 @@ class Tag extends \Jackbooted\Util\JB {
      * Automatically handle opening and closing html
      */
     public static function __callStatic( $name, $arguments ) {
-        self::$log->trace( 'Entering: ' . __METHOD__ . "name: $name, arguments: " . print_r( $arguments, true ) );
-        
         if ( substr( $name, 0, 1 ) == '_' ) {
             return self::_hTag( strtolower( substr( $name, 1 ) ) );
         }
         else {
-            return self::hTag( strtolower( $name ), ( count( $arguments ) > 0 ) ? $arguments[0] : [] );
+            if ( is_array( $arguments ) && count( $arguments ) > 0 ) {
+                $params = $arguments[0];
+            }
+            else {
+                $params = [];
+            }
+            return self::hTag( strtolower( $name ), $params );
         }
     }
 
