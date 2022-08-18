@@ -43,12 +43,14 @@ class Template extends \Jackbooted\Util\JB {
 
     public function replace( $token, $value = null ) {
         if ( is_array( $token ) ) {
-            foreach ( $token as $key => $val )
-                $this->tokenList['{' . $key . '}'] = $val;
+            foreach ( $token as $key => $val ) {
+                $this->tokenList['{$' . $key . '}'] = $val;
+            }
         }
         else {
-            if ( $value !== null )
-                $this->tokenList['{' . $token . '}'] = $value;
+            if ( $value !== null ) {
+                $this->tokenList['{$' . $token . '}'] = $value;
+            }
         }
     }
 
@@ -80,6 +82,10 @@ class Template extends \Jackbooted\Util\JB {
     private function doStraightReplacements() {
         $this->outputText = str_replace( array_keys( $this->tokenList ), array_values( $this->tokenList ), $this->outputText, $count );
         $this->log->debug( "replaced {$count} tokens" );
+    }
+
+    public function toHtml() {
+        return $this->__toString();
     }
 
     public function __toString() {

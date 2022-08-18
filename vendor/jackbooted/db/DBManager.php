@@ -31,8 +31,9 @@ class DBManager extends WebPage {
     const TABLES_SQL = 'SELECT fldTable FROM tblNextNumber ORDER BY fldTable';
 
     public static function menu() {
-        if ( Privileges::access( __METHOD__ ) !== true || !G::isLoggedIn() )
+        if ( Privileges::access( __METHOD__ ) !== true || !G::isLoggedIn() ) {
             return '';
+        }
 
         $html = Tag::hTag( 'b' ) . 'Database Menu' . Tag::_hTag( 'b' ) .
                 Tag::form( [ 'method' => 'get' ] ) .
@@ -45,8 +46,9 @@ class DBManager extends WebPage {
     }
 
     public function index( $tName = '' ) {
-        if ( ( $tableName = Request::get( 'tblName', $tName ) ) == '' )
+        if ( ( $tableName = Request::get( 'tblName', $tName ) ) == '' ) {
             return '';
+        }
 
         $crud = CRUD::factory( $tableName, [ 'topPager' => false ] )
                 ->copyVarsFromRequest( 'tblName' );
@@ -98,8 +100,9 @@ class DBManager extends WebPage {
     }
 
     public function xls( $tName = '' ) {
-        if ( ( $tableName = Request::get( 'tblName', $tName ) ) == '' )
+        if ( ( $tableName = Request::get( 'tblName', $tName ) ) == '' ) {
             exit;
+        }
         XLS::output( DB::query( DB::DEF, 'SELECT * FROM ' . $tableName ), $tableName );
     }
 

@@ -32,8 +32,9 @@ class Cookie extends \Jackbooted\Util\JB {
      * @public
      */
     public static function get( $s, $def = '' ) {
-        if ( !isset( $_COOKIE[$s] ) )
+        if ( !isset( $_COOKIE[$s] ) ) {
             return $def;
+        }
 
         return self::$crypto->decrypt( $_COOKIE[$s] );
     }

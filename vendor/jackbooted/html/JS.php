@@ -90,8 +90,9 @@ class JS extends \Jackbooted\Util\JB {
     }
 
     static function library( $lib, $force = false ) {
-        if ( !$force && isset( self::$displayedLibraries[$lib] ) )
+        if ( !$force && isset( self::$displayedLibraries[$lib] ) ) {
             return '';
+        }
         self::$displayedLibraries[$lib] = true;
 
         if ( !preg_match( '/^http(s)?:\/\/.*$/i', $lib ) ) {
@@ -105,8 +106,9 @@ class JS extends \Jackbooted\Util\JB {
         }
         else if ( preg_match( '/^.*\.css$/i', $lib ) ) {
             $attribs = [ 'type' => 'text/css', 'href' => $lib, 'rel' => 'stylesheet' ];
-            if ( preg_match( '/^.*\.print\.css$/i', $lib ) )
+            if ( preg_match( '/^.*\.print\.css$/i', $lib ) ) {
                 $attribs['media'] = 'print';
+            }
             return Tag::hTag( 'link', $attribs ) . Tag::_hTag( 'link' ) . self::$LF;
         }
         else {
@@ -136,8 +138,9 @@ class JS extends \Jackbooted\Util\JB {
         $str = '';
         $cnt = strlen( $s );
         for ( $i = 0; $i < $cnt; $i++ ) {
-            if ( $i > 0 )
+            if ( $i > 0 ) {
                 $str .= ",";
+            }
             $str .= ord( substr( $s, $i, $i + 1 ) );
         }
         return self::javascript( 'document.write ( String.fromCharCode ( ' . $str . ' ) );' );
@@ -164,5 +167,4 @@ class JS extends \Jackbooted\Util\JB {
     public static function showErrorBack( $str ) {
         return self::javascript( "alert ( '$str' ); window.history.back ( );" );
     }
-
 }

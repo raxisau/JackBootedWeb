@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackbooted\Security;
 
 use \Jackbooted\Config\Cfg;
@@ -48,8 +47,9 @@ class TamperGuard extends \Jackbooted\Util\JB {
         foreach ( $response as $key => $val ) {
             if ( is_array( $val ) ) {
                 foreach ( $val as $key1 => $val1 ) {
-                    if ( is_array( $val1 ) )
+                    if ( is_array( $val1 ) ) {
                         continue;
+                    }
                     $keyList[] = '[' . $key . '][' . $key1 . ']';
                     $valList[] = $val1;
                 }
@@ -71,15 +71,17 @@ class TamperGuard extends \Jackbooted\Util\JB {
     }
 
     public static function check( Request $request ) {
-        if ( ( $formVarLen = $request->count() ) == 0 )
+        if ( ( $formVarLen = $request->count() ) == 0 ) {
             return true;
+        }
         foreach ( $request as $key => $val ) {
             if ( in_array( $key, self::$knownFields ) ) {
                 $formVarLen --;
             }
         }
-        if ( $formVarLen <= 0 )
+        if ( $formVarLen <= 0 ) {
             return true;
+        }
 
         if ( ( $checksum = $request->getVar( self::CHECKSUM ) ) == '' ) {
             $request->clear();

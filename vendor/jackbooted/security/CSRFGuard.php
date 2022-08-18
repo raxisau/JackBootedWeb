@@ -32,39 +32,53 @@ class CSRFGuard extends \Jackbooted\Util\JB {
     }
 
     public static function key() {
-        $id = DBMaintenance::dbNextNumber( DB::DEF, 'tblCrossSiteProtection' );
         $key = uniqid( '', true );
-        $sql = 'INSERT INTO tblCrossSiteProtection VALUES(?,?,?)';
-        DB::exec( DB::DEF, $sql, [ $id, $key, time() + self::EXPIRY ] );
+
+        if ( Cfg::get( 'jb_db', false ) ) {
+            $id = DBMaintenance::dbNextNumber( DB::DEF, 'tblCrossSiteProtection' );
+            $sql = 'INSERT INTO tblCrossSiteProtection VALUES(?,?,?)';
+            DB::exec( DB::DEF, $sql, [ $id, $key, time() + self::EXPIRY ] );
+        }
+        else {
+            \Jackbooted\Util\Sess::set( $key, true );
+        }
         return $key;
     }
 
     public static function check() {
-        // If we do not have jackbooted database then have no CSRFGuard
-        if ( !Cfg::get( 'jb_db', false ) )
-            return true;
-
         // If the variable is not there then assume all good
-        if ( ( $csrfKey = Request::get( CSRFGuard::KEY ) ) == '' )
+        if ( ( $csrfKey = Request::get( CSRFGuard::KEY ) ) == '' ) {
             return true;
+        }
 
         return self::valid( $csrfKey );
     }
 
     public static function valid( $key ) {
-        $sql = 'SELECT COUNT(*) FROM tblCrossSiteProtection WHERE fldUniqueID=?';
-        $cnt = DB::oneValue( DB::DEF, $sql, $key );
-        if ( $cnt > 0 ) {
-            $sql = 'DELETE FROM tblCrossSiteProtection WHERE fldUniqueID=? OR fldExpiryDate<?';
-            DB::exec( DB::DEF, $sql, [ $key, time() ] );
-            return true;
+        if ( ! Cfg::get( 'jb_db', false ) ) {
+            if ( \Jackbooted\Util\Sess::get( $key, false ) ) {
+                \Jackbooted\Util\Sess::unset( $key );
+                return true;
+            }
+            else {
+                self::$log->error( 'CSRFGuard failed: ' . $key . ' not available ' . $_SERVER['SCRIPT_NAME'] );
+                return false;
+            }
         }
         else {
-            $sql = 'DELETE FROM tblCrossSiteProtection WHERE fldExpiryDate<?';
-            DB::exec( DB::DEF, $sql, time() );
-            self::$log->error( 'CSRFGuard failed: ' . $key . ' not available ' . $_SERVER['SCRIPT_NAME'] );
-            return false;
+            $sql = 'SELECT COUNT(*) FROM tblCrossSiteProtection WHERE fldUniqueID=?';
+            $cnt = DB::oneValue( DB::DEF, $sql, $key );
+            if ( $cnt > 0 ) {
+                $sql = 'DELETE FROM tblCrossSiteProtection WHERE fldUniqueID=? OR fldExpiryDate<?';
+                DB::exec( DB::DEF, $sql, [ $key, time() ] );
+                return true;
+            }
+            else {
+                $sql = 'DELETE FROM tblCrossSiteProtection WHERE fldExpiryDate<?';
+                DB::exec( DB::DEF, $sql, time() );
+                self::$log->error( 'CSRFGuard failed: ' . $key . ' not available ' . $_SERVER['SCRIPT_NAME'] );
+                return false;
+            }
         }
     }
-
 }

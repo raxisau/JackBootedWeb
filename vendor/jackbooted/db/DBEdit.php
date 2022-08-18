@@ -466,8 +466,9 @@ class DBEdit extends \Jackbooted\Util\JB {
     }
 
     private function convertColumnToTitle( $col ) {
-        if ( $col == $this->daoObject->primaryKey )
+        if ( $col == $this->daoObject->primaryKey ) {
             return 'ID';
+        }
 
         $title = '';
 
@@ -476,15 +477,17 @@ class DBEdit extends \Jackbooted\Util\JB {
         }
         else if ( substr( $col, 0, 2 ) == 'f_' ) {
             foreach ( explode( '_', substr( $col, 2 ) ) as $segment ) {
-                if ( $title != '' )
+                if ( $title != '' ) {
                     $title .= ' ';
+                }
                 $title .= ucfirst( $segment );
             }
         }
         else {
             foreach ( explode( '_', $col ) as $segment ) {
-                if ( $title != '' )
+                if ( $title != '' ) {
                     $title .= ' ';
+                }
                 $title .= ucfirst( $segment );
             }
         }
@@ -499,8 +502,9 @@ class DBEdit extends \Jackbooted\Util\JB {
         for ( $i = 0; $i < $colLen; $i++ ) {
             $ch = substr( $col, $i, 1 );
             $curCharacterIsUpper = ctype_upper( $ch );
-            if ( $curCharacterIsUpper && !$lastCharacterIsUpper )
+            if ( $curCharacterIsUpper && !$lastCharacterIsUpper ) {
                 $title .= ' ';
+            }
             $lastCharacterIsUpper = $curCharacterIsUpper;
             $title .= $ch;
         }

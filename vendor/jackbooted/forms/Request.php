@@ -63,12 +63,15 @@ class Request extends PipeLine {
      */
     public function __construct( &$varsToProcess = null ) {
         parent::__construct();
-        if ( $varsToProcess == null )
+        if ( $varsToProcess == null ) {
             $this->formVars = $this->getRequestVars();
-        else if ( is_array( $varsToProcess ) )
+        }
+        else if ( is_array( $varsToProcess ) ) {
             $this->formVars = $varsToProcess;
-        else if ( is_string( $varsToProcess ) )
+        }
+        else if ( is_string( $varsToProcess ) ) {
             $this->formVars = $this->convertQueryStringToArray( $varsToProcess );
+        }
 
         $this->decryptRequestVars( $this->formVars );
     }
@@ -121,8 +124,9 @@ class Request extends PipeLine {
      */
     public function getVar( $key = null, $def = null ) {
         // if no key then give them the lot
-        if ( $key === null )
+        if ( $key === null ) {
             return $this->formVars;
+        }
 
         if ( isset( $this->formVars[$key] ) ) {
             return $this->formVars[$key];

@@ -52,10 +52,12 @@ class Migrations extends \Jackbooted\Html\WebPage {
             // get a list of methods to run
             $methodList = [];
             foreach ( $clazz->getMethods() as $method ) {
-                if ( in_array( $method->name, $runItems[$migrationClass] ) )
+                if ( in_array( $method->name, $runItems[$migrationClass] ) ) {
                     continue;
-                if ( strpos( $method->name, 'migrate' ) !== 0 )
+                }
+                if ( strpos( $method->name, 'migrate' ) !== 0 ) {
                     continue;
+                }
 
                 // Add the name to the list
                 $methodList[] = $method->name;

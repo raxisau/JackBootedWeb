@@ -22,8 +22,9 @@ class Widget extends \Jackbooted\Util\JB {
     public static function button( $domSelector ) {
 
         // If we have done this selector, then nothing to do
-        if ( in_array( $domSelector, self::$buttonDomSelectorList ) )
+        if ( in_array( $domSelector, self::$buttonDomSelectorList ) ) {
             return '';
+        }
 
         self::$buttonDomSelectorList[] = $domSelector;
 
@@ -42,8 +43,9 @@ JS;
         if ( !isset( $pickList ) ||
                 $pickList === false ||
                 !is_array( $pickList ) ||
-                count( $pickList ) <= 0 )
+                count( $pickList ) <= 0 ) {
             return '';
+        }
 
         $html = '';
         if ( self::$styleComboInvocations == 0 ) {
@@ -61,8 +63,9 @@ CSS;
         }
 
         $maxLength = max( array_map( 'strlen', $pickList ) );
-        if ( $maxLength > 20 )
+        if ( $maxLength > 20 ) {
             $maxLength = 20;
+        }
 
         $pickListJSON = json_encode( $pickList );
         $js = <<<JS
@@ -138,8 +141,9 @@ JS;
 
     public static function popupWrapper( $msg, $timeout = 1500, $title = '' ) {
         $id = Invocation::next();
-        if ( $title == '' )
+        if ( $title == '' ) {
             $title = 'Message:';
+        }
 
         if ( $timeout < 0 ) {
             $timeoutJS = <<<JS
@@ -233,8 +237,9 @@ JS;
     private static $datePickerJSDisplayed = false;
 
     public static function datePickerJS( $selector = 'input.datepicker' ) {
-        if ( self::$datePickerJSDisplayed )
+        if ( self::$datePickerJSDisplayed ) {
             return '';
+        }
         self::$datePickerJSDisplayed = true;
 
         /* The format can be combinations of the following:

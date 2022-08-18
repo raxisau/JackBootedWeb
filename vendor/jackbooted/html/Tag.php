@@ -3,7 +3,6 @@
 namespace Jackbooted\Html;
 
 use \Jackbooted\Forms\Request;
-use \Jackbooted\Util\Log4PHP;
 use \Jackbooted\Util\Invocation;
 
 /** Utilities.php - Utility functions
@@ -21,18 +20,13 @@ use \Jackbooted\Util\Invocation;
 class Tag extends \Jackbooted\Util\JB {
 
     private static $LF = '';
-    private static $log;
-
-    public static function init() {
-        self::$log = Log4PHP::logFactory( __CLASS__ );
-    }
 
     public function __call( $name, $arguments ) {
         if ( substr( $name, 0, 1 ) == '_' ) {
-            return self::_hTag( substr( $name, 1 ) );
+            return self::_hTag( strtolower( substr( $name, 1 ) ) );
         }
         else {
-            return self::hTag( $name( count( $arguments ) > 0 ) ? $arguments[0] : [] );
+            return self::hTag( strtolower( $name ), ( count( $arguments ) > 0 ) ? $arguments[0] : [] );
         }
     }
 
@@ -42,10 +36,10 @@ class Tag extends \Jackbooted\Util\JB {
      */
     public static function __callStatic( $name, $arguments ) {
         if ( substr( $name, 0, 1 ) == '_' ) {
-            return self::_hTag( substr( $name, 1 ) );
+            return self::_hTag( strtolower( substr( $name, 1 ) ) );
         }
         else {
-            return self::hTag( $name( count( $arguments ) > 0 ) ? $arguments[0] : [] );
+            return self::hTag( strtolower( $name ), ( count( $arguments ) > 0 ) ? $arguments[0] : [] );
         }
     }
 
@@ -79,12 +73,17 @@ class Tag extends \Jackbooted\Util\JB {
     public static function form( $attribs = [], $doubleClickProtection = true ) {
         $html = '';
 
-        if ( !isset( $attribs['action'] ) )
+        if ( !isset( $attribs['action'] ) ) {
             $attribs['action'] = '?';
-        if ( !isset( $attribs['method'] ) )
+        }
+
+        if ( !isset( $attribs['method'] ) ) {
             $attribs['method'] = 'post';
-        if ( !isset( $attribs['id'] ) )
+        }
+
+        if ( !isset( $attribs['id'] ) ) {
             $attribs['id'] = 'FRM_' . self::$formCount ++;
+        }
 
         if ( isset( $attribs['submitmsg'] ) ) {
             $submitMsg = $attribs['submitmsg'];
@@ -120,14 +119,6 @@ class Tag extends \Jackbooted\Util\JB {
         return $html;
     }
 
-    /** Creates and returns the HTML required for the end of a form
-     * @returns string The resulting HTML
-     * @public
-     */
-    public static function _form() {
-        return self::_hTag( 'form' );
-    }
-
     /**
      *  Creates and returns the HTML required to display an image
      * @param $s The src of the image
@@ -135,18 +126,10 @@ class Tag extends \Jackbooted\Util\JB {
      * @returns string The resulting HTML
      */
     public static function img( $s, $attribs = [] ) {
-        if ( !isset( $attribs['border'] ) )
+        if ( !isset( $attribs['border'] ) ) {
             $attribs['border'] = 0;
+        }
         return '<img src="' . $s . '"' . self::toAttribs( $attribs ) . '/>' . self::$LF;
-    }
-
-    /**
-     * function to generate &lt;table&gt;
-     * @param $attribs extra attributes style events etc
-     * @returns string The resulting HTML
-     */
-    public static function table( $attribs = [] ) {
-        return self::hTag( 'table', $attribs );
     }
 
     /**
@@ -158,122 +141,11 @@ class Tag extends \Jackbooted\Util\JB {
     }
 
     /**
-     * function to generate &lt;/table&gt;
-     * @returns string The resulting HTML
-     */
-    public static function _table() {
-        return self::_hTag( 'table' );
-    }
-
-    /**
-     * function to generate &lt;div&gt;
-     * @param $attribs extra attributes style events etc
-     * @returns string The resulting HTML
-     */
-    public static function div( $attribs = [] ) {
-        return self::hTag( 'div', $attribs );
-    }
-
-    /**
-     * function to generate &lt;/div&gt;
-     * @returns string The resulting HTML
-     */
-    public static function _div() {
-        return self::_hTag( 'div' );
-    }
-
-    /**
-     * function to generate &lt;td&gt;
-     * @param $attribs extra attributes style events etc
-     * @returns string The resulting HTML
-     */
-    public static function tr( $attribs = [] ) {
-        return self::hTag( 'tr', $attribs );
-    }
-
-    /**
-     * function to generate &lt;td&gt;
-     * @param $attribs extra attributes style events etc
-     * @returns string The resulting HTML
-     */
-    public static function td( $attribs = [] ) {
-        return self::hTag( 'td', $attribs );
-    }
-
-    /**
-     * function to generate &lt;th&gt;
-     * @param $attribs extra attributes style events etc
-     * @returns string The resulting HTML
-     */
-    public static function th( $attribs = [] ) {
-        return self::hTag( 'th', $attribs );
-    }
-
-    /**
-     * function to generate &lt;/tr&gt;
-     * @returns string The resulting HTML
-     */
-    public static function _tr() {
-        return self::_hTag( 'tr' );
-    }
-
-    /**
      * function to generate &lt;/td&gt;
      * @returns string The resulting HTML
      */
     public static function _td() {
         return self::_hTag( 'td' );
-    }
-
-    /**
-     * function to generate &lt;p&gt;
-     * @param $attribs extra attributes style events etc
-     * @returns string The resulting HTML
-     */
-    public static function p( $attribs = [] ) {
-        return self::hTag( 'p', $attribs );
-    }
-
-    /**
-     * function to generate &lt;/p&gt;
-     * @returns string The resulting HTML
-     */
-    public static function _p() {
-        return self::_hTag( 'p' );
-    }
-
-    /**
-     * function to generate &lt;li&gt;
-     * @param $attribs extra attributes style events etc
-     * @returns string The resulting HTML
-     */
-    public static function li( $attribs = [] ) {
-        return self::hTag( 'li', $attribs );
-    }
-
-    /**
-     * function to generate &lt;/li&gt;
-     * @returns string The resulting HTML
-     */
-    public static function _li() {
-        return self::_hTag( 'li' );
-    }
-
-    /**
-     * function to generate &lt;ul&gt;
-     * @param $attribs extra attributes style events etc
-     * @returns string The resulting HTML
-     */
-    public static function ul( $attribs = [] ) {
-        return self::hTag( 'ul', $attribs );
-    }
-
-    /**
-     * function to generate &lt;/ul&gt;
-     * @returns string The resulting HTML
-     */
-    public static function _ul() {
-        return self::_hTag( 'ul' );
     }
 
     /**
@@ -293,14 +165,6 @@ class Tag extends \Jackbooted\Util\JB {
      */
     public static function _hTag( $t ) {
         return ( '</' . $t . '>' . self::$LF );
-    }
-
-    /**
-     * function to generate &lt;/th&gt;
-     * @returns string The resulting HTML
-     */
-    public static function _th() {
-        return self::_hTag( 'th' );
     }
 
     /** Creates and returns the HTML required to display generic Input
@@ -469,8 +333,9 @@ class Tag extends \Jackbooted\Util\JB {
      */
     static function checkBox( $name, $val, $checked = FALSE, $attribs = [] ) {
         $inpAttribs = [ 'type' => 'checkbox', 'name' => $name, 'value' => $val ];
-        if ( $checked )
+        if ( $checked ) {
             $inpAttribs['checked'] = 'checked';
+        }
         return self::input( $attribs, $inpAttribs );
     }
 
@@ -483,8 +348,10 @@ class Tag extends \Jackbooted\Util\JB {
      * @return string Html tag
      */
     public static function linkButton( $url, $name, $attribs = [] ) {
-        if ( is_string( $attribs ) )
+        if ( is_string( $attribs ) ) {
             $attribs = [ $attribs ];
+        }
+
         if ( isset( $attribs['onClick'] ) ) {
             $xtraJS = $attribs['onClick'];
             unset( $attribs['onClick'] );
@@ -492,13 +359,16 @@ class Tag extends \Jackbooted\Util\JB {
         else {
             $xtraJS = 'true';
         }
+
         $extraAttribs = [ 'onClick' => "if($xtraJS){location.href='$url';return true;}else{return false;}" ];
         return self::button( $name, array_merge( $extraAttribs, $attribs ) );
     }
 
     public static function hRefButton( $url, $name, $attribs = [] ) {
-        if ( is_string( $attribs ) )
+        if ( is_string( $attribs ) ) {
             $attribs = [ $attribs ];
+        }
+
         if ( !isset( $attribs['id'] ) ) {
             $attribs['id'] = 'linkButton_' . Invocation::next();
         }
@@ -514,17 +384,10 @@ class Tag extends \Jackbooted\Util\JB {
      */
     public static function select( $name = '', $attribs = [] ) {
         $inpAttribs = [];
-        if ( isset( $name ) && $name != false )
+        if ( isset( $name ) && $name != false ) {
             $inpAttribs['NAME'] = $name;
+        }
         return self::hTag( 'select', array_merge( $inpAttribs, $attribs ) ) . self::$LF;
-    }
-
-    /**
-     * function to close the select tag
-     * @returns string The resulting HTML
-     */
-    public static function _select() {
-        return self::_hTag( 'select' ) . self::$LF;
     }
 
     /**
@@ -536,8 +399,9 @@ class Tag extends \Jackbooted\Util\JB {
      */
     public static function optionTag( $value, $displayedOnList, $selected = FALSE ) {
         $attrib = [ 'value' => $value ];
-        if ( $selected )
+        if ( $selected ) {
             $attrib['selected'] = 'selected';
+        }
 
         return self::hTag( 'option', $attrib ) .
                 $displayedOnList .
@@ -591,14 +455,12 @@ class Tag extends \Jackbooted\Util\JB {
             return '';
         }
         else if ( is_string( $attribs ) ) {
-            self::depricated( $attribs );
             return ' ' . $attribs;
         }
         else {
             $tag = '';
             foreach ( $attribs as $key => $val ) {
                 if ( is_int( $key ) ) {
-                    self::depricated( $val );
                     $tag .= ' ' . $val;
                 }
                 else {
@@ -608,23 +470,4 @@ class Tag extends \Jackbooted\Util\JB {
             return $tag;
         }
     }
-
-    private static function depricated( $attrib ) {
-        // Try to do less calculations if this is not being displayed
-        if ( !self::$log->isDisplayed( Log4PHP::TRACE ) )
-            return;
-
-        $stack = debug_backtrace();
-        foreach ( $stack as $key => $calledFrom ) {
-            if ( !in_array( $calledFrom['class'], [ 'Tag', 'Lists' ] ) )
-                break;
-        }
-        $stackMessage = '';
-        for ( $i = $key; $i < count( $stack ); $i++ ) {
-            $stackMessage .= basename( $stack[$i]['file'], '.php' ) . '(' . $stack[$i]['line'] . ') ';
-        }
-
-        self::$log->warn( $stackMessage . $attrib );
-    }
-
 }

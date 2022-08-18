@@ -81,8 +81,9 @@ class CRUD extends \Jackbooted\Util\JB {
     }
 
     private static function header() {
-        if ( self::$headerDisplayed )
+        if ( self::$headerDisplayed ) {
             return '';
+        }
         self::$headerDisplayed = true;
         $js = <<<JS
     var pageDirty = false;
@@ -193,10 +194,12 @@ JS;
         $this->paginator = new Paginator( $pageProps );
 
         $colProps = [ 'suffix' => self::SUFFIX ];
-        if ( isset( $extraArgs['colSort'] ) )
+        if ( isset( $extraArgs['colSort'] ) ) {
             $colProps['init_column'] = $extraArgs['colSort'];
-        if ( isset( $extraArgs['colSortOrder'] ) )
+        }
+        if ( isset( $extraArgs['colSortOrder'] ) ) {
             $colProps['init_order'] = $extraArgs['colSortOrder'];
+        }
         $this->columnator = new Columnator( $colProps );
 
         $this->resp = new Response ();
@@ -220,8 +223,9 @@ JS;
     }
 
     public function index() {
-        if ( !$this->ok )
+        if ( !$this->ok ) {
             return 'Invalid table: ' . $this->tableName;
+        }
 
         $html = $this->controller();
 
@@ -370,10 +374,12 @@ JS;
     }
 
     private function controller() {
-        if ( ( $action = Request::get( $this->action ) ) == '' )
+        if ( ( $action = Request::get( $this->action ) ) == '' ) {
             return '';
-        if ( !method_exists( $this, $action ) )
+        }
+        if ( !method_exists( $this, $action ) ) {
             return '';
+        }
 
         return $this->$action();
     }
@@ -386,10 +392,12 @@ JS;
             $sql = 'UPDATE ' . $this->tableName . ' SET ';
             $params = [];
             foreach ( $grid[$idx] as $colName => $value ) {
-                if ( $colName == $this->primaryKey )
+                if ( $colName == $this->primaryKey ) {
                     continue;
-                if ( count( $params ) > 0 )
+                }
+                if ( count( $params ) > 0 ) {
                     $sql .= ', ';
+                }
                 $sql .= $colName . '=?';
 
                 switch ( $this->getColumnType( $colName ) ) {
@@ -402,8 +410,9 @@ JS;
                         break;
 
                     default:
-                        if ( $this->nullsEmpty && empty( $value ) )
+                        if ( $this->nullsEmpty && empty( $value ) ) {
                             $value = null;
+                        }
                         $params[] = $value;
                         break;
                 }
@@ -545,8 +554,9 @@ JS;
     }
 
     private function insertForm() {
-        if ( !$this->canInsert )
+        if ( !$this->canInsert ) {
             return '';
+        }
 
         $this->resp->set( $this->action, 'insertRows' );
 
@@ -645,8 +655,9 @@ JS;
                 return true;
             case DB::ORACLE:
                 $result = $this->query( 'SELECT * FROM user_tab_columns WHERE table_name=UPPER(?)', $this->tableName );
-                if ( !$result->ok() )
+                if ( !$result->ok() ) {
                     return false;
+                }
 
                 $fieldColumn = $result->getColumn( 'COLUMN_NAME' );
                 $typeColumn = $result->getColumn( 'DATA_TYPE' );
@@ -667,9 +678,7 @@ JS;
     }
 
     protected function createSQLResult() {
-        $qry = $this->paginator->getLimits( $this->dbType, 'SELECT * FROM ' . $this->tableName . ' ' .
-                $this->createSQLWhere( $params ) .
-                $this->columnator->getSort() );
+        $qry = $this->paginator->getLimits( $this->dbType, 'SELECT * FROM ' . $this->tableName . ' ' . $this->createSQLWhere( $params ) . $this->columnator->getSort() );
         $tab = $this->query( $qry, $params );
 
         //echo '<pre>createSQLResult: ' . $qry . "\n";
@@ -704,14 +713,16 @@ JS;
 
     private function createSQLWhere( &$params ) {
         $params = null;
-        if ( count( $this->where ) <= 0 )
+        if ( count( $this->where ) <= 0 ) {
             return '';
+        }
 
         $sql = ' WHERE ';
         $first = true;
         foreach ( $this->where as $key => $val ) {
-            if ( !$first )
+            if ( !$first ) {
                 $sql .= 'AND ';
+            }
             $comp = ( stripos( $val, '%' ) === false ) ? '=' : ' like ';
             $sql .= $key . $comp . '?';
             $first = false;
@@ -726,8 +737,9 @@ JS;
     }
 
     protected function convertColumnToTitle( $col ) {
-        if ( $col == $this->primaryKey )
+        if ( $col == $this->primaryKey ) {
             return 'ID';
+        }
 
         $title = '';
 
@@ -736,15 +748,17 @@ JS;
         }
         else if ( substr( $col, 0, 2 ) == 'f_' ) {
             foreach ( explode( '_', substr( $col, 2 ) ) as $segment ) {
-                if ( $title != '' )
+                if ( $title != '' ) {
                     $title .= ' ';
+                }
                 $title .= ucfirst( $segment );
             }
         }
         else {
             foreach ( explode( '_', $col ) as $segment ) {
-                if ( $title != '' )
+                if ( $title != '' ) {
                     $title .= ' ';
+                }
                 $title .= ucfirst( $segment );
             }
         }
@@ -759,8 +773,9 @@ JS;
         for ( $i = 0; $i < $colLen; $i++ ) {
             $ch = substr( $col, $i, 1 );
             $curCharacterIsUpper = ctype_upper( $ch );
-            if ( $curCharacterIsUpper && !$lastCharacterIsUpper )
+            if ( $curCharacterIsUpper && !$lastCharacterIsUpper ) {
                 $title .= ' ';
+            }
             $lastCharacterIsUpper = $curCharacterIsUpper;
             $title .= $ch;
         }
@@ -768,9 +783,7 @@ JS;
     }
 
     protected function getRowCount() {
-        $qry = 'SELECT count(' . $this->primaryKey . ') ' .
-                'FROM ' . $this->tableName . ' ' .
-                $this->createSQLWhere( $params );
+        $qry = 'SELECT count(' . $this->primaryKey . ') FROM ' . $this->tableName . ' ' . $this->createSQLWhere( $params );
         return DB::oneValue( $this->db, $qry, $params );
     }
 
@@ -787,5 +800,4 @@ JS;
         //echo '</pre>';
         return DB::exec( $this->db, $qry, $params );
     }
-
 }

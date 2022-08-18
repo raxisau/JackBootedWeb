@@ -71,8 +71,9 @@ class GoogleChartAPI extends \Jackbooted\Util\JB {
         }
 
         $step = $range / 5.0;
-        if ( $step > 3 )
+        if ( $step > 3 ) {
             $step = (int) floor( $step );
+        }
 
         return $this->add( 'chxr', "1,{$min},{$max},{$step}" )
                         ->add( 'chg', '0,10' )

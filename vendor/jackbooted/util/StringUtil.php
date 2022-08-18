@@ -15,6 +15,15 @@ class StringUtil extends \Jackbooted\Util\JB {
         return $msg . ( ( $msg == '' ) ? '' : ' ' ) . $num . ' ' . $units . self::plural( $num );
     }
 
+    public static function money( $amt, $dec=0 ) {
+        if ( ! is_numeric( $amt ) ) {
+            return 'N/A';
+        }
+        else {
+            return '$' . number_format( $amt, $dec );
+        }
+    }
+
     public static function plural( $num ) {
         return ( $num == 1 ) ? '' : 's';
     }

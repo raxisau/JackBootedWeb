@@ -40,8 +40,9 @@ class Gravatar extends \Jackbooted\Util\JB {
     }
 
     public static function icon( $email, $size = 24, $rating = 'PG', $type = null ) {
-        if ( $type == null )
+        if ( $type == null ) {
             $type = self::$gravType;
+        }
         $gHash = md5( strtolower( trim( $email ) ) );
 
         $tPath = Cfg::get( 'tmp_path' );

@@ -84,8 +84,9 @@ abstract class DAO extends \Jackbooted\Util\JB {
 
                 // This allows for dummy columns to be part of the object without the
                 // DAO automatically accessing them in the queries.
-                if ( $this->ignoreCols != null && array_key_exists( $key, $this->ignoreCols ) )
+                if ( $this->ignoreCols != null && array_key_exists( $key, $this->ignoreCols ) ) {
                     continue;
+                }
 
                 if ( $sql == '' ) {
                     $sql .= ' WHERE ';
@@ -189,12 +190,14 @@ abstract class DAO extends \Jackbooted\Util\JB {
         else if ( is_array( $params['order'] ) ) {
             $order = '';
             foreach ( $this->objToRel( $params['order'] ) as $key => $value ) {
-                if ( $order != '' )
+                if ( $order != '' ) {
                     $order .= ', ';
+                }
                 $order .= $key;
                 $value = strtoupper( $value );
-                if ( $value == 'ASC' || $value == 'DESC' )
+                if ( $value == 'ASC' || $value == 'DESC' ) {
                     $order .= ' ' . $value;
+                }
             }
             $sql .= ' ORDER BY ' . $order;
         }
@@ -297,8 +300,9 @@ abstract class DAO extends \Jackbooted\Util\JB {
         $relational = [];
         if ( is_array( $object ) ) {
             foreach ( $object as $key => $val ) {
-                if ( isset( $this->orm[$key] ) )
+                if ( isset( $this->orm[$key] ) ) {
                     $key = $this->orm[$key];
+                }
                 $relational[$key] = $val;
             }
         }

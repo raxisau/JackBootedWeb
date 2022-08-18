@@ -30,13 +30,12 @@ class Captcha extends WebPage {
     }
 
     public function imageUrl() {
-        $resp = new Response ();
         $url = Cfg::siteUrl() . '/ajax.php?' .
                         Response::factory()
-                        ->action( __CLASS__ . '::img()' )
-                        ->set( '_CP1', $this->value )
-                        ->set( '_CP4', $this->hatch )
-                        ->toUrl( Response::UNIQUE_CSRF );
+                                ->action( __CLASS__ . '::img()' )
+                                ->set( '_CP1', $this->value )
+                                ->set( '_CP4', $this->hatch )
+                                ->toUrl( Response::UNIQUE_CSRF );
 
         return $url;
     }
@@ -54,13 +53,11 @@ class Captcha extends WebPage {
         header( 'Content-type: image/jpeg' );
 
         $captchaValue = Request::get( '_CP1' );
-        $hatch = Request::get( '_CP4' );
+        $hatch        = Request::get( '_CP4' );
 
         $fontAngle = 0.0;
-        //$fontFile  = dirname ( __FILE__ ) . '/fonts/luggerbu.ttf';
-        //$fontFile  = dirname ( __FILE__ ) . '/fonts/Alanden_.ttf';
-        $fontFile = dirname( __FILE__ ) . '/fonts/WAVY.TTF';
         $fontSize = 16.0;
+        $fontFile = dirname( __FILE__ ) . '/fonts/WAVY.TTF';
 
         $box = imagettfbbox( $fontSize, $fontAngle, $fontFile, $captchaValue );
         $min_x = min( [ $box[0], $box[2], $box[4], $box[6] ] );
@@ -71,7 +68,6 @@ class Captcha extends WebPage {
         $h = ( $max_y - $min_y ) * 1.4;
 
         $im = imagecreatetruecolor( $w, $h ) or die( 'Cannot Initialize new GD image stream' );
-        $background_color = imagecolorallocate( $im, 50, 50, 50 );
 
         // Write the text
         imagettftext( $im, $fontSize, $fontAngle, 4, $h - 4, self::textColor( $im ), $fontFile, $captchaValue );

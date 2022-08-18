@@ -2,7 +2,7 @@
 /**
  * Don't change this file
  */
-$config['version']      = 'JACKBOOTWEB Version 12.0';
+$config['version']      = 'JACKBOOTWEB Version 12.9';
 $config['debug']        = ! isset ( $_SERVER['HTTP_HOST'] ) || strpos ( $_SERVER['HTTP_HOST'], 'local' ) !== false;
 $config['cookie_path']  = '/';
 $config['LF']           = "\r\n";
@@ -48,6 +48,7 @@ $config['known']             = [ ]; //TamperGuard Variables. Variables that add 
 // The list below are the scripts that are exempt from checking.
 $config['exempt']            = [ 'cron.php', 'router.php', 'menu.php' ]; // List of files that are not checked
 
+$config['crypto_location']   = 'session';   // If this is 'session' then it will look to the session variables, otherwise use the crypto_key
 $config['crypto_key']        = 'PredefinedEncryptionKeyhgfqf786w7676wedw'; // This key is shuffled around and put into the session
                                                                            // Which is then used for encrypting form variables
                                                                            // You probably should not use this in your app as changing it

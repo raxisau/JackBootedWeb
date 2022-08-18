@@ -269,8 +269,9 @@ class Log4PHP extends \Jackbooted\Util\JB {
      */
     public function show( $level, $s, $source = '' ) {
         // Get out if the error level is too high
-        if ( $level > $this->classErrorLevel )
+        if ( $level > $this->classErrorLevel ) {
             return;
+        }
 
         $errLev = error_reporting( E_ALL | E_STRICT );
 

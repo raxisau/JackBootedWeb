@@ -20,14 +20,8 @@ use \Defuse\Crypto\Crypto;
  * available to the general public.
  */
 
-/**
- * Description of Encryption
- *
- * @author bdutton
- */
 class Cryptography extends \Jackbooted\Util\JB {
 
-    //echo str_shuffle ( 'PredefinedEncryptionKey12345678901234567' );
     const RAND_KEY = '4n5d73rde315E486pe9t7oy2nirefcPKnie0y126';
     const META = ':e:';
     const META_LEN = 3;
@@ -38,17 +32,19 @@ class Cryptography extends \Jackbooted\Util\JB {
     private static $instance = null;
     private static $log;
     private static $encryptionOff = false;
-    private static $old = false;
 
     public static function init() {
-        if ( !isset( $_SESSION[G::SESS] ) ) $_SESSION[G::SESS] = [];
-        if ( ! isset( $_SESSION[G::SESS][G::CRYPTO] ) ) {
-            $iv = str_shuffle( Cfg::get( 'crypto_key', G::IV ) );
-            $_SESSION[G::SESS][G::CRYPTO] = Config::get( 'session.crypto.key', $iv, Config::GLOBAL_SCOPE );
+        if ( Cfg::get( 'crypto_location', 'session' ) == 'session' ) {
+            if ( !isset( $_SESSION[G::SESS] ) ) {
+                $_SESSION[G::SESS] = [];
+            }
+            if ( ! isset( $_SESSION[G::SESS][G::CRYPTO] ) ) {
+                $iv = str_shuffle( Cfg::get( 'crypto_key', G::IV ) );
+                $_SESSION[G::SESS][G::CRYPTO] = Config::get( 'session.crypto.key', $iv, Config::GLOBAL_SCOPE );
+            }
         }
         self::$log = Log4PHP::logFactory( __CLASS__ );
         self::$encryptionOff = Cfg::get( 'encrypt_override' );
-        self::$old = Cfg::get( 'mcrypt', false );
         self::$instance = new Cryptography ();
     }
 
@@ -86,7 +82,14 @@ class Cryptography extends \Jackbooted\Util\JB {
         parent::__construct();
 
         $this->encryptionKey = $l_key;
-        $this->randKey = md5( ( isset( $_SESSION[G::SESS][G::CRYPTO] ) ) ? $_SESSION[G::SESS][G::CRYPTO] : self::RAND_KEY );
+
+        if ( Cfg::get( 'crypto_location', 'session' ) == 'session' ) {
+            $this->randKey = md5( ( isset( $_SESSION[G::SESS][G::CRYPTO] ) ) ? $_SESSION[G::SESS][G::CRYPTO] : self::RAND_KEY );
+        }
+        else {
+            $this->randKey = Cfg::get( 'crypto_key' );
+        }
+
         $this->key = Key::createKey( ( $this->encryptionKey == null ) ? $this->randKey : $this->encryptionKey );
     }
 
@@ -95,8 +98,10 @@ class Cryptography extends \Jackbooted\Util\JB {
     private $blockLength;
 
     private function mcryptInit() {
-        if ( $this->mcryptInit )
+        if ( $this->mcryptInit ) {
             return;
+        }
+
         $this->mcryptInit = true;
 
         if ( !self::$encryptionOff ) {
@@ -106,8 +111,10 @@ class Cryptography extends \Jackbooted\Util\JB {
         $plainTextKey = ( $this->encryptionKey == null ) ? $this->randKey : $this->encryptionKey;
 
         $keySize = mcrypt_get_key_size( $algortithm, MCRYPT_MODE_ECB );
-        while ( strlen( $plainTextKey ) < $keySize )
+        while ( strlen( $plainTextKey ) < $keySize ) {
             $plainTextKey .= $plainTextKey;
+        }
+
         $plainTextKey = substr( $plainTextKey, 0, $keySize );
 
         $this->blockLength = mcrypt_get_block_size( $algortithm, MCRYPT_MODE_ECB );
@@ -122,44 +129,38 @@ class Cryptography extends \Jackbooted\Util\JB {
      * @return string
      */
     public function encrypt( $plainText, $force = false ) {
-        if ( self::$encryptionOff && !$force )
+        if ( self::$encryptionOff && !$force ) {
             return $plainText;
-        if ( !is_string( $plainText ) )
-            $plainText = "{$plainText}";
-        if ( !isset( $plainText ) || strlen( $plainText ) == 0 )
-            return $plainText;
-
-        if ( self::$old ) {
-            $this->mCryptInit();
-            $len = strlen( $plainText ) % $this->blockLength;
-            if ( $len != 0 ) {
-                $charactersNeeded = $this->blockLength - $len;
-                $plainText .= substr( self::PADDING, 0, $charactersNeeded );
-            }
-
-            $cypherText = self::META . base64_encode( mcrypt_generic( $this->td, $plainText ) );
-
-            // Checking that new system is consistant
-            $newCypherText = self::DMETA . base64_encode( Crypto::encrypt( $plainText, $this->key, true ) );
-            $checkPlain = $this->decrypt( $newCypherText );
-            if ( $checkPlain != $plainText ) {
-                echo "<pre>";
-                echo "Was unable to encrypt and decrypt the following\n";
-                echo "Original plainText ***$plainText*** => ***$newCypherText***\n";
-                echo "Decoded  ***$checkPlain*** \n";
-                echo "</pre>";
-                exit;
-            }
         }
-        else {
+
+        if ( !is_string( $plainText ) ) {
+            $plainText = "{$plainText}";
+        }
+
+        if ( !isset( $plainText ) || strlen( $plainText ) == 0 ) {
+            return $plainText;
+        }
+
+        try {
             $cypherText = self::DMETA . base64_encode( Crypto::encrypt( $plainText, $this->key, true ) );
         }
+        catch ( \Exception $ex ) {
+            self::$log->error( "Encryption error: " . $ex->getMessage() );
+            $cypherText = $plainText;
+        }
+
         return $cypherText;
     }
 
     public function decrypt( $cypherText ) {
         if ( strpos( $cypherText, self::DMETA ) === 0 ) {
-            $plainText = Crypto::decrypt( base64_decode( substr( $cypherText, self::DMETA_LEN ) ), $this->key, true );
+            try {
+                $plainText = Crypto::decrypt( base64_decode( substr( $cypherText, self::DMETA_LEN ) ), $this->key, true );
+            }
+            catch ( \Exception $ex ) {
+                self::$log->error( "Decryption error: " . $ex->getMessage() );
+                $plainText = $cypherText;
+            }
         }
         else if ( strpos( $cypherText, self::META ) === 0 ) {
             $this->mCryptInit();
@@ -171,17 +172,20 @@ class Cryptography extends \Jackbooted\Util\JB {
 
         return $plainText;
     }
-
     /**
      * Clean up the crypto resources when they go out of scope
      */
     public function __destruct() {
-        if ( !$this->mcryptInit )
+        if ( !$this->mcryptInit ) {
             return;
-        if ( function_exists( 'mcrypt_generic_deinit' ) && $this->td != null )
+        }
+
+        if ( function_exists( 'mcrypt_generic_deinit' ) && $this->td != null ) {
             eval( 'mcrypt_generic_deinit ( $this->td );' );
-        if ( function_exists( 'mcrypt_module_close' ) && $this->td != null )
+        }
+        if ( function_exists( 'mcrypt_module_close' ) && $this->td != null ) {
             eval( 'mcrypt_module_close ( $this->td );' );
+        }
     }
 
 }

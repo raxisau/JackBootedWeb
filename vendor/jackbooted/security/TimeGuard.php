@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackbooted\Security;
 
 use \Jackbooted\Forms\Request;

@@ -281,8 +281,9 @@ class DB extends \Jackbooted\Util\JB {
                 $values = [ $values ];
             }
 
-            foreach ( $values as $val )
+            foreach ( $values as $val ) {
                 $params[] = $val;
+            }
 
             return join( ',', array_fill( 0, count( $values ), '?' ) );
         }
@@ -381,16 +382,18 @@ class DB extends \Jackbooted\Util\JB {
      */
     public static function oneColumn( $dbh, $qry, $params = null ) {
         $result = self::query( $dbh, $qry, $params );
-        if ( $result === false )
+        if ( $result === false ) {
             return false;
+        }
 
         $col = [];
         while ( ( $row = $result->fetch( self::FETCH_NUM ) ) !== false ) {
             $col[] = $row[0];
         }
 
-        if ( count( $col ) == 0 )
+        if ( count( $col ) == 0 ) {
             return false;
+        }
 
         return $col;
     }
@@ -498,8 +501,10 @@ class DB extends \Jackbooted\Util\JB {
             self::dbg( $qry, $params );
         }
 
-        if ( ( $dbResource = self::connectionFactory( $dbh ) ) === false )
+        if ( ( $dbResource = self::connectionFactory( $dbh ) ) === false ) {
             return false;
+        }
+
         try {
             if ( $params == null ) {
                 $result = $dbResource->exec( $qry );
@@ -544,8 +549,9 @@ class DB extends \Jackbooted\Util\JB {
     static function limit( $sql, $start, $cnt ) {
 
         // Check if we are already doing the limiting
-        if ( strpos( strtoupper( $sql ), 'LIMIT' ) !== FALSE )
+        if ( strpos( strtoupper( $sql ), 'LIMIT' ) !== FALSE ) {
             return ( $sql );
+        }
 
         return ( $sql . " LIMIT $start,$cnt" );
     }
@@ -589,8 +595,9 @@ class DB extends \Jackbooted\Util\JB {
         $stack = debug_backtrace();
         $stackLength = count( $stack );
         for ( $origin = 1; $origin < $stackLength; $origin++ ) {
-            if ( __FILE__ != $stack[$origin]['file'] )
+            if ( __FILE__ != $stack[$origin]['file'] ) {
                 break;
+            }
         }
 
         $fileLocation = basename( $stack[$origin]['file'] );

@@ -47,8 +47,9 @@ class Response extends PipeLine {
     public function __construct( $initPattern = null ) {
         parent::__construct();
         // If there is a pattern passed thru then copy from request
-        if ( $initPattern != null )
+        if ( $initPattern != null ) {
             $this->copyVarsFromRequest( $initPattern );
+        }
 
         $this->copyVarsFromRequest( WebPage::SAVE_URL );
 
@@ -102,19 +103,22 @@ class Response extends PipeLine {
      * @return Response
      */
     public function copyVarsFromRequest( $matches = '/.*/' ) {
-        if ( !preg_match( '/^\\/.*\\/$/', $matches ) )
+        if ( !preg_match( '/^\\/.*\\/$/', $matches ) ) {
             $matches = '/^' . $matches . '$/';
+        }
 
         foreach ( Request::get() as $key => $val ) {
-            if ( preg_match( $matches, $key ) )
+            if ( preg_match( $matches, $key ) ) {
                 $this->set( $key, $val );
+            }
         }
         return $this;
     }
 
     private function addCSRFGuard() {
-        if ( self::$ignoreCrossSiteGuard )
+        if ( self::$ignoreCrossSiteGuard ) {
             return;
+        }
 
         if ( self::$crossSiteGuard == null ) {
             self::$crossSiteGuard = CSRFGuard::key();
@@ -130,8 +134,9 @@ class Response extends PipeLine {
      * @return string
      */
     public function toHidden( $guard = true ) {
-        if ( $guard )
+        if ( $guard ) {
             $this->addCSRFGuard();
+        }
         TamperGuard::add( $this );
 
         $html = '';
@@ -142,8 +147,9 @@ class Response extends PipeLine {
         }
 
         TamperGuard::del( $this );
-        if ( $guard )
+        if ( $guard ) {
             $this->delCSRFGuard();
+        }
         return $html;
     }
 
@@ -172,8 +178,9 @@ class Response extends PipeLine {
      * @return string
      */
     public function toUrl( $guard = false ) {
-        if ( $guard === true )
+        if ( $guard === true ) {
             $this->addCSRFGuard();
+        }
         else if ( $guard == self::UNIQUE_CSRF ) {
             $tempGuard = self::$crossSiteGuard;
             self::$crossSiteGuard = null;
@@ -184,8 +191,9 @@ class Response extends PipeLine {
         TamperGuard::add( $this );
         $this->convertFormVarsToFlatArray();
         TamperGuard::del( $this );
-        if ( $guard )
+        if ( $guard ) {
             $this->delCSRFGuard();
+        }
         return join( '&', $this->intermediateUrlArray );
     }
 

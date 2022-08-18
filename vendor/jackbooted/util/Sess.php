@@ -26,4 +26,7 @@ class Sess extends \Jackbooted\Util\JB {
         $_SESSION[G::SESS][$key] = $val;
     }
 
+    public static function unset( $key ) {
+        unset( $_SESSION[G::SESS][$key] );
+    }
 }

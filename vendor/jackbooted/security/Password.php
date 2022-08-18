@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackbooted\Security;
 
 /*
@@ -40,28 +39,33 @@ class Password extends \Jackbooted\Util\JB {
         // For example passGen ( 6, self::COMPLEX ) will give 2 upper case,
         // 2 lowercase one number and one symbol. This ratio seems to be the most readable
         // while keeping the password strength
-        $letterGroupIndexes = [ self::LOWER_ALPHA,
+        $letterGroupIndexes = [
+            self::LOWER_ALPHA,
             self::LOWER_ALPHA,
             self::UPPER_ALPHA,
             self::UPPER_ALPHA,
             self::NUMBERS,
-            self::SYMBOLS ];
+            self::SYMBOLS
+        ];
 
         // These letter groups are chosen to remove the ambigious letters
         // In this case G l I 1 0 O o are all a little ambigious
         // Also the letter w is removed. In some fonts it is hard to read
-        $letterGroups = [ self::LOWER_ALPHA => 'abcdefghijkmnpqrstuvxyz',
+        $letterGroups = [
+            self::LOWER_ALPHA => 'abcdefghijkmnpqrstuvxyz',
             self::UPPER_ALPHA => 'ABCDEFHJKLMNPRSTUVXYZ',
             self::NUMBERS => '23456789',
-            self::SYMBOLS => '@#$%^&*+?{}[]<>' ];
+            self::SYMBOLS => '@#$%^&*+?{}[]<>'
+        ];
         $password = '';
 
         for ( $i = 0; strlen( $password ) < $len; $i++ ) {
             $idx = $letterGroupIndexes[$i % count( $letterGroupIndexes )];
 
             // Skip this group is the password is too complex
-            if ( ( $idx & $complexity ) == 0 )
+            if ( ( $idx & $complexity ) == 0 ) {
                 continue;
+            }
 
             $password .= substr( str_shuffle( $letterGroups[$idx] ), 0, 1 );
         }

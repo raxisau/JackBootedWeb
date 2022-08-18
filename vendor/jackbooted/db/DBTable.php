@@ -160,8 +160,9 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @return mixed
      */
     public function setValue( $value, $columnNameOrIndex = 0, $row = 0 ) {
-        if ( !$this->ok() )
+        if ( !$this->ok() ) {
             return self::$falseValue;
+        }
 
         $this->table[$row][$columnNameOrIndex] = $value;
     }
@@ -176,8 +177,9 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
      * @return array
      */
     public function &getValue( $columnNameOrIndex = 0, $row = 0 ) {
-        if ( !$this->ok() )
+        if ( !$this->ok() ) {
             return self::$falseValue;
+        }
 
         $row = $this->getRow( $row );
 
@@ -318,8 +320,9 @@ class DBTable extends \Jackbooted\Util\JB implements \Iterator {
             foreach ( $this->table as &$row ) {
                 if ( $firstTime ) {
                     $msg .= '  <tr>';
-                    foreach ( $row as $key => &$value )
+                    foreach ( $row as $key => &$value ) {
                         $msg .= '<th>' . $key . '</th>';
+                    }
                     $msg .= '  </tr>' . "\n";
                     $firstTime = false;
                 }

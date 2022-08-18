@@ -24,12 +24,6 @@ use \Jackbooted\Util\Log4PHP;
  */
 class Lists extends \Jackbooted\Util\JB {
 
-    private static $log;
-
-    public static function init() {
-        self::$log = Log4PHP::logFactory( __CLASS__ );
-    }
-
     /**
      * Generates a drop down box from almost anything
      * @param string $name nameof the select
@@ -149,13 +143,15 @@ class Lists extends \Jackbooted\Util\JB {
         if ( is_array( $resultset ) ) {
             if ( count( $resultset ) == 0 ) {
                 $tag = "* None Available *";
-                if ( $defaultValue != null )
+                if ( $defaultValue != null ) {
                     $tag .= Tag::hidden( $name, $defaultValue );
+                }
             }
             else {
                 $tag = Tag::select( $name, $attribs );
-                if ( $hasBlank )
+                if ( $hasBlank ) {
                     $tag .= Tag::optiontag( ' ', '', (!isset( $defaultValue ) || $defaultValue == false ) );
+                }
                 foreach ( $resultset as $category => $list ) {
                     $tag .= Tag::hTag( 'optgroup', array_merge( $optGroupAttrib, array( 'label' => $category ) ) );
                     foreach ( $list as $key => $val ) {
@@ -171,18 +167,21 @@ class Lists extends \Jackbooted\Util\JB {
             $table = new DBTable( $resultset, DB::FETCH_NUM );
             if ( $table->rowCount() == 0 ) {
                 $tag = "* None Available *";
-                if ( $defaultValue != null )
+                if ( $defaultValue != null ) {
                     $tag .= Tag::hidden( $name, $defaultValue );
+                }
             }
             else {
                 $tag = Tag::select( $name, $attribs );
-                if ( $hasBlank )
+                if ( $hasBlank ) {
                     $tag .= Tag::optiontag( ' ', '', (!isset( $defaultValue ) || $defaultValue == false ) );
+                }
                 $prevCategory = '';
                 foreach ( $table as $row ) {
                     if ( $prevCategory != $row[0] ) {
-                        if ( $prevCategory != '' )
+                        if ( $prevCategory != '' ) {
                             $tag .= Tag::_hTag( 'optgroup' );
+                        }
                         $tag .= Tag::hTag( 'optgroup', array( 'label' => $row[0] ) );
                         $prevCategory = $row[0];
                     }
@@ -227,8 +226,9 @@ class Lists extends \Jackbooted\Util\JB {
             $tag = array();
             $idx = 0;
             foreach ( $displayList as $key => $val ) {
-                if ( is_int( $key ) )
+                if ( is_int( $key ) ) {
                     $key = $val;
+                }
                 $key = trim( $key );
 
                 $attribs['id'] = $name . $idx ++;

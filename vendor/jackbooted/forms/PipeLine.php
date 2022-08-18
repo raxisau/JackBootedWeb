@@ -39,8 +39,9 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
     public function getRaw( $key ) {
         $oldValues = Cfg::turnOffErrorHandling();
         eval( '$value = $this->formVars' . $key . ';' );
-        if ( !isset( $value ) )
+        if ( !isset( $value ) ) {
             $value = '';
+        }
         Cfg::turnOnErrorHandling( $oldValues );
         return $value;
     }

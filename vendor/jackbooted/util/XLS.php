@@ -20,8 +20,9 @@ class XLS extends \Jackbooted\Util\JB {
 
     public static function output( $table, $name = '' ) {
         error_reporting( 0 );
-        if ( !is_object( $table ) && !is_array( $table ) )
+        if ( !is_object( $table ) && !is_array( $table ) ) {
             exit;
+        }
         if ( $name == '' ) {
             $name = 'output' . Invocation::next();
         }
