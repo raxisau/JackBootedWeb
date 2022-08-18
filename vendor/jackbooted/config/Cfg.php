@@ -2,16 +2,6 @@
 
 namespace Jackbooted\Config;
 
-use \Jackbooted\Forms\Request;
-use \Jackbooted\Forms\Response;
-use \Jackbooted\G;
-use \Jackbooted\Html\JS;
-use \Jackbooted\Html\Tag;
-use \Jackbooted\Security\CSRFGuard;
-use \Jackbooted\Security\TamperGuard;
-use \Jackbooted\Security\TimeGuard;
-use \Jackbooted\Util\Log4PHP;
-
 /**
  * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
  *
@@ -39,7 +29,6 @@ class Cfg {
         self::preLoadUsedClasses();
         self::setUpLogging();
         self::setUpAutoLoader();
-        self::setUpDebugFriendlyClassSwitches();
         self::setUpSession();
         self::ensureNoForgery();
         self::setErrorLevel();
@@ -64,8 +53,7 @@ class Cfg {
     }
 
     public static function setUpDates() {
-        self::$log->trace( 'Entering: ' . __METHOD__ );
-        if ( ( $tz = G::get( 'fldTimeZone', false ) ) !== false ) {
+        if ( ( $tz = \Jackbooted\G::get( 'fldTimeZone', false ) ) !== false ) {
             date_default_timezone_set( $tz );
         }
         else if ( ( $tz = self::get( 'timezone', false ) ) !== false ) {
@@ -78,7 +66,6 @@ class Cfg {
         self::set( 'local_date', strftime( '%Y-%m-%d', $timeStamp ) );
         self::set( 'local_time', strftime( '%H:%M', $timeStamp ) );
         self::set( 'local_date_array', getdate( $timeStamp ) );
-        self::$log->trace( 'Exiting: ' . __METHOD__ );
     }
 
     public static function siteUrl() {
@@ -89,17 +76,23 @@ class Cfg {
         if ( !self::get( 'maintenance' ) ) {
             return;
         }
-        $maint = Cfg::get( 'maintenance_url', self::siteUrl() . '/maintenance.php' );
+        $maint = self::get( 'maintenance_url', self::siteUrl() . '/maintenance.php' );
         header( 'Location: ' . $maint );
         exit;
     }
 
     private static function ensureNoForgery() {
         self::$log->trace( 'Entering: ' . __METHOD__ );
-        if ( !Cfg::get( 'jb_forgery_check', true ) ) {
+        if ( !self::get( 'jb_forgery_check', true ) ) {
             self::$log->trace( 'Exiting: ' . __METHOD__ );
             return;
         }
+
+        // No checking if there are not any arguments
+        if ( count( $_POST ) == 0 && count( $_GET ) == 0 ) {
+            return;
+        }
+
         // Check if the current script is exempt from forgery check
         $fileName = '';
         if ( isset( $_SERVER['SCRIPT_FILENAME'] ) ) {
@@ -108,18 +101,18 @@ class Cfg {
         else if ( isset( $_SERVER['argv'][0] ) ) {
             $fileName = $_SERVER['argv'][0];
         }
-        if ( in_array( basename( $fileName ), Cfg::get( 'exempt', [] ) ) ) {
+        if ( in_array( basename( $fileName ), self::get( 'exempt', [] ) ) ) {
             self::$log->trace( 'Exiting: ' . __METHOD__ );
             return;
         }
 
         // Add the known request variables to TamperGuard
-        foreach ( Cfg::get( 'known', [] ) as $val ) {
-            TamperGuard::known( $val );
+        foreach ( self::get( 'known', [] ) as $val ) {
+            \Jackbooted\Security\TamperGuard::known( $val );
         }
         $message = null;
 
-        if ( ( $tg = TimeGuard::check() ) !== TimeGuard::NOGUARD ) {
+        if ( ( $tg = \Jackbooted\Security\TimeGuard::check() ) !== \Jackbooted\Security\TimeGuard::NOGUARD ) {
             if ( $tg !== true ) {
                 $message = <<<HTML
                     Invalid AJAX Request ($tg)<br/>
@@ -130,7 +123,7 @@ class Cfg {
 HTML;
             }
         }
-        else if ( ( $reqChk = Request::check() ) !== true ) {
+        else if ( ( $reqChk = \Jackbooted\Forms\Request::check() ) !== true ) {
             $reqChk = str_replace( '%', '%%', $reqChk );
             $message = <<<HTML
                 Invalid or expired request (URL Error - $reqChk)<br/>
@@ -140,7 +133,7 @@ HTML;
                 <meta HTTP-EQUIV="REFRESH" content="%s; url=%s">
 HTML;
         }
-        else if ( !CSRFGuard::check() ) {
+        else if ( ! \Jackbooted\Security\CSRFGuard::check() ) {
             $message = <<<HTML
                 Invalid Request (CSRF error)<br/>
                 %s has detected re-submission or form tampering.<br/>
@@ -153,12 +146,12 @@ HTML;
         if ( $message != null ) {
             $seconds = '5';
 
-            if ( ( $location = Cfg::get( 'index' ) ) == '' ) {
-                $location = Cfg::siteUrl() . '/index.php';
+            if ( ( $location = self::get( 'index' ) ) == '' ) {
+                $location = self::siteUrl() . '/index.php';
             }
 
             self::$log->trace( 'Exiting: ' . __METHOD__ );
-            echo sprintf( $message, Cfg::get( 'version' ), Cfg::get( 'boss' ), $location, $seconds, $seconds, $location );
+            echo sprintf( $message, self::get( 'version' ), self::get( 'boss' ), $location, $seconds, $seconds, $location );
             exit;
         }
         
@@ -166,28 +159,18 @@ HTML;
     }
 
     private static function setUpSession() {
-        self::$log->trace( 'Entering: ' . __METHOD__ );
-        if ( ! Cfg::get( 'jb_db' ) ) {
-            self::$log->trace( 'Exiting: ' . __METHOD__ );
+        if ( ! self::get( 'jb_db' ) ) {
             return;
         }
 
-        self::$log->trace( '**** HERE 1');
         self::initSession();
-        self::$log->trace( '**** HERE 2');
-
-        self::$log->trace( '**** HERE 2.3 ' . \Jackbooted\Admin\Login::DEF );
 
         // See if we can log the user in
         if ( ! \Jackbooted\Admin\Login::loadPreferencesFromCookies() ) {
-            self::$log->trace( '**** HERE 3');
-            if ( G::isLoggedIn() ) {
-                self::$log->trace( '**** HERE 4');
+            if ( \Jackbooted\G::isLoggedIn() ) {
                 \Jackbooted\Admin\Login::logOut();
-                self::$log->trace( '**** HERE 5');
             }
         }
-        self::$log->trace( 'Exiting: ' . __METHOD__ );
     }
 
     public static function initSession() {
@@ -195,33 +178,25 @@ HTML;
         if ( ! isset( $_SESSION ) ) {
             session_start();
         }
-        if ( !isset( $_SESSION[G::SESS] ) ) {
-            $_SESSION[G::SESS] = [];
+        if ( !isset( $_SESSION[\Jackbooted\G::SESS] ) ) {
+            $_SESSION[\Jackbooted\G::SESS] = [];
         }
         self::$log->trace( 'Exiting ' . __METHOD__ );
     }
 
 
-    private static function setUpDebugFriendlyClassSwitches() {
-        self::$log->trace( 'Entering: ' . __METHOD__ );
-        if ( !self::get( 'debug' ) ) {
-            self::$log->trace( 'Exiting: ' . __METHOD__ );
-            return;
-        }
-
-        // Add here if necessary
-        self::$log->trace( 'Exiting: ' . __METHOD__ );
-    }
-
     private static function preLoadUsedClasses() {
-        $dir = dirname( dirname( __FILE__ ) );
+        $dir = dirname( __DIR__ );
 
-        $filesToLoad = [ $dir . '/util/JB.php',
+        $filesToLoad = [
+            $dir . '/util/JB.php',
             $dir . '/util/Log4PHP.php',
             $dir . '/util/PHPExt.php',
             $dir . '/util/AutoLoader.php',
             $dir . '/util/ClassLocator.php',
-            $dir . '/time/Stopwatch.php' ];
+            $dir . '/time/Stopwatch.php',
+            $dir . '/G.php',
+        ];
 
         foreach ( $filesToLoad as $fileName ) {
             if ( file_exists( $fileName ) ) {
@@ -231,29 +206,17 @@ HTML;
     }
 
     private static function setUpAutoLoader() {
-        self::$log->trace( 'Entering: ' . __METHOD__ );
         \Jackbooted\Util\AutoLoader::init();
         \Jackbooted\Time\Stopwatch::init();
         \Jackbooted\Util\ClassLocator::init( self::get( 'class_path' ) );
-        self::$log->trace( 'Exit: ' . __METHOD__ );
     }
 
     private static function setUpLogging() {
-        Log4PHP::init( Log4PHP::ALL );
-        Log4PHP::setOutput( Log4PHP::FILE );
-        self::$log = Log4PHP::logFactory( __CLASS__ );
-        self::$log->debug( __METHOD__ . 'Logging set up' );
+        $inDevMode = self::get( 'debug' );
 
-//        $errorLogLocation = ini_get( 'error_log' );
-//        if ( !isset( $errorLogLocation ) || $errorLogLocation == false ) {
-//            ini_set( 'error_log', '/dev/stdout' );
-//        }
-//
-//        $inDevMode = self::get( 'debug' );
-//
-//        Log4PHP::init( ( $inDevMode ) ? Log4PHP::DEBUG : Log4PHP::ERROR  );
-//        Log4PHP::setOutput( Log4PHP::FILE );
-//        self::$log = Log4PHP::logFactory( __CLASS__ );
+        \Jackbooted\Util\Log4PHP::init( ( $inDevMode ) ? \Jackbooted\Util\Log4PHP::DEBUG : \Jackbooted\Util\Log4PHP::ERROR );
+        \Jackbooted\Util\Log4PHP::setOutput( \Jackbooted\Util\Log4PHP::FILE );
+        self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
     }
 
     public static function turnOffErrorHandling() {
@@ -268,17 +231,10 @@ HTML;
     }
 
     public static function setErrorLevel() {
-        self::$log->trace( 'Entering: ' . __METHOD__ );
+        $errMode = self::get( 'jb_error_mode' );
+        self::$errorLevel = ( $errMode ) ? -1 : 0;
+        error_reporting( self::$errorLevel );
 
-        //$errMode = self::get( 'jb_error_mode' );
-        //$level = ( $errMode ) ? ( E_ALL | E_STRICT ) : 0;
-        //error_reporting( $level );
-        //ini_set( 'display_errors', ( $errMode ) ? '1' : '0'  );
-        //self::$errorLevel = $level;
-
-        error_reporting( -1 );
-        ini_set( 'display_errors', '1'  );
-
-        self::$log->trace( 'Exiting: ' . __METHOD__ );
+        ini_set( 'display_errors', ( $errMode ) ? '1' : '0'  );
     }
 }
