@@ -270,96 +270,15 @@ HTML;
     public static function setErrorLevel() {
         self::$log->trace( 'Entering: ' . __METHOD__ );
 
-        $errMode = self::get( 'jb_error_mode' );
-        $level = ( $errMode ) ? ( E_ALL | E_STRICT ) : 0;
-        error_reporting( $level );
-        ini_set( 'display_errors', ( $errMode ) ? '1' : '0'  );
-        self::$errorLevel = $level;
+        //$errMode = self::get( 'jb_error_mode' );
+        //$level = ( $errMode ) ? ( E_ALL | E_STRICT ) : 0;
+        //error_reporting( $level );
+        //ini_set( 'display_errors', ( $errMode ) ? '1' : '0'  );
+        //self::$errorLevel = $level;
 
         error_reporting( -1 );
         ini_set( 'display_errors', '1'  );
 
         self::$log->trace( 'Exiting: ' . __METHOD__ );
     }
-
-    public static function errorHandler( $errno, $errstr, $errfile, $errline ) {
-        if ( !preg_match( '/^.*\\/3rdparty\\/.*$/', $errfile ) ) {
-            self::$log->error( "{$errno}-{$errstr}: {$errfile}({$errline})" );
-        }
-
-        switch ( $errno ) {
-            case E_STRICT:
-            case E_USER_WARNING:
-                return;
-
-            default:
-                if ( self::get( 'debug' ) ) {
-                    $errMsg = sprintf( '(!) Fatal error: %s in %s on line: %s', $errstr, $errfile, $errline );
-
-                    $html = Tag::table( [ 'cellpadding' => 3, 'cellspacing' => 0, 'border' => 1 ] ) .
-                            Tag::tr( [ 'bgcolor' => 'silver' ] ) .
-                            Tag::th( [ 'colspan' => 4, 'align' => 'left' ] ) . $errMsg . Tag::_th() .
-                            Tag::_tr() .
-                            Tag::tr( [ 'bgcolor' => 'silver' ] ) .
-                            Tag::th() . 'Stk' . Tag::_th() .
-                            Tag::th() . 'File' . Tag::_th() .
-                            Tag::th() . 'Line' . Tag::_th() .
-                            Tag::th() . 'Function' . Tag::_th() .
-                            Tag::_tr();
-
-                    foreach ( debug_backtrace() as $idx => $row ) {
-                        if ( $idx == 0 ) {
-                            continue;
-                        }
-
-                        if ( isset( $row['file'] ) ) {
-                            $file = basename( $row['file'] );
-                            $title = $row['file'];
-                        }
-                        else {
-                            $file = '&nbsp;';
-                            $title = ' ';
-                        }
-
-                        $line = ( isset( $row['line'] ) ) ? $row['line'] : '&nbsp;';
-
-                        $function = $row['function'];
-                        if ( isset( $row['class'] ) ) {
-                            $function = $row['class'] . $row['type'] . $function;
-                        }
-
-                        $style = ( ( $idx % 2 ) == 0 ) ? [] : [ 'bgcolor' => 'yellow' ];
-                        $html .= Tag::tr( $style ) .
-                                Tag::td() . $idx . Tag::_td() .
-                                Tag::td( [ 'title' => $title ] ) . $file . Tag::_td() .
-                                Tag::td() . $line . Tag::_td() .
-                                Tag::td() . $function . Tag::_td() .
-                                Tag::_tr();
-                    }
-
-                    $html .= Tag::_table();
-                    $html = str_replace( [ "\n", "'" ], [ '', "\\'" ], $html );
-                    $url = self::siteUrl() . '/ajax.php?' . Response::factory()->action( '\Jackbooted\Html\WebPage->blank()' )->toUrl();
-
-                    $js = <<<JS
-                    $().ready(function() {
-                        newWindow = window.open ( '$url','Error Output','height=300,width=700');
-                        var tmp = newWindow.document;
-                        tmp.write ( '<html><head><title>$errMsg</title>' );
-                        tmp.write ( '<style type="text/css">' );
-                        tmp.write ( '</style>');
-                        tmp.write ( '</head><body>');
-                        tmp.write ( '$html' );
-                        tmp.write ( '</body></html>');
-                        tmp.close();
-                    });
-JS;
-                    echo JS::library( JS::JQUERY ) .
-                    JS::javaScript( $js ) .
-                    $errMsg;
-                }
-                break;
-        }
-    }
-
 }
