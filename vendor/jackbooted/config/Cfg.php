@@ -35,35 +35,15 @@ class Cfg {
         setlocale( LC_MONETARY, 'en_US' );
         ini_set( 'short_open_tag', '1' );
 
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
         self::checkForMaintenance();
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
         self::preLoadUsedClasses();
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
         self::setUpLogging();
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
         self::setUpAutoLoader();
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
         self::setUpDebugFriendlyClassSwitches();
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
         self::setUpSession();
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
         self::ensureNoForgery();
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
         self::setErrorLevel();
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
         self::setUpDates();
-        error_reporting ( -1 );
-        ini_set ( 'display_errors', '1' );
     }
 
     public static function get( $key = null, $def = '' ) {
