@@ -32,7 +32,7 @@ class Tag extends \Jackbooted\Util\JB {
             return self::_hTag( strtolower( substr( $name, 1 ) ) );
         }
         else {
-            if ( is_array( $arguments ) && count( $arguments ) > 0 ) {
+            if ( isset( $arguments[0] ) ) {
                 $params = $arguments[0];
             }
             else {
@@ -51,7 +51,7 @@ class Tag extends \Jackbooted\Util\JB {
             return self::_hTag( strtolower( substr( $name, 1 ) ) );
         }
         else {
-            if ( is_array( $arguments ) && count( $arguments ) > 0 ) {
+            if ( isset( $arguments[0] ) ) {
                 $params = $arguments[0];
             }
             else {
@@ -156,14 +156,6 @@ class Tag extends \Jackbooted\Util\JB {
      */
     public static function br() {
         return '<br/>';
-    }
-
-    /**
-     * function to generate &lt;/td&gt;
-     * @returns string The resulting HTML
-     */
-    public static function _td() {
-        return self::_hTag( 'td' );
     }
 
     /**
