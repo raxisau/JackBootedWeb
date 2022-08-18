@@ -93,7 +93,7 @@ class Login extends WebPage {
     }
 
     public static function sendLoginCookie( $username, $password ) {
-        self::$log->error( 'Entering ' . __METHOD__ );
+        self::$log->trace( 'Entering ' . __METHOD__ );
         $hash = self::calculateHash( $username, $password );
 
         if ( Cfg::get( 'save_cookies', false ) ) {
@@ -105,11 +105,11 @@ class Login extends WebPage {
         G::set( self::LOGIN_NAME, $username );
         G::set( self::PASSWORD_NAME, $password );
         G::set( self::SESSHASH_NAME, $hash );
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
     }
 
     public static function getLoginCookie() {
-        self::$log->error( 'Entering ' . __METHOD__ );
+        self::$log->trace( 'Entering ' . __METHOD__ );
         $username = G::get( self::LOGIN_NAME, '' );
         $password = G::get( self::PASSWORD_NAME, '' );
         $hash     = G::get( self::SESSHASH_NAME, '' );
@@ -119,15 +119,15 @@ class Login extends WebPage {
             $password = Cookie::get( self::PASSWORD_NAME, '' );
             $hash = Cookie::get( self::SESSHASH_NAME, '' );
         }
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return [ $username, $password, $hash ];
     }
 
     public static function loadPreferencesFromCookies() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         list ( $username, $password, $hash ) = self::getLoginCookie();
         if ( !self::checkAuthenticated( $username, $password, $hash ) ) {
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             return false;
         }
 
@@ -136,29 +136,29 @@ class Login extends WebPage {
             self::sendLoginCookie( $username, $password );
         }
 
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return true;
     }
 
     public static function calculateHash( $username, $password ) {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         $hashArray = [ $username, $password, $_SERVER['REMOTE_ADDR'], time() ];
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return serialize( $hashArray );
     }
 
     public static function testHash( $username, $password, $hash ) {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         if ( ( $hashArray = @unserialize( $hash ) ) === false ) {
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             return false;
         }
         else if ( $hashArray[0] != $username ) {
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             return self::$log->error( 'Incorrect username' );
         }
         else if ( $hashArray[1] != $password ) {
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             return self::$log->error( 'Incorrect password' );
         }
 
@@ -166,21 +166,21 @@ class Login extends WebPage {
         // my internet provider is changing IPs every 5 minutes
         // This check will force a user to login again if they change location
         // else if ( $hashArray[2] != $_SERVER['REMOTE_ADDR'] )
-        //    return self::$log->error( 'Login from different IP' );
+        //    return self::$log->trace( 'Login from different IP' );
         else if ( time() - $hashArray[3] > Cfg::get( 'session_timeout', 604800 ) ) {
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             return self::$log->error( 'Session timeout' );
         }
 
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return true;
     }
 
     public static function checkAuthenticated( $username, $password, $hash = null ) {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         if ( ! isset( $username ) || $username == false || $username == '' ||
              ! isset( $password ) || $password == false || $password == '' ) {
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             return false;
         }
 
@@ -226,19 +226,19 @@ SQL;
             self::incrementFails( $username, $password );
         }
 
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $sucessfulLogin;
     }
 
     public static function updateLastLogin( $username ) {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         DB::exec( DB::DEF, 'UPDATE tblUser SET fldLastLogin=?,fldFails=0 WHERE fldUser=?', [ time(), $username ] );
         DB::exec( DB::DEF, 'DELETE FROM tblLoginAttempt WHERE fldUsername=?', [ $username ] );
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
     }
 
     public static function incrementFails( $username, $password ) {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         $params = [ DBMaintenance::dbNextNumber( DB::DEF, 'tblLoginAttempt' ),
                     $username,
                     $password,
@@ -246,46 +246,46 @@ SQL;
                     $_SERVER['REMOTE_ADDR'] ];
         DB::exec( DB::DEF, 'INSERT INTO tblLoginAttempt VALUES(?,?,?,?,?)', $params );
         DB::exec( DB::DEF, 'UPDATE tblUser SET fldFails=fldFails+1 WHERE fldUser=?', $username );
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return DB::oneValue( DB::DEF, 'SELECT fldFails FROM tblUser WHERE fldUser=?', $username );
     }
 
     public static function clearFails() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         $la = DB::exec( DB::DEF, 'DELETE FROM tblLoginAttempt WHERE fldUsername IN (SELECT fldUser FROM tblUser)' );
         $up = DB::exec( DB::DEF, 'UPDATE tblUser SET fldFails=0' );
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return [ 0, "Cleared: $up Login Attempts: $la" ];
     }
 
     public static function loadPreferences( $user ) {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         $prefLoader = new PreferenceLoader( null, $user );
         $_SESSION[G::SESS][G::PREFS] = $prefLoader->getPreferences();
         G::setLoggedIn( true );
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
     }
 
     public static function logOut() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         self::killSession();
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         self::doRedirect();
     }
 
     public static function initSession() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         if ( ! isset( $_SESSION ) ) {
             session_start();
         }
         if ( !isset( $_SESSION[G::SESS] ) ) { 
             $_SESSION[G::SESS] = [];
         }
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
     }
 
     public static function killSession() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         Cookie::clear( self::LOGIN_NAME );
         Cookie::clear( self::PASSWORD_NAME );
         Cookie::clear( self::SESSHASH_NAME );
@@ -298,18 +298,18 @@ SQL;
 
         session_unset();
         session_destroy();
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
     }
 
     public static function home() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         Request::set( WebPage::SAVE_URL, Cfg::siteUrl() );
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         self::doRedirect();
     }
 
     public static function doRedirect() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         $redirectTime = 0;
 
         if ( ( $index = Cfg::get( 'index' ) ) == '' ) {
@@ -319,7 +319,7 @@ SQL;
         $url = Request::get( WebPage::SAVE_URL, $index );
 
         echo ( sprintf( '<meta HTTP-EQUIV="REFRESH" content="%s; url=%s">', $redirectTime, $url ) );
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         exit;
     }
 
@@ -328,7 +328,7 @@ SQL;
     }
 
     public function index() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         $formName = 'Login_index';
         $valid = Validator::factory( $formName )
                 ->addExists( self::LOGIN_FNAME, 'Email field must not be empty' )
@@ -366,12 +366,12 @@ SQL;
                 Tag::_form() .
                 Tag::linkButton( '?' . $resp->action( __CLASS__ . '->forgotPassword()' )->toUrl(), 'Forgot Password' );
 
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $html;
     }
 
     public function forgotPassword() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         // Initialise the $msg and $action and $disclaimer variables
         $formName = 'Login_forgotPassword';
 
@@ -399,16 +399,16 @@ SQL;
                 Tag::_form() .
                 Tag::linkButton( '?' . Response::factory()->action( __CLASS__ . '->index()' )->toUrl(), 'Back to Login' );
 
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $html;
     }
 
     public function sendPW() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         $sql = 'SELECT fldUserID FROM tblUser WHERE fldUser=?';
 
         if ( ( $id = DB::oneValue( DB::DEF, $sql, Request::get( 'fldEmail' ) ) ) === false ) {
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             return $this->forgotPassword() .
                     Widget::popupWrapper( 'This email does not exist on this system.', -1 );
         }
@@ -449,18 +449,18 @@ SQL;
 
         $msg = 'Soon you will receive an email that will contain your login details.';
 
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $this->index() .
                 Widget::popupWrapper( $msg, -1 );
     }
 
     public function checkLogin() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         $username = Request::get( self::LOGIN_FNAME );
         $password = Request::get( self::PASSW_FNAME );
 
         if ( !isset( $username ) || $username == false || !isset( $password ) || $password == false ) {
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             return false;
         }
 
@@ -470,17 +470,17 @@ SQL;
             self::$log->debug( 'New session has taken over id: ' . session_id() );
             self::loadPreferences( $username );
             self::sendLoginCookie( $username, $password );
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             self::doRedirect();
         }
         else {
-            self::$log->error( 'Exiting ' . __METHOD__ );
+            self::$log->trace( 'Exiting ' . __METHOD__ );
             return 'Invalid Login Details' . $this->index();
         }
     }
 
     protected function getDisplayName() {
-        self::$log->error( 'Entering: ' . __METHOD__ );
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         $name = G::get( 'fldFirstName' ) . ' ' . G::get( 'fldLastName' );
         if ( G::isLoggedIn() &&
                 G::accessLevel( Privileges::getSecurityLevel( 'SITE ADMIN' ) ) ) {
@@ -489,7 +489,7 @@ SQL;
         else {
             $uName = Tag::e( $name );
         }
-        self::$log->error( 'Exiting ' . __METHOD__ );
+        self::$log->trace( 'Exiting ' . __METHOD__ );
         return $uName;
     }
 }

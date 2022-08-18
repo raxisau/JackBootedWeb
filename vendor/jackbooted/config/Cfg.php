@@ -64,6 +64,7 @@ class Cfg {
     }
 
     public static function setUpDates() {
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         if ( ( $tz = G::get( 'fldTimeZone', false ) ) !== false ) {
             date_default_timezone_set( $tz );
         }
@@ -77,6 +78,7 @@ class Cfg {
         self::set( 'local_date', strftime( '%Y-%m-%d', $timeStamp ) );
         self::set( 'local_time', strftime( '%H:%M', $timeStamp ) );
         self::set( 'local_date_array', getdate( $timeStamp ) );
+        self::$log->trace( 'Exiting: ' . __METHOD__ );
     }
 
     public static function siteUrl() {
@@ -93,7 +95,9 @@ class Cfg {
     }
 
     private static function ensureNoForgery() {
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         if ( !Cfg::get( 'jb_forgery_check', true ) ) {
+            self::$log->trace( 'Exiting: ' . __METHOD__ );
             return;
         }
         // Check if the current script is exempt from forgery check
@@ -104,8 +108,10 @@ class Cfg {
         else if ( isset( $_SERVER['argv'][0] ) ) {
             $fileName = $_SERVER['argv'][0];
         }
-        if ( in_array( basename( $fileName ), Cfg::get( 'exempt', [] ) ) )
+        if ( in_array( basename( $fileName ), Cfg::get( 'exempt', [] ) ) ) {
+            self::$log->trace( 'Exiting: ' . __METHOD__ );
             return;
+        }
 
         // Add the known request variables to TamperGuard
         foreach ( Cfg::get( 'known', [] ) as $val ) {
@@ -151,13 +157,18 @@ HTML;
                 $location = Cfg::siteUrl() . '/index.php';
             }
 
+            self::$log->trace( 'Exiting: ' . __METHOD__ );
             echo sprintf( $message, Cfg::get( 'version' ), Cfg::get( 'boss' ), $location, $seconds, $seconds, $location );
             exit;
         }
+        
+        self::$log->trace( 'Exiting: ' . __METHOD__ );
     }
 
     private static function setUpSession() {
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         if ( ! Cfg::get( 'jb_db' ) ) {
+            self::$log->trace( 'Exiting: ' . __METHOD__ );
             return;
         }
 
@@ -169,15 +180,19 @@ HTML;
                 \Jackbooted\Admin\Login::logOut();
             }
         }
+        self::$log->trace( 'Exiting: ' . __METHOD__ );
     }
 
 
     private static function setUpDebugFriendlyClassSwitches() {
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         if ( !self::get( 'debug' ) ) {
+            self::$log->trace( 'Exiting: ' . __METHOD__ );
             return;
         }
 
         // Add here if necessary
+        self::$log->trace( 'Exiting: ' . __METHOD__ );
     }
 
     private static function preLoadUsedClasses() {
@@ -198,9 +213,11 @@ HTML;
     }
 
     private static function setUpAutoLoader() {
+        self::$log->trace( 'Entering: ' . __METHOD__ );
         \Jackbooted\Util\AutoLoader::init();
         \Jackbooted\Time\Stopwatch::init();
         \Jackbooted\Util\ClassLocator::init( self::get( 'class_path' ) );
+        self::$log->trace( 'Exit: ' . __METHOD__ );
     }
 
     private static function setUpLogging() {
@@ -233,13 +250,18 @@ HTML;
     }
 
     public static function setErrorLevel() {
+        self::$log->trace( 'Entering: ' . __METHOD__ );
+
         $errMode = self::get( 'jb_error_mode' );
-
         $level = ( $errMode ) ? ( E_ALL | E_STRICT ) : 0;
-
         error_reporting( $level );
         ini_set( 'display_errors', ( $errMode ) ? '1' : '0'  );
         self::$errorLevel = $level;
+
+        error_reporting( -1 );
+        ini_set( 'display_errors', '1'  );
+
+        self::$log->trace( 'Exiting: ' . __METHOD__ );
     }
 
     public static function errorHandler( $errno, $errstr, $errfile, $errline ) {
