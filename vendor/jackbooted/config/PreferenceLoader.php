@@ -37,25 +37,21 @@ class PreferenceLoader extends \Jackbooted\Util\JB {
         // the user information If there is no information
         // in the user, check the alternate domain
         $sql = "SELECT * FROM tblUser WHERE ";
-        if ( $user != NULL )
+        if ( $user != NULL ) {
             $sql .= "fldUser='$user'";
-        else if ( $server != NULL )
+        }
+        else if ( $server != NULL ) {
             $sql .= "'$server' LIKE fldDomain";
+        }
         $sql .= " LIMIT 1";
 
-        if ( $this->_loadUserTable( $sql ) ) {
-            $this->_loadGroupTable();
-        }
-        // if not work then try the alternate domain
-        else {
+        if ( ! $this->_loadUserTable( $sql ) ) {
             $sql = "SELECT * FROM tblUser WHERE '$server' LIKE fldAltDomain LIMIT 1";
             if ( $this->_loadUserTable( $sql ) ) {
                 // If it is in the alternate domain the
                 // use these preferences
                 $server = $this->prefs->userPrefs["fldDomain"];
                 Cfg::set( 'server', $server );
-
-                $this->_loadGroupTable();
             }
         }
     }
@@ -97,37 +93,4 @@ class PreferenceLoader extends \Jackbooted\Util\JB {
         // return true/success
         return ( TRUE );
     }
-
-    /** Function to load the user Group details
-     * @returns boolean
-     * @private
-     */
-    function _loadGroupTable() {
-
-        // Load the first group because it is the Global Group
-        $sql = DB::limit( "SELECT * FROM tblGroup", 0, 1 );
-        $tab = new DBTable( DB::DEF, $sql, null, DB::FETCH_ASSOC );
-        if ( $tab->isEmpty() )
-            return ( false );
-
-        $fldGroup = [];
-        $fldGroup[$tab->getValue( "fldGroupID" )] = $tab->getValue( "fldName" );
-
-        // get the groups that are related to this client
-        $sql = ( "SELECT g.* FROM tblGroup g, tblUserGroupMap map " .
-                "WHERE map.fldUserID='" . $this->prefs->get( "fldIserID" ) . "' " .
-                "AND   map.fldGroupID=g.fldGroupID " );
-        $tab = new DBTable( DB::DEF, $sql, null, DB::FETCH_ASSOC );
-        if ( !$tab->isEmpty() ) {
-            for ( $i = 0; $i < $tab->getRowCount(); $i++ ) {
-                $fldGroup[$tab->getValue( "fldGroupID", $i )] = $tab->getValue( "fldName", $i );
-            }
-        }
-
-        $this->prefs->put( "fldGroup", $fldGroup );
-
-        // return true/success
-        return ( TRUE );
-    }
-
 }

@@ -172,12 +172,17 @@ HTML;
             return;
         }
 
+        self::$log->trace( '**** HERE 1');
         self::initSession();
+        self::$log->trace( '**** HERE 2');
 
         // See if we can log the user in
         if ( ! \Jackbooted\Admin\Login::loadPreferencesFromCookies() ) {
+            self::$log->trace( '**** HERE 3');
             if ( G::isLoggedIn() ) {
+                self::$log->trace( '**** HERE 4');
                 \Jackbooted\Admin\Login::logOut();
+                self::$log->trace( '**** HERE 5');
             }
         }
         self::$log->trace( 'Exiting: ' . __METHOD__ );
