@@ -19,7 +19,6 @@ use \Jackbooted\DB\DBTable;
 class XLS extends \Jackbooted\Util\JB {
 
     public static function output( $table, $name = '' ) {
-        error_reporting( 0 );
         if ( !is_object( $table ) && !is_array( $table ) ) {
             exit;
         }

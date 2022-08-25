@@ -8,5 +8,5 @@ else {
 $config['js_url']       = $config['site_url'] . '/js';
 $config['images_url']   = $config['site_url'] . '/images';
 $config['favicon']      = $config['site_url'] . '/favicon.ico';
-$config['githubsecret'] = 'Secret';
+$config['githubsecret'] = 'XmGPhH5wxtlc';
 

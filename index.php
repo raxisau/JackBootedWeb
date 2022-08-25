@@ -3,7 +3,7 @@
 use \Jackbooted\Config\Cfg;
 use \Jackbooted\Html\JS;
 
-require_once ( dirname( __FILE__ ) . '/config.php' );
+require_once ( __DIR__ . '/config.php' );
 $pageTimer = new \Jackbooted\Time\Stopwatch( "Page Load" );
 ?>
 <html>

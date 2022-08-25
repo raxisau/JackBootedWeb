@@ -4,7 +4,7 @@
  * It will return quickly if this is PHPLiceX call or calling
  * with action to return some data
  */
-require_once dirname( __FILE__ ) . '/config.php';
+require_once __DIR__ . '/config.php';
 // Check to see if this is a PHPLixeX call
 PHPLiveX::create()->execute();
 

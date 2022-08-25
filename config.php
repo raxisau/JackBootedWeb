@@ -12,12 +12,12 @@
  * */
 // Create the $config array
 $config = [];
-require_once dirname( __FILE__ ) . '/config.default.php';
-require_once dirname( __FILE__ ) . '/config.local.php';
+require_once __DIR__ . '/config.default.php';
+require_once __DIR__ . '/config.local.php';
 
 // Environment overrides not in version control
-if ( file_exists( dirname( __FILE__ ) . '/config.env.php' ) ) {
-    require_once dirname( __FILE__ ) . '/config.env.php';
+if ( file_exists( __DIR__ . '/config.env.php' ) ) {
+    require_once __DIR__ . '/config.env.php';
 }
 
 require_once $config['site_path'] . '/vendor/jackbooted/config/Cfg.php';

@@ -103,9 +103,6 @@ HTML;
     }
 
     public function validateEmailDisplay() {
-        error_reporting( -1 );
-        ini_set('display_errors', '1');
-
         echo '<pre>';
         $result = \App\Libraries\SMTPValidate::isValid( Request::get( 'fldEmailTo' ), Request::get( 'fldEmailFrom' ), 4 );
         echo '</pre>';
@@ -117,9 +114,6 @@ HTML;
     }
 
     public function editAlerts() {
-        //error_reporting( -1 );
-        //ini_set('display_errors', '1');
-
         $editTable = new DBEdit( '\App\Models\Alerts',
                                  'SELECT fldModJackAlertID,fldDescription FROM tblModJackAlert',
                                  [ 'insDefaults' =>  [ 'fldType'       => Alerts::TYPE_DEBUG,
@@ -142,8 +136,6 @@ HTML;
     }
 
     public function crudAlerts() {
-        error_reporting( -1 );
-        ini_set('display_errors', '1');
         $crud = new CRUD( 'tblModJackAlert',  [ 'insDefaults' =>  [ 'fldType'        => Alerts::TYPE_DEBUG,
                                                                     'fldStatus'      => Alerts::STATUS_NEW,
                                                                     'fldErrorID'     => 'JB001',

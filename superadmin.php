@@ -6,7 +6,7 @@ use \Jackbooted\Config\Cfg;
 use \Jackbooted\DB\DBManager;
 use \Jackbooted\Admin\SuperAdmin;
 
-require_once dirname( __FILE__ ) . '/config.php';
+require_once __DIR__ . '/config.php';
 Cfg::set( 'accesslevel', 0 );
 $pageTimer = new \Jackbooted\Time\Stopwatch( 'Page Load' );
 ?>

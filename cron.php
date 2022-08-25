@@ -6,7 +6,7 @@ use \Jackbooted\Cron\Scheduler;
 
 // /usr/bin/php /home/brettdut/public_html/voodoo/cron.php >> /home/brettdut/public_html/voodoo/_private/cron.log
 
-require_once dirname( __FILE__ ) . "/config.php";
+require_once __DIR__ . "/config.php";
 set_time_limit( 0 );
 if ( isset( $_SERVER['HTTP_HOST'] ) )
     echo '<pre>';

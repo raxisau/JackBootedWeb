@@ -31,7 +31,6 @@ class Cfg {
         self::setUpAutoLoader();
         self::setUpSession();
         self::ensureNoForgery();
-        self::setErrorLevel();
         self::setUpDates();
     }
 
@@ -61,10 +60,10 @@ class Cfg {
         }
 
         $timeStamp = time();
-        self::set( 'local_timestamp', $timeStamp );
-        self::set( 'local_date_time', strftime( '%Y-%m-%d %H:%M:%S', $timeStamp ) );
-        self::set( 'local_date', strftime( '%Y-%m-%d', $timeStamp ) );
-        self::set( 'local_time', strftime( '%H:%M', $timeStamp ) );
+        self::set( 'local_timestamp',  $timeStamp );
+        self::set( 'local_date_time',  strftime( '%Y-%m-%d %H:%M:%S', $timeStamp ) );
+        self::set( 'local_date',       strftime( '%Y-%m-%d', $timeStamp ) );
+        self::set( 'local_time',       strftime( '%H:%M', $timeStamp ) );
         self::set( 'local_date_array', getdate( $timeStamp ) );
     }
 
@@ -184,7 +183,6 @@ HTML;
         self::$log->trace( 'Exiting ' . __METHOD__ );
     }
 
-
     private static function preLoadUsedClasses() {
         $dir = dirname( __DIR__ );
 
@@ -228,13 +226,5 @@ HTML;
     public static function turnOnErrorHandling( $oldValues ) {
         error_reporting( $oldValues[0] );
         ini_set( 'display_errors', $oldValues[1] );
-    }
-
-    public static function setErrorLevel() {
-        $errMode = self::get( 'jb_error_mode' );
-        self::$errorLevel = ( $errMode ) ? -1 : 0;
-        error_reporting( self::$errorLevel );
-
-        ini_set( 'display_errors', ( $errMode ) ? '1' : '0'  );
     }
 }
