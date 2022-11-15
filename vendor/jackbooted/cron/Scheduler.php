@@ -68,7 +68,7 @@ class Scheduler extends ORM {
             if ( $storedLastRunTime < $previousCalculatedRunTime ) {
 
                 // Update the run time to now
-                $sheduleItem->lastRun = strftime( '%Y-%m-%d %H:%M', $previousCalculatedRunTime );
+                $sheduleItem->lastRun = date( 'Y-m-d H:i:s', $previousCalculatedRunTime );
                 $sheduleItem->save();
 
                 // Enqueue a new item to run

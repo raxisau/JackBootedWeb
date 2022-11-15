@@ -5,11 +5,11 @@ use \Jackbooted\Util\Log4PHP;
 use \Jackbooted\DB\DAO;
 
 class AlertsDAO extends DAO  {
-    private static $log;
 
     public static function init () {
-        self::$log = Log4PHP::logFactory ( __CLASS__ );
+        parent::init();
     }
+
     public function __construct () {
         $this->db = DB::DEF;
         $this->primaryKey = 'fldModJackAlertID';

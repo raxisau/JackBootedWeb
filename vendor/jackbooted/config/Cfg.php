@@ -2,6 +2,10 @@
 
 namespace Jackbooted\Config;
 
+if ( class_exists( '\Jackbooted\Config\Cfg', false) ) {
+    return;
+}
+
 /**
  * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
  *
@@ -14,7 +18,6 @@ namespace Jackbooted\Config;
  */
 class Cfg {
 
-    private static $errorLevel;
     private static $config;
     private static $log;
 
@@ -38,7 +41,7 @@ class Cfg {
         if ( $key == null ) {
             return self::$config;
         }
-        
+
         if ( !isset( self::$config[$key] ) ) {
             return $def;
         }
@@ -52,18 +55,18 @@ class Cfg {
     }
 
     public static function setUpDates() {
-        if ( ( $tz = \Jackbooted\G::get( 'fldTimeZone', false ) ) !== false ) {
+        if ( ( $tz = \Jackbooted\G::get( 'fldTimeZone', false ) ) !== false && ! is_numeric( $tz ) ) {
             date_default_timezone_set( $tz );
         }
-        else if ( ( $tz = self::get( 'timezone', false ) ) !== false ) {
+        else if ( ( $tz = self::get( 'timezone', false ) ) !== false && ! is_numeric( $tz ) ) {
             date_default_timezone_set( $tz );
         }
 
         $timeStamp = time();
         self::set( 'local_timestamp',  $timeStamp );
-        self::set( 'local_date_time',  strftime( '%Y-%m-%d %H:%M:%S', $timeStamp ) );
-        self::set( 'local_date',       strftime( '%Y-%m-%d', $timeStamp ) );
-        self::set( 'local_time',       strftime( '%H:%M', $timeStamp ) );
+        self::set( 'local_date_time',  date( 'Y-m-d H:i:s', $timeStamp ) );
+        self::set( 'local_date',       date( 'Y-m-d', $timeStamp ) );
+        self::set( 'local_time',       date( 'H:i', $timeStamp ) );
         self::set( 'local_date_array', getdate( $timeStamp ) );
     }
 
@@ -113,6 +116,7 @@ class Cfg {
 
         if ( ( $tg = \Jackbooted\Security\TimeGuard::check() ) !== \Jackbooted\Security\TimeGuard::NOGUARD ) {
             if ( $tg !== true ) {
+                self::$log->error( 'TimeGuard failure' );
                 $message = <<<HTML
                     Invalid AJAX Request ($tg)<br/>
                     %s has detected changes in the URL.<br/>
@@ -123,9 +127,10 @@ HTML;
             }
         }
         else if ( ( $reqChk = \Jackbooted\Forms\Request::check() ) !== true ) {
+            self::$log->error( 'Request and Tamper Guard failure: ' . $reqChk );
             $reqChk = str_replace( '%', '%%', $reqChk );
             $message = <<<HTML
-                Invalid or expired request (URL Error - $reqChk)<br/>
+                Invalid or expired request (URL Error - $reqChk - $fileName)<br/>
                 %s has detected changes in the URL.<br/>
                 Please do not manually edit URL (support %s).<br/>
                 You will be <a href="%s">redirected</a> in %s seconds
@@ -133,6 +138,7 @@ HTML;
 HTML;
         }
         else if ( ! \Jackbooted\Security\CSRFGuard::check() ) {
+            self::$log->error( 'CSRFGuard Failure' );
             $message = <<<HTML
                 Invalid Request (CSRF error)<br/>
                 %s has detected re-submission or form tampering.<br/>
@@ -153,7 +159,7 @@ HTML;
             echo sprintf( $message, self::get( 'version' ), self::get( 'boss' ), $location, $seconds, $seconds, $location );
             exit;
         }
-        
+
         self::$log->trace( 'Exiting: ' . __METHOD__ );
     }
 
@@ -187,18 +193,20 @@ HTML;
         $dir = dirname( __DIR__ );
 
         $filesToLoad = [
-            $dir . '/util/JB.php',
-            $dir . '/util/Log4PHP.php',
-            $dir . '/util/PHPExt.php',
-            $dir . '/util/AutoLoader.php',
-            $dir . '/util/ClassLocator.php',
-            $dir . '/time/Stopwatch.php',
-            $dir . '/G.php',
+            '\Jackbooted\Util\JB'           => $dir . '/util/JB.php',
+            '\Jackbooted\Util\Log4PHP'      => $dir . '/util/Log4PHP.php',
+            '\Jackbooted\Util\PHPExt'       => $dir . '/util/PHPExt.php',
+            '\Jackbooted\Util\AutoLoader'   => $dir . '/util/AutoLoader.php',
+            '\Jackbooted\Util\ClassLocator' => $dir . '/util/ClassLocator.php',
+            '\Jackbooted\Time\Stopwatch'    => $dir . '/time/Stopwatch.php',
+            '\Jackbooted\G'                 => $dir . '/G.php',
         ];
 
-        foreach ( $filesToLoad as $fileName ) {
-            if ( file_exists( $fileName ) ) {
-                require_once $fileName;
+        foreach ( $filesToLoad as $className => $fileName ) {
+            if ( ! class_exists( $className, false) ) {
+                if ( file_exists( $fileName ) ) {
+                    require_once $fileName;
+                }
             }
         }
     }
@@ -213,6 +221,7 @@ HTML;
         $inDevMode = self::get( 'debug' );
 
         \Jackbooted\Util\Log4PHP::init( ( $inDevMode ) ? \Jackbooted\Util\Log4PHP::DEBUG : \Jackbooted\Util\Log4PHP::ERROR );
+        //\Jackbooted\Util\Log4PHP::init( \Jackbooted\Util\Log4PHP::TRACE );
         \Jackbooted\Util\Log4PHP::setOutput( \Jackbooted\Util\Log4PHP::FILE );
         self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
     }

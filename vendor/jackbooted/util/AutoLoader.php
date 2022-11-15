@@ -93,8 +93,13 @@ class AutoLoader extends \Jackbooted\Util\JB {
             return;
         }
 
+        // There might be multiple instances of Jackbooted
+        if ( class_exists( $className, false) ) {
+            return;
+        }
+
         if ( preg_match( '/^(Jackbooted|App|Defuse|Shuchkin|PHPMailer)\\\\.*$/', $className, $matches1 ) === 1 ||
-             preg_match( '/^(FPDF|FeedItem|FeedWriter|PHPLiveX|SiteMap|Upload|BAR_GRAPH)$/', $className, $matches2 ) === 1 ) {
+             preg_match( '/^(setasign|FPDF|FeedItem|FeedWriter|PHPLiveX|SiteMap|Upload|BAR_GRAPH)$/', $className, $matches2 ) === 1 ) {
 
             if ( ( $tries = self::locateClassFromFileAndLoad( $className ) ) !== true ) {
                 self::$log->error( 'The system has attempted to autoload non existing class: ' . $className . ' tried: (' . implode( ', ', $tries ) . ')' );

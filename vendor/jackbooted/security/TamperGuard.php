@@ -74,11 +74,13 @@ class TamperGuard extends \Jackbooted\Util\JB {
         if ( ( $formVarLen = $request->count() ) == 0 ) {
             return true;
         }
+
         foreach ( $request as $key => $val ) {
             if ( in_array( $key, self::$knownFields ) ) {
                 $formVarLen --;
             }
         }
+
         if ( $formVarLen <= 0 ) {
             return true;
         }
@@ -93,7 +95,8 @@ class TamperGuard extends \Jackbooted\Util\JB {
                 return false;
             }
         }
-        else if ( !is_array( $checksum ) ) {
+
+        if ( !is_array( $checksum ) ) {
             $request->clear();
             if ( Cfg::get( 'jb_tamper_detail', false ) ) {
                 return 'Checksum Variable not an array.';
@@ -103,7 +106,8 @@ class TamperGuard extends \Jackbooted\Util\JB {
                 return false;
             }
         }
-        else if ( count( $checksum ) != 2 ) {
+
+        if ( count( $checksum ) != 2 ) {
             $request->clear();
             if ( Cfg::get( 'jb_tamper_detail', false ) ) {
                 return 'Checksum Variable not 2 elements.';
@@ -113,33 +117,30 @@ class TamperGuard extends \Jackbooted\Util\JB {
                 return false;
             }
         }
-        else {
-            if ( !empty( $checksum[0] ) ) {
-                $keys = explode( ',', $checksum[0] );
-                $allVariablesJoined = $checksum[0];
-                foreach ( $keys as $key ) {
-                    $allVariablesJoined .= $request->getRaw( $key );
-                }
-            }
-            else {
-                $allVariablesJoined = '';
-            }
 
-            if ( md5( $allVariablesJoined ) != $checksum[1] ) {
-                $request->clear();
-                if ( Cfg::get( 'jb_tamper_detail', false ) ) {
-                    return 'Checksum failed md5(' . $allVariablesJoined . ')<>' . $checksum[1];
-                }
-                else {
-                    self::$log->error( 'The checksum has failed. The request variables have been tampered: ' . $_SERVER['SCRIPT_NAME'] );
-                    return false;
-                }
-                self::$log->error( 'The checksum has failed. The request variables have been tampered. ' . $_SERVER['SCRIPT_NAME'] );
-            }
-            else {
-                return true;
+        if ( !empty( $checksum[0] ) ) {
+            $allVariablesJoined = $checksum[0];
+            foreach ( explode( ',', $checksum[0] ) as $key ) {
+                $val = $request->getRaw( $key );
+                $allVariablesJoined .= $val;
             }
         }
+        else {
+            $allVariablesJoined = '';
+        }
+
+        if ( md5( $allVariablesJoined ) != $checksum[1] ) {
+            $request->clear();
+            if ( Cfg::get( 'jb_tamper_detail', false ) ) {
+                return 'Checksum failed md5(' . $allVariablesJoined . ')<>' . $checksum[1];
+            }
+            else {
+                self::$log->error( 'The checksum has failed. The request variables have been tampered: ' . $_SERVER['SCRIPT_NAME'] );
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

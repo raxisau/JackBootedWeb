@@ -147,7 +147,7 @@ JS;
 
     public function newItem() {
         $defaults = [ 'cmd' => __CLASS__ . '::hello();',
-            'start' => strftime( '%Y-%m-%d %H:%M' ),
+            'start' => date( 'Y-m-d H:i' ),
             'cron' => '* * * * *',
             'active' => 'No',
             'lastRun' => '' ];

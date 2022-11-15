@@ -5,6 +5,7 @@ use \Jackbooted\Admin\Login;
 use \Jackbooted\Config\Cfg;
 use \Jackbooted\DB\DBManager;
 use \Jackbooted\Admin\SuperAdmin;
+use \Jackbooted\Html\JS;
 
 require_once __DIR__ . '/config.php';
 Cfg::set( 'accesslevel', 0 );

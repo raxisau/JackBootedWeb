@@ -12,5 +12,5 @@ $config['migration'] = [ '\App\Commands\InstallationCLI',
 
 $config['def_display'] = '\App\Controllers\JackMain->index()';
 
-$config['build_version'] = 'JackBooted Framework 2.0.1 (built: 2022-06-20 17:00:00)';
+$config['build_version'] = 'JackBooted Framework 2.1.1 (built: 2022-11-15 17:00:00)';
 $config['tinymce_api'] = 'no-api-key';

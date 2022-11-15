@@ -99,8 +99,7 @@ class JS extends \Jackbooted\Util\JB {
             $lib = Cfg::get( 'js_url' ) . '/' . $lib;
         }
 
-        if ( preg_match( '/^.*\.js$/i', $lib ) ||
-                preg_match( '/^.*\jsapi$/i', $lib ) ) {
+        if ( preg_match( '/^.*\.js$/i', $lib ) || preg_match( '/^.*jsapi$/i', $lib ) ) {
             return Tag::hTag( 'script', [ 'type' => 'text/javascript', 'src' => $lib ] ) .
                     Tag::_hTag( 'script' ) . self::$LF;
         }

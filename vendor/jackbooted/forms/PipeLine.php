@@ -37,12 +37,15 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
     }
 
     public function getRaw( $key ) {
-        $oldValues = Cfg::turnOffErrorHandling();
-        eval( '$value = $this->formVars' . $key . ';' );
-        if ( !isset( $value ) ) {
-            $value = '';
+        $keyList = explode( '.', str_replace( [ '[', ']' ], [ '', '' ], str_replace( '][', '.', $key ) ) );
+        $value = $this->formVars;
+        foreach ( $keyList as $k ) {
+            if ( ! isset( $value[$k] ) ) {
+                return '';
+            }
+
+            $value = $value[$k];
         }
-        Cfg::turnOnErrorHandling( $oldValues );
         return $value;
     }
 

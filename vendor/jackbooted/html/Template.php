@@ -30,10 +30,11 @@ class Template extends \Jackbooted\Util\JB {
     private $dataSource;
     private $type;
     private $tokenList = [];
+    private $debugVars = [];
     private $outputText;
     private $log;
 
-    public function __construct( &$dataSource, $type = self::STRING ) {
+    public function __construct( $dataSource, $type = self::STRING ) {
         parent::__construct();
 
         $this->dataSource = $dataSource;
@@ -44,14 +45,17 @@ class Template extends \Jackbooted\Util\JB {
     public function replace( $token, $value = null ) {
         if ( is_array( $token ) ) {
             foreach ( $token as $key => $val ) {
-                $this->tokenList['{$' . $key . '}'] = $val;
+                $this->debugVars[$key] = 1;
+                $this->tokenList['{$' . $key . '}'] = $val ;
             }
         }
         else {
             if ( $value !== null ) {
+                $this->debugVars[$token] = 1;
                 $this->tokenList['{$' . $token . '}'] = $value;
             }
         }
+        return $this;
     }
 
     private function loadDataSource() {
@@ -77,11 +81,23 @@ class Template extends \Jackbooted\Util\JB {
         else {
             $this->log->debug( 'No body tags to trim' );
         }
+
+        $this->outputText = preg_replace( '/{\*.+?\*}/ms', '', $this->outputText );
     }
 
     private function doStraightReplacements() {
+        $count = 0;
+        $this->replace( 'debug_vars', '<pre>' . json_encode( array_keys( $this->debugVars ), JSON_PRETTY_PRINT ) . '</pre>' );
         $this->outputText = str_replace( array_keys( $this->tokenList ), array_values( $this->tokenList ), $this->outputText, $count );
         $this->log->debug( "replaced {$count} tokens" );
+    }
+
+    public function toTxt() {
+        return $this->__toString();
+    }
+
+    public function toJSON() {
+        return $this->__toString();
     }
 
     public function toHtml() {

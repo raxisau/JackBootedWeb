@@ -1,5 +1,4 @@
 <?php
-
 use \Jackbooted\Config\Cfg;
 use \Jackbooted\Html\JS;
 

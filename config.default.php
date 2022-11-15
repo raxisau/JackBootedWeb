@@ -2,7 +2,7 @@
 /**
  * Don't change this file
  */
-$config['version']      = 'JACKBOOTWEB Version 12.9';
+$config['version']      = 'JACKBOOTWEB Version 13.1';
 $config['cookie_path']  = '/';
 $config['LF']           = "\r\n";
 

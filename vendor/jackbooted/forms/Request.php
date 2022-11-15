@@ -2,9 +2,6 @@
 
 namespace Jackbooted\Forms;
 
-use \Jackbooted\Security\Cryptography;
-use \Jackbooted\Security\TamperGuard;
-
 /**
  * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
  *
@@ -22,8 +19,10 @@ use \Jackbooted\Security\TamperGuard;
 class Request extends PipeLine {
 
     private static $defaultInstance = null;
+    public static $log;
 
     public static function init() {
+        self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
         self::$defaultInstance = new Request ( );
     }
 
@@ -54,7 +53,7 @@ class Request extends PipeLine {
     }
 
     public static function check() {
-        return TamperGuard::check( self::$defaultInstance );
+        return \Jackbooted\Security\TamperGuard::check( self::$defaultInstance );
     }
 
     /**
@@ -79,7 +78,7 @@ class Request extends PipeLine {
     private function decryptRequestVars( &$arr ) {
         foreach ( $arr as $key => $val ) {
             if ( is_string( $arr[$key] ) ) {
-                $arr[$key] = Cryptography::de( $arr[$key] );
+                $arr[$key] = \Jackbooted\Security\Cryptography::de( $arr[$key] );
             }
             else if ( is_array( $arr[$key] ) ) {
                 $this->decryptRequestVars( $arr[$key] );

@@ -147,15 +147,17 @@ class Login extends WebPage {
 
     public static function testHash( $username, $password, $hash ) {
         self::$log->trace( 'Entering: ' . __METHOD__ );
-        if ( ( $hashArray = @unserialize( $hash ) ) === false ) {
+        if ( ( $hashArray = unserialize( $hash ) ) === false ) {
             self::$log->trace( 'Exiting ' . __METHOD__ );
             return false;
         }
-        else if ( $hashArray[0] != $username ) {
+
+        if ( $hashArray[0] != $username ) {
             self::$log->trace( 'Exiting ' . __METHOD__ );
             return self::$log->error( 'Incorrect username' );
         }
-        else if ( $hashArray[1] != $password ) {
+
+        if ( $hashArray[1] != $password ) {
             self::$log->trace( 'Exiting ' . __METHOD__ );
             return self::$log->error( 'Incorrect password' );
         }
@@ -165,7 +167,7 @@ class Login extends WebPage {
         // This check will force a user to login again if they change location
         // else if ( $hashArray[2] != $_SERVER['REMOTE_ADDR'] )
         //    return self::$log->trace( 'Login from different IP' );
-        else if ( time() - $hashArray[3] > Cfg::get( 'session_timeout', 604800 ) ) {
+        if ( time() - $hashArray[3] > Cfg::get( 'session_timeout', 604800 ) ) {
             self::$log->trace( 'Exiting ' . __METHOD__ );
             return self::$log->error( 'Session timeout' );
         }

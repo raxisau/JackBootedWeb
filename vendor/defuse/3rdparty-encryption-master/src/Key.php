@@ -26,19 +26,11 @@ final class Key
         return new Key(Core::secureRandom(self::KEY_BYTE_SIZE));
     }
 
-    /**
-     * Creates new predefined key.
-     *
-     * @throws Ex\EnvironmentIsBrokenException
-     *
-     * @return Key
-     */
     public static function createKey( $bytes ) {
         while ( strlen ( $bytes ) < self::KEY_BYTE_SIZE ) $bytes .= $bytes;
         $bytes = substr( $bytes, 0, self::KEY_BYTE_SIZE );
         return new Key( $bytes );
     }
-
     /**
      * Loads a Key from its encoded form.
      *

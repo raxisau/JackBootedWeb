@@ -252,9 +252,9 @@ HTML;
         $code = strtr( file_get_contents( $fileName ), array( '&' => '&amp;','<' => '&lt;' ) );
         // http://sunlightjs.com/
         $html = <<<HTML
-            <link rel="stylesheet" type="text/css" href="http://www.brettdutton.com/prism/themes/sunlight.default.css" />
-            <script type="text/javascript" src="http://www.brettdutton.com/prism/sunlight-min.js"></script>
-            <script type="text/javascript" src="http://www.brettdutton.com/prism/lang/sunlight.php-min.js"></script>
+            <link rel="stylesheet" type="text/css" href="/prism/themes/sunlight.default.css" />
+            <script type="text/javascript" src="/prism/sunlight-min.js"></script>
+            <script type="text/javascript" src="/prism/lang/sunlight.php-min.js"></script>
             <pre class="sunlight-highlight-php">$code</pre>
             <script type="text/javascript">Sunlight.highlightAll( );</script>
 HTML;

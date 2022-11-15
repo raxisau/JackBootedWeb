@@ -17,7 +17,7 @@ use \Jackbooted\Forms\Request;
 
 /**
  */
-abstract class ORM extends \Jackbooted\Util\JB {
+class ORM extends \Jackbooted\Util\JB {
 
     const UPDATE = 'update';
     const INSERT = 'insert';
@@ -37,7 +37,10 @@ abstract class ORM extends \Jackbooted\Util\JB {
      *     return new EmailQueue( $data );
      * }
      */
-    public abstract static function factory( $data );
+    public static function factory( $data ) {
+        $clazz = static::class;
+        return new $clazz( $data );
+    }
 
     public static function create( $data ) {
         $obj = static::factory( $data );

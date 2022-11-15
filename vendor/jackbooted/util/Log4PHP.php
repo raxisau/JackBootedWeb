@@ -319,10 +319,10 @@ class Log4PHP extends \Jackbooted\Util\JB {
      */
     private function messageToFile( $msg ) {
         if ( self::$logFile == null ) {
-            self::$logFile = @fopen( PHPExt::getTempDir() . '/Log4PHP-log-' . date( 'Y-m-d' ) . '.txt', 'a' );
+            self::$logFile = fopen( PHPExt::getTempDir() . '/Log4PHP-log-' . date( 'Y-m-d' ) . '.txt', 'a' );
         }
 
-        @fwrite( self::$logFile, date( 'Y-m-d H:i:s' ) . ' ' . str_replace( "\n", ' ', $msg ) . "\n" );
+        fwrite( self::$logFile, date( 'Y-m-d H:i:s' ) . ' ' . str_replace( "\n", ' ', $msg ) . "\n" );
     }
 
     /**

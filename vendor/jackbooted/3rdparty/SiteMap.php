@@ -59,8 +59,8 @@ XML;
             echo $string;
         }
         else {
-            @unlink( $fname );
-            @file_put_contents( $fname, $string );
+            unlink( $fname );
+            file_put_contents( $fname, $string );
         }
     }
 

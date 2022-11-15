@@ -169,7 +169,7 @@ class ClassLocator extends \Jackbooted\Util\JB {
         }
 
         $serializeLocator = fgets( $fd );
-        $locatorArray = @unserialize( $serializeLocator );
+        $locatorArray = unserialize( $serializeLocator );
         fclose( $fd );
 
         if ( $locatorArray === false ) {
@@ -262,7 +262,7 @@ class ClassLocator extends \Jackbooted\Util\JB {
             return;
         }
 
-        @fputs( $fd, serialize( $this->locationArray ) );
+        fputs( $fd, serialize( $this->locationArray ) );
         fclose( $fd );
     }
 

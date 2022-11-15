@@ -509,7 +509,7 @@ JS;
 
             case self::TIMESTAMP:
                 $attribs = array_merge( $updCheckAttrib, $this->cellAttributes[$colName] );
-                $attribs['value'] = strftime( '%Y-%m-%d %H:%M:%S', (int) $value );
+                $attribs['value'] = date( 'Y-m-d H:i:s', (int) $value );
                 $attribs['size'] = strlen( $attribs['value'] ) + 1;
                 $html .= Tag::text( $name, $attribs );
                 break;

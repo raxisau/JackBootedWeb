@@ -217,8 +217,9 @@ class Tag extends \Jackbooted\Util\JB {
         $inpAttribs['type'] = 'radio';
         $inpAttribs['name'] = $name;
         $inpAttribs['value'] = $val;
-        if ( is_bool( $checked ) && $checked )
+        if ( is_bool( $checked ) && $checked ) {
             $inpAttribs['checked'] = 'checked';
+        }
         return self::input( $attribs, $inpAttribs );
     }
 

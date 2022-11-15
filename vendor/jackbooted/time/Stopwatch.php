@@ -90,7 +90,7 @@ class Stopwatch extends \Jackbooted\Util\JB {
     public static function msToStr( $delta ) {
         $ms = $delta * 1000;
         $sec = intval( $ms / 1000 );
-        $ms %= 1000;
+        $ms = intval( (int)$ms % 1000 );
 
         $msg = self::secToStr( $sec );
         $msg .= ( ( $msg == '' ) ? '' : ' ' ) . $ms . ' ms';

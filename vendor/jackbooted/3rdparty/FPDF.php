@@ -1656,7 +1656,7 @@ class FPDF {
 
     protected function _putinfo() {
         $this->metadata[ 'Producer' ]     = 'FPDF ' . FPDF_VERSION;
-        $this->metadata[ 'CreationDate' ] = 'D:' . @date( 'YmdHis' );
+        $this->metadata[ 'CreationDate' ] = 'D:' . date( 'YmdHis' );
         foreach ( $this->metadata as $key => $value )
             $this->_put( '/' . $key . ' ' . $this->_textstring( $value ) );
     }

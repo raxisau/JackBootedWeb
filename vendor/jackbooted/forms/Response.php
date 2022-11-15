@@ -2,12 +2,6 @@
 
 namespace Jackbooted\Forms;
 
-use \Jackbooted\Html\Tag;
-use \Jackbooted\Html\WebPage;
-use \Jackbooted\Security\Cryptography;
-use \Jackbooted\Security\CSRFGuard;
-use \Jackbooted\Security\TamperGuard;
-
 /**
  * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
  *
@@ -51,10 +45,10 @@ class Response extends PipeLine {
             $this->copyVarsFromRequest( $initPattern );
         }
 
-        $this->copyVarsFromRequest( WebPage::SAVE_URL );
+        $this->copyVarsFromRequest( \Jackbooted\Html\WebPage::SAVE_URL );
 
         // Ensure that the known fields
-        foreach ( TamperGuard::$knownFields as $key ) {
+        foreach ( \Jackbooted\Security\TamperGuard::$knownFields as $key ) {
             $this->copyVarsFromRequest( $key );
             $this->addExempt( $key );
         }
@@ -84,8 +78,8 @@ class Response extends PipeLine {
      * @param  $val
      * @return Response
      */
-    public function action( $val ) {
-        $this->formVars[WebPage::ACTION] = $val;
+    public function action( $val, $actionKey=\Jackbooted\Html\WebPage::ACTION ) {
+        $this->formVars[$actionKey] = $val;
         return $this;
     }
 
@@ -121,13 +115,13 @@ class Response extends PipeLine {
         }
 
         if ( self::$crossSiteGuard == null ) {
-            self::$crossSiteGuard = CSRFGuard::key();
+            self::$crossSiteGuard = \Jackbooted\Security\CSRFGuard::key();
         }
-        $this->set( CSRFGuard::KEY, self::$crossSiteGuard );
+        $this->set( \Jackbooted\Security\CSRFGuard::KEY, self::$crossSiteGuard );
     }
 
     private function delCSRFGuard() {
-        $this->del( CSRFGuard::KEY );
+        $this->del( \Jackbooted\Security\CSRFGuard::KEY );
     }
 
     /**
@@ -137,16 +131,16 @@ class Response extends PipeLine {
         if ( $guard ) {
             $this->addCSRFGuard();
         }
-        TamperGuard::add( $this );
+        \Jackbooted\Security\TamperGuard::add( $this );
 
         $html = '';
         $this->convertFormVarsToAssocArray();
         foreach ( $this->intermediateHiddenArray as $key => $val ) {
             $cypherText = $this->encryptValue( $key, $val );
-            $html .= Tag::hidden( $key, $cypherText );
+            $html .= \Jackbooted\Html\Tag::hidden( $key, $cypherText );
         }
 
-        TamperGuard::del( $this );
+        \Jackbooted\Security\TamperGuard::del( $this );
         if ( $guard ) {
             $this->delCSRFGuard();
         }
@@ -188,9 +182,9 @@ class Response extends PipeLine {
             self::$crossSiteGuard = $tempGuard;
         }
 
-        TamperGuard::add( $this );
+        \Jackbooted\Security\TamperGuard::add( $this );
         $this->convertFormVarsToFlatArray();
-        TamperGuard::del( $this );
+        \Jackbooted\Security\TamperGuard::del( $this );
         if ( $guard ) {
             $this->delCSRFGuard();
         }
@@ -228,7 +222,7 @@ class Response extends PipeLine {
             return $value;
         }
         else {
-            return Cryptography::en( $value );
+            return \Jackbooted\Security\Cryptography::en( $value );
         }
     }
 }
