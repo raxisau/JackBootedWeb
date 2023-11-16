@@ -6,7 +6,7 @@ use \Jackbooted\Config\Cfg;
 use \Jackbooted\Util\Invocation;
 
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -108,7 +108,7 @@ JS;
         if ( $apikey == 'no-api-key' ) {
             $apikey = Cfg::get('tinymce_api', 'no-api-key');
         }
-        
+
         if ( $apikey == '' || $apikey == null ) {
             $apikey = 'no-api-key';
         }
@@ -236,7 +236,7 @@ JS;
 
     private static $datePickerJSDisplayed = false;
 
-    public static function datePickerJS( $selector = 'input.datepicker' ) {
+    public static function datePickerJS( $selector = 'input.datepicker', $format='yy-mm-dd' ) {
         if ( self::$datePickerJSDisplayed ) {
             return '';
         }
@@ -263,16 +263,16 @@ JS;
          */
 
         $js = <<<JS
-    $().ready(function() {
-        $( "$selector" ).each( function() {
-            $(this).datepicker({
-                dateFormat: "yy-mm-dd"
+            jQuery().ready(function() {
+                jQuery( "{$selector}" ).each( function() {
+                    $(this).datepicker({
+                        dateFormat: "{$format}"
+                    });
+                });
             });
-        });
-    });
-JS;
+        JS;
         return JS::libraryWithDependancies( JS::JQUERY_UI ) .
-                JS::javaScript( $js );
+               JS::javaScript( $js );
     }
 
     public static function facebox( $selector = 'a.facebox' ) {

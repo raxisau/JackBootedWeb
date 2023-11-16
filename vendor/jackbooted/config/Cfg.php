@@ -7,7 +7,7 @@ if ( class_exists( '\Jackbooted\Config\Cfg', false) ) {
 }
 
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -221,7 +221,6 @@ HTML;
         $inDevMode = self::get( 'debug' );
 
         \Jackbooted\Util\Log4PHP::init( ( $inDevMode ) ? \Jackbooted\Util\Log4PHP::DEBUG : \Jackbooted\Util\Log4PHP::ERROR );
-        //\Jackbooted\Util\Log4PHP::init( \Jackbooted\Util\Log4PHP::TRACE );
         \Jackbooted\Util\Log4PHP::setOutput( \Jackbooted\Util\Log4PHP::FILE );
         self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
     }

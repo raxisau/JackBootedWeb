@@ -5,7 +5,7 @@ namespace Jackbooted\Forms;
 use \Jackbooted\Config\Cfg;
 
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -59,7 +59,7 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return array
      */
-    public function current() {
+    public function current() : mixed {
         return current( $this->formVars );
     }
 
@@ -69,7 +69,7 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return integer
      */
-    public function key() {
+    public function key() : mixed {
         return key( $this->formVars );
     }
 
@@ -79,7 +79,7 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return void
      */
-    public function next() {
+    public function next() : void {
         next( $this->formVars );
     }
 
@@ -89,7 +89,7 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return void
      */
-    public function rewind() {
+    public function rewind() : void {
         reset( $this->formVars );
     }
 
@@ -99,7 +99,7 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
      * @since 1.0
      * @return boolean
      */
-    public function valid() {
+    public function valid() : bool {
         return current( $this->formVars ) !== false;
     }
 
@@ -107,7 +107,7 @@ abstract class PipeLine extends \Jackbooted\Util\JB implements \Iterator {
         echo $this->__toString();
         return $this;
     }
-    
+
     public function __toString() {
         return "<pre>\n" . print_r ( $this->formVars, true ) . '</pre>';
     }

@@ -3,7 +3,7 @@
 namespace Jackbooted\Forms;
 
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -19,10 +19,8 @@ namespace Jackbooted\Forms;
 class Request extends PipeLine {
 
     private static $defaultInstance = null;
-    public static $log;
 
     public static function init() {
-        self::$log = \Jackbooted\Util\Log4PHP::logFactory( __CLASS__ );
         self::$defaultInstance = new Request ( );
     }
 

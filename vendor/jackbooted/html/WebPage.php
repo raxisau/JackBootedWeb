@@ -2,7 +2,7 @@
 namespace Jackbooted\Html;
 
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -56,7 +56,7 @@ class WebPage extends \Jackbooted\Util\JB {
         return $html;
     }
 
-    private static function normalizeCall( $clazz, $rest ) {
+    public static function normalizeCall( $clazz, $rest ) {
         $className = str_replace( '\\\\', '\\', $clazz );
         if ( ( $idx = strpos( $rest, '(' ) ) !== false ) {
             $functionName = trim( substr( $rest, 0, $idx ) );

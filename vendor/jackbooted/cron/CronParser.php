@@ -3,7 +3,7 @@
 namespace Jackbooted\Cron;
 
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -30,7 +30,7 @@ namespace Jackbooted\Cron;
  *          if ( $storedLastRunTime <  $previousCalculatedRunTime ) {
  *
  *              // Update the run time to now
- *              $sheduleItem->lastRun = strftime ( '%Y-%m-%d %H:%M', $previousCalculatedRunTime );
+ *              $sheduleItem->lastRun = date( 'Y-m-d H:i', $previousCalculatedRunTime );
  *              $sheduleItem->save ();
  *
  *              // Do the work to run the cron job here
@@ -61,36 +61,36 @@ class CronParser extends \Jackbooted\Util\JB {
      */
     public static function lastRun( $cronString ) {
         $originalString = $cronString;
+        $cronString = strtolower( $cronString );
 
         $mappings = [
-            '@yearly' => '0 0 1 1 *',
+            '@yearly'   => '0 0 1 1 *',
             '@annually' => '0 0 1 1 *',
-            '@monthly' => '0 0 1 * *',
-            '@weekly' => '0 0 * * 0',
-            '@daily' => '0 0 * * *',
-            '@hourly' => '0 * * * *'
+            '@monthly'  => '0 0 1 * *',
+            '@weekly'   => '0 0 * * 0',
+            '@daily'    => '0 0 * * *',
+            '@hourly'   => '0 * * * *'
         ];
         if ( isset( $mappings[$cronString] ) ) {
             $cronString = $mappings[$cronString];
         }
 
-        // Reduces white spaces
-        $cronString = preg_replace( '/[\s]{2,}/', ' ', $cronString );
-
         // recognise the really simple case
         if ( $cronString == '* * * * *' ) {
             $calcTime = ( (int) ( time() / 60 ) ) * 60;
+            //echo "Every Minute\n";
             return $calcTime;
         }
 
         // Get rid of names
-        $cronString = strtolower( $cronString );
         $cronString = str_replace( [ 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday' ], [ '0', '1', '2', '3', '4', '5', '6' ], $cronString );
+        $cronString = str_replace( [ 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat' ], [ '0', '1', '2', '3', '4', '5', '6' ], $cronString );
 
         // Get the parts if not 5 return every minute
-        $cronParts = explode( ' ', $cronString );
+        $cronParts = preg_split( '/\s+/', $cronString, -1, PREG_SPLIT_NO_EMPTY );
         if ( count( $cronParts ) != 5 ) {
             $calcTime = ( (int) ( time() / 60 ) ) * 60;
+            //echo "Not 5 parts\n";
             return $calcTime;
         }
 
@@ -122,13 +122,13 @@ class CronParser extends \Jackbooted\Util\JB {
 
                     // Screen out date where date is > 29 for feb
                     if ( $cronParts[3][$correctParts[3]] == 2 && $cronParts[2][$correctParts[2]] > 29 ) {
-                        // echo 'Skipping : Month: ' . $cronParts[3][$correctParts[3]] . ' Day: ' . $cronParts[2][$correctParts[2]] . '<br/>' . "\n";
+                        //echo 'Skipping : Month: ' . $cronParts[3][$correctParts[3]] . ' Day: ' . $cronParts[2][$correctParts[2]] . '<br/>' . "\n";
                         continue;
                     }
 
                     // If this is the 31 and month is Sep, Apr, Jun, Nov then skip
                     if ( $cronParts[2][$correctParts[2]] == 31 && in_array( $cronParts[3][$correctParts[3]], [ 9, 4, 6, 11 ] ) ) {
-                        // echo 'Skipping : Month: ' . $cronParts[3][$correctParts[3]] . ' Day: ' . $cronParts[2][$correctParts[2]] . '<br/>' . "\n";
+                        //echo 'Skipping : Month: ' . $cronParts[3][$correctParts[3]] . ' Day: ' . $cronParts[2][$correctParts[2]] . '<br/>' . "\n";
                         continue;
                     }
 
@@ -136,7 +136,7 @@ class CronParser extends \Jackbooted\Util\JB {
                     if ( $numDaysOfWeek != 7 ) {
                         $dow = self::getDayOfWeek( $cronParts, $correctParts );
                         if ( !in_array( $dow, $cronParts[4] ) ) {
-                            // echo 'Skipping : Day of Week: ' . $dow . '<br/>' . "\n";
+                            //echo 'Skipping : Day of Week: ' . $dow . '<br/>' . "\n";
                             continue;
                         }
                     }
@@ -167,7 +167,7 @@ class CronParser extends \Jackbooted\Util\JB {
      */
     private static function calcTime( $cronParts, $correctParts ) {
         $tim = mktime( $cronParts[1][$correctParts[1]], $cronParts[0][$correctParts[0]], 0, $cronParts[3][$correctParts[3]], $cronParts[2][$correctParts[2]], $cronParts[5][$correctParts[5]] );
-        //echo '$cronParts  - [' . join( ', ', $cronParts  ) . ']<br/>' . "\n";
+        //echo '$cronParts  - ' . json_encode( $cronParts ) . '<br/>' . "\n";
         //echo '$correctParts  - [' . join( ', ', $correctParts  ) . ']<br/>' . "\n";
         //echo date ( 'Y-m-d H:i', $tim ) . '<br/>' . "\n";
         return $tim;
@@ -286,4 +286,8 @@ class CronParser extends \Jackbooted\Util\JB {
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 2/3 * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '30-50/3 * * * *' ) ) . '<br/>' . "\n";
 //echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 0 31 * *' ) ) . '<br/>' . "\n";
-//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', YACronParser::lastRun( '0 0 31 * Monday,Wednesday,Friday' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '0 0 31 * Monday,Wednesday,Friday' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '02-59/15 02-04 * * Thu' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '01 00 * * Tue' ) ) . '<br/>' . "\n";
+//echo 'LastRun Date: ' . date ( 'Y-m-d H:i', CronParser::lastRun( '02 00 * * Thu' ) ) . '<br/>' . "\n";
+//exit;

@@ -9,7 +9,7 @@ use \Jackbooted\Html\JS;
 use \Jackbooted\DB\DB;
 
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -30,6 +30,7 @@ class Paginator extends Navigator {
     const ROWS_PER_PAGE     = 'P';
     const LOG_THRESHOLD     = 'L';
     const PAGE_VAR          = '_PG';
+    const PAGE_VAR_REGEX    = '/^_PG.*$/';
     const SUBMIT            = 'S';
     const PAGE_LINK_CLASS   = 'PAGE_LINK_CLASS';
     const PAGE_BUTTON_CLASS = 'PAGE_BUTTON_CLASS';
@@ -193,7 +194,17 @@ class Paginator extends Navigator {
         $this->auditStartRow();
 
         if ( $dbType == DB::MYSQL || $dbType == DB::SQLITE ) {
-            return $sql . ' LIMIT ' . $this->getStart() . ',' . $this->getPageSize();
+            $start = $this->getStart();
+            if ( !is_numeric($start) ) {
+                $start = 0;
+            }
+
+            $pageSize = $this->getPageSize();
+            if ( !is_numeric($pageSize) ) {
+                $pageSize = 15;
+            }
+
+            return $sql . ' LIMIT ' . $start . ',' . $pageSize;
         }
         else if ( $dbType == DB::ORACLE ) {
             $lowLim = $this->getStart();

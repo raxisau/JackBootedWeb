@@ -7,7 +7,7 @@ use \Jackbooted\Html\JS;
 use \Jackbooted\Util\Invocation;
 
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -22,11 +22,16 @@ use \Jackbooted\Util\Invocation;
  */
 class Columnator extends Navigator {
 
-    const SORT_COL = 'C';
-    const SORT_ORDER = 'O';
-    const COL_VAR = '_CL';
-    const COL_LINK_CLASS = 'COL_LINK_CLASS';
+    const SORT_COL         = 'C';
+    const SORT_ORDER       = 'O';
+    const COL_VAR          = '_CL';
+    const COL_VAR_REGEX    = '/^_CL.*$/';
+    const COL_LINK_CLASS   = 'COL_LINK_CLASS';
     const COL_BUTTON_CLASS = 'COL_BUTTON_CLASS';
+
+    const ORDER_ASC  = 'ASC';
+    const ORDER_DESC = 'DESC';
+    private static $validOrder = [ self::ORDER_ASC, self::ORDER_DESC ];
 
     private static $columnation = [
         self::SORT_COL => '',
@@ -87,8 +92,8 @@ class Columnator extends Navigator {
         // Get the current settings
         $this->sortColumn = $this->formVars[self::SORT_COL];
         $this->sortOrder = $this->formVars[self::SORT_ORDER];
-        if ( !isset( $this->sortOrder ) || $this->sortOrder == false || !in_array( $this->sortOrder, [ 'ASC', 'DESC' ] ) ) {
-            $this->sortOrder = 'ASC';
+        if ( !isset( $this->sortOrder ) || $this->sortOrder == false || ! $this->isValidOrder() ) {
+            $this->sortOrder = self::ORDER_ASC;
         }
 
         $this->styles[self::COL_LINK_CLASS] = 'jb-collink';
@@ -109,10 +114,10 @@ class Columnator extends Navigator {
         $this->set( self::SORT_COL, $columnName );
 
         if ( $this->sortColumn == $columnName ) {
-            $this->set( self::SORT_ORDER, ( $this->sortOrder == 'ASC' ) ? 'DESC' : 'ASC'  );
-            $sortDirectionName = ( $this->sortOrder == 'ASC' ) ? 'Decending' : 'Ascending';
+            $this->set( self::SORT_ORDER, ( $this->sortOrder == self::ORDER_ASC ) ? self::ORDER_DESC : self::ORDER_ASC  );
+            $sortDirectionName = $this->directionName();
             $title = 'Click here to sort ' . $sortDirectionName . ' By ' . $columnDisplay;
-            $button = ( $this->sortOrder == 'ASC' ) ? ' <i class="fal fa-sort-amount-up-alt"></i>' : ' <i class="fal fa-sort-amount-down"></i>';
+            $button = ( $this->sortOrder == self::ORDER_ASC ) ? ' <i class="fal fa-sort-amount-up-alt"></i>' : ' <i class="fal fa-sort-amount-down"></i>';
 
             $url = $this->toUrl();
             $html = JS::library( 'fontawesome-all.min.css' ) .
@@ -122,7 +127,7 @@ class Columnator extends Navigator {
         }
         else {
             $this->set( self::SORT_ORDER, $this->sortOrder );
-            $sortDirectionName = ( $this->sortOrder == 'ASC' ) ? 'Decending' : 'Ascending';
+            $sortDirectionName = $this->directionName();
             $title = 'Sort ' . $sortDirectionName . ' By ' . $columnDisplay;
             $button = ' <i class="fal fa-sort-alt"></i>';
             $url = $this->toUrl();
@@ -137,11 +142,22 @@ class Columnator extends Navigator {
         return $html;
     }
 
+    private function directionName() {
+        return ( $this->sortOrder == self::ORDER_ASC ) ? 'Decending' : 'Ascending';
+    }
+    private function isValidOrder() {
+        return in_array( $this->sortOrder, self::$validOrder );
+    }
+
     /**
      * @return string
      */
     public function getSort() {
         if ( !isset( $this->formVars[self::SORT_COL] ) || $this->formVars[self::SORT_COL] == false ) {
+            return '';
+        }
+
+        if ( substr( $this->formVars[self::SORT_COL], 0, 3 ) == ':d:' || ! $this->isValidOrder() ) {
             return '';
         }
 

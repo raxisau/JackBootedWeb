@@ -2,11 +2,8 @@
 
 namespace Jackbooted\Cron;
 
-use \Jackbooted\DB\ORM;
-use \Jackbooted\Util\Log4PHP;
-
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -15,32 +12,60 @@ use \Jackbooted\Util\Log4PHP;
  * License which means that its source code is freely-distributed and
  * available to the general public.
  */
-class Scheduler extends ORM {
+class Scheduler extends \Jackbooted\DB\ORM {
 
-    private static $log = null;
+    const ACTIVE = 'Yes';
+
     private static $dao = null;
 
     /**
      * @return void
      */
     public static function init() {
-        self::$log = Log4PHP::logFactory( __CLASS__ );
-        self::$dao = new SchedulerDAO ();
+        if ( self::$dao == null ) {
+            self::$dao = new SchedulerDAO ();
+        }
     }
 
-    public static function load( $id ) {
-        return new Scheduler( self::$dao->oneRow( $id ) );
+    public static function factory( $data ) {
+        $clazz = __CLASS__;
+        return new $clazz( $data );
+    }
+
+    public static function getRowCount() {
+        return self::$dao->getRowCount();
+    }
+
+    public static function displayList( $order='', $limits='' ) {
+        $tName = self::$dao->tableName;
+        $sql= <<<SQL
+            SELECT *
+            FROM   {$tName}
+            {$order}
+            {$limits}
+SQL;
+
+        $tab = \Jackbooted\DB\DBTable::factory( self::$dao->db, $sql, null, \Jackbooted\DB\DB::FETCH_ASSOC );
+        return self::tableToObjectList( $tab );
+    }
+
+    public static function jobs() {
+        $jobList = [];
+        foreach( self::getList() as $cronEntry ) {
+            $jobList[] = $cronEntry->getData();
+        }
+        return $jobList;
     }
 
     public static function getList( $all = false ) {
         if ( $all ) {
-            $where = [ 'where' => [] ];
+            $search = [ 'where' => [], 'order' => [ 'group' => 'ASC', 'cmd' => 'ASC' ] ];
         }
         else {
-            $where = [ 'where' => [ 'active' => SchedulerDAO::ACTIVE ] ];
+            $search = [ 'where' => [ 'active' => self::ACTIVE ], 'order' => [ 'group' => 'ASC', 'cmd' => 'ASC' ] ];
         }
 
-        $table = self::$dao->search( $where );
+        $table = self::$dao->search( $search );
         return self::tableToObjectList( $table );
     }
 
@@ -60,25 +85,74 @@ class Scheduler extends ORM {
 
         foreach ( self::getList() as $sheduleItem ) {
 
-            $storedLastRunTime = strtotime( ( $sheduleItem->lastRun == '' ) ? $sheduleItem->start : $sheduleItem->lastRun );
-            $previousCalculatedRunTime = CronParser::lastRun( $sheduleItem->cron );
+            if ( $sheduleItem->lastRun == '' ) {
+                $sheduleItem->lastRun = date( 'Y-m-d H:i', CronParser::lastRun( $sheduleItem->cron ) );
+                $sheduleItem->save();
+            }
+
+            $storedLastRunTime = strtotime( $sheduleItem->lastRun );
+            $lastRun = CronParser::lastRun( $sheduleItem->cron );
 
             // This looks at when the item had run. If the stored value is less than
             // the calculated value means that we have past a run period. So need to run
-            if ( $storedLastRunTime < $previousCalculatedRunTime ) {
+            if ( $storedLastRunTime < $lastRun ) {
 
                 // Update the run time to now
-                $sheduleItem->lastRun = date( 'Y-m-d H:i:s', $previousCalculatedRunTime );
+                $sheduleItem->lastRun = date( 'Y-m-d H:i', $lastRun );
                 $sheduleItem->save();
 
-                // Enqueue a new item to run
-                $job = new Cron( [ 'ref' => $sheduleItem->id,
-                    'cmd' => $sheduleItem->cmd, ] );
-                $job->save();
-                $numAdded ++;
+                $diffSec = abs( $lastRun - time() );
+                if ( $diffSec < 60 ) {
+                    $data = [
+                        'ref'     => $sheduleItem->id,
+                        'cmd'     => $sheduleItem->cmd,
+                        'message' => $sheduleItem->cron,
+                    ];
+                    $job = new Cron( $data );
+                    $job->save();
+                    $numAdded ++;
+                }
             }
         }
         return $numAdded;
     }
 
 }
+class SchedulerDAO extends \Jackbooted\DB\DAO {
+    public function __construct() {
+        $this->db             = 'local';
+        $this->primaryKey     = 'fldSchedulerID';
+        $this->tableName      = "tblScheduler";
+        $this->tableStructure = <<<SQL
+            CREATE TABLE IF NOT EXISTS {$this->tableName} (
+                `{$this->primaryKey}`  int(11)      NOT NULL AUTO_INCREMENT,
+
+                fldGroup       varchar(30)     DEFAULT NULL,
+                fldCommand     varchar(255)     DEFAULT NULL,
+                fldDescription varchar(255)     DEFAULT NULL,
+                fldActive      enum('Yes','No') NOT NULL DEFAULT 'Yes',
+                fldStartTime   varchar(40)      DEFAULT NULL,
+                fldCron        varchar(100)     DEFAULT NULL,
+                fldLastRun     varchar(40)      DEFAULT NULL,
+
+                PRIMARY KEY ({$this->primaryKey})
+            ) ENGINE=MyISAM
+SQL;
+
+        $this->orm = [
+            'group'   => 'fldGroup',
+            'command' => 'fldCommand',
+            'cmd'     => 'fldCommand',
+            'desc'    => 'fldDescription',
+            'active'  => 'fldActive',
+            'start'   => 'fldStartTime',
+            'cron'    => 'fldCron',
+            'lastRun' => 'fldLastRun'
+        ];
+
+        parent::__construct();
+    }
+
+}
+Scheduler::init();
+SchedulerDAO::init();

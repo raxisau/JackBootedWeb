@@ -5,10 +5,9 @@ namespace Jackbooted\Html;
 use \Jackbooted\DB\DB;
 use \Jackbooted\DB\DBTable;
 use \Jackbooted\Forms\Request;
-use \Jackbooted\Util\Log4PHP;
 
 /**
- * @copyright Confidential and copyright (c) 2022 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -66,12 +65,18 @@ class Lists extends \Jackbooted\Util\JB {
                 unset( $attribs['hasBlank'] );
             }
 
+            $blankName = '';
+            if ( isset( $attribs['blankName'] ) ) {
+                $blankName = $attribs['blankName'];
+                unset( $attribs['blankName'] );
+            }
+
             $tag = Tag::select( $name, $attribs );
             if ( !is_array( $defaultValue ) ) {
                 $defaultValue = array( $defaultValue );
             }
             if ( $blank ) {
-                $tag .= Tag::optiontag( ' ', '', in_array( '', $defaultValue ) );
+                $tag .= Tag::optiontag( '', $blankName, in_array( '', $defaultValue ) );
             }
             foreach ( $displayList as $key => $val ) {
                 if ( is_int( $key ) ) {
