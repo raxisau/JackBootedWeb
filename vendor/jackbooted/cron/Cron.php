@@ -5,7 +5,7 @@ namespace Jackbooted\Cron;
 use \Jackbooted\Config\Cfg;
 
 /**
- * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2024 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -38,14 +38,51 @@ class Cron extends \Jackbooted\DB\ORM {
         return new $clazz( $data );
     }
 
-    public static function run( $callbackRunner ) {
+    private static function jobScriptExists( $checkDir ) {
+        echo "Checking if {$checkDir}/job.sh exists\n";
+        return file_exists( $checkDir . '/job.sh' );
+    }
+
+    private static function findJobScript( ) {
+        // Look in the root directory first
+        $jackDir = \Jackbooted\Config\Cfg::get( 'site_path' );
+        if ( self::jobScriptExists( $jackDir ) ) return $jackDir;
+
+        // check for the scripts folder one directory up
+        $jackDirUpScripts = dirname( \Jackbooted\Config\Cfg::get( 'site_path' ) ) . '/scripts';
+        if ( self::jobScriptExists( $jackDirUpScripts ) ) return $jackDirUpScripts;
+
+        $jackDirUp = dirname( \Jackbooted\Config\Cfg::get( 'site_path' ) );
+        if ( self::jobScriptExists( $jackDirUp ) ) return $jackDirUp;
+
+        $jackDirScripts = \Jackbooted\Config\Cfg::get( 'site_path' ) . '/scripts';
+        if ( self::jobScriptExists( $jackDirScripts ) ) return $jackDirScripts;
+
+        return false;
+    }
+
+    public static function defaultRun( $cronCmd ) {
+        if ( ( $jackDir = self::findJobScript() ) === false ) {
+            return 'Error: cannot find job.sh';
+        }
+
+        $command = sprintf( '/usr/bin/bash -c "exec nohup setsid /usr/bin/bash %s/job.sh %s > /dev/null 2>&1 &"', $jackDir, $cronCmd );
+        exec( $command );
+        return 'Executed: ' . $command;
+    }
+
+    public static function run( $callbackRunner=null ) {
+        if ( $callbackRunner == null ) {
+            $callbackRunner = [ __CLASS__, 'defaultRun' ];
+        }
+
         $msgList = [];
         $processed = 0;
 
         // This will load up the cron queue
         \Jackbooted\Cron\Scheduler::check();
 
-        $pageTimer = new \Jackbooted\Time\Stopwatch( 'Run time for ' . __METHOD__, false );
+        $pageTimer = new \Jackbooted\Time\Stopwatch( 'Run time for ' . __METHOD__ );
         while ( $pageTimer->getTime() < 60 ) {
             $cronJobList = self::getList( 1 );
             if ( count( $cronJobList ) <= 0 ) {
@@ -149,9 +186,11 @@ HTML;
 
 class CronDAO extends \Jackbooted\DB\DAO {
     public function __construct() {
-        $this->db             = 'local';
+        $pre      = \App\App::$dbPrefix;
+        $this->db = \App\App::DB;
+
         $this->primaryKey     = 'fldCronQueueID';
-        $this->tableName      = "tblCronQueue";
+        $this->tableName      = $pre . 'tblcronqueue';
         $this->tableStructure = <<<SQL
             CREATE TABLE IF NOT EXISTS {$this->tableName} (
                 `{$this->primaryKey}`  int(11)      NOT NULL AUTO_INCREMENT,

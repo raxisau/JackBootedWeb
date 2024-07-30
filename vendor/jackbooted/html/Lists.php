@@ -7,7 +7,7 @@ use \Jackbooted\DB\DBTable;
 use \Jackbooted\Forms\Request;
 
 /**
- * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2024 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -288,24 +288,23 @@ class Lists extends \Jackbooted\Util\JB {
             "Move items in the right list to remove from the selected list. " .
             "Select buttons in the moddle to move all the items in the list" );
 
-        $msg = "";
-        $msg .= Tag::table( $title );
-        $msg .= Tag::tr();
-        $msg .= Tag::td( "align=center" );
-        $msg .= "Out of List<br>";
-        $msg .= Lists::select( $lName, $lList, "onChange=\"selMove ( '$lName','$rName',false );\" Size=$ht Multiple" );
-        $msg .= Tag::_td();
-        $msg .= Tag::td( "valign=middle" );
-        $msg .= "<br>" . Tag::button( ">>", "onClick=\"selMove ( '$lName','$rName',true );\"" );
-        $msg .= "<br>" . Tag::button( "<<", "onClick=\"selMove ( '$rName','$lName',true );\"" );
-        $msg .= Tag::_td();
-        $msg .= Tag::td( "align=center" );
-        $msg .= "In the List<br>";
-        $msg .= Lists::select( $rName, $rList, "onChange=\"selMove ( '$rName','$lName',false );\" Size=$ht Multiple" );
-        $msg .= Tag::hidden( $rName . "Result" );
-        $msg .= Tag::_td();
-        $msg .= Tag::_tr();
-        $msg .= Tag::_table();
+        $msg = Tag::table( $title ) .
+                 Tag::tr() .
+                   Tag::td( "align=center" ) .
+                     "Out of List<br>" .
+                     Lists::select( $lName, $lList, "onChange=\"selMove( '$lName','$rName',false );\" Size=$ht Multiple" ) .
+                   Tag::_td() .
+                   Tag::td( "valign=middle" ) .
+                     "<br>" . Tag::button( ">>", "onClick=\"selMove( '$lName','$rName',true );\"" ) .
+                     "<br>" . Tag::button( "<<", "onClick=\"selMove( '$rName','$lName',true );\"" ) .
+                   Tag::_td() .
+                   Tag::td( "align=center" ) .
+                     "In the List<br>" .
+                     Lists::select( $rName, $rList, "onChange=\"selMove( '$rName','$lName',false );\" Size=$ht Multiple" ) .
+                     Tag::hidden( $rName . "Result" ) .
+                   Tag::_td() .
+                 Tag::_tr() .
+               Tag::_table();
 
         return ( $msg );
     }

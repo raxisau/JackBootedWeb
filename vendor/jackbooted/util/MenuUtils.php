@@ -10,7 +10,7 @@ use \Jackbooted\Html\Tag;
 use \Jackbooted\Html\WebPage;
 
 /*
- * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2024 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -27,14 +27,14 @@ class MenuUtils extends WebPage {
         $jsLibraries = JS::libraryWithDependancies( JS::JQUERY_UI );
         $activeMenu = Request::get( self::ACTIVE_MENU, 0 );
         $js = <<<JS
-            $().ready ( function () {
-                $( '#$id' ).show()
-                           .accordion({
-                    collapsible: true,
-                    active: $activeMenu
-                });
+            jQuery().ready ( function () {
+                jQuery( '#$id' ).show()
+                                .accordion({
+                                    collapsible: true,
+                                    active: $activeMenu
+                                });
             });
-JS;
+        JS;
 
         $html = '';
         $html .= Tag::div( [ 'id' => $id, 'style' => 'font-size: 0.8em; width:250px; text-align:left; display:none;' ] );
@@ -64,7 +64,7 @@ JS;
         }
         $html .= Tag::_div();
 
-        return $jsLibraries .
+        return  $jsLibraries .
                 JS::javaScript( $js ) .
                 $html;
     }
@@ -101,7 +101,8 @@ JS;
     }
 
     public static function responseObject() {
-        return new Response( self::ACTIVE_MENU );
+        $resp = new Response( self::ACTIVE_MENU );
+        return $resp;
     }
 
 }

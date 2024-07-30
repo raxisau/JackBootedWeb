@@ -11,7 +11,7 @@ use \Jackbooted\Html\WebPage;
 use \Jackbooted\Html\Widget;
 
 /**
- * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2024 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -25,6 +25,8 @@ class SchedulerManager extends WebPage {
     const DEF = '\Jackbooted\Cron\SchedulerManager->index()';
 
     private $response;
+    public  $action = '';
+    public  $actSep = '?';
 
     public function __construct( $response=null ) {
         parent::__construct();
@@ -110,9 +112,9 @@ JS;
 JS;
                 $this->response->set( 'fldID', $idx );
                 $lastRun = ( $schedulerItem->lastRun == '' ) ? '*Never*' : $schedulerItem->lastRun;
-                $onChangeJS = "$('#U$rowIdx').attr('checked',true)";
+                $onChangeJS = "jQuery('#U$rowIdx').attr('checked',true)";
                 $onChg = [ 'onChange' => $onChangeJS ];
-                $delButton = Tag::href( '?' . $this->response->action( __CLASS__ . '->deleteItem()', self::ACTION )->toUrl(),
+                $delButton = Tag::href( $this->action . $this->actSep . $this->response->action( __CLASS__ . '->deleteItem()', self::ACTION )->toUrl(),
                                         '<i class="fas fa-trash-alt"></i>',
                                         [
                                             'onClick' => "confirm('Are you sure? This cannot be reversed, and you can just deactivate')",
@@ -120,7 +122,7 @@ JS;
                                             'class'   => 'btn btn-danger btn-xs',
                                             'style'   => 'color: white;',
                                         ] );
-                $runButton = Tag::href( '?' . $this->response->action( __CLASS__ . '->runItem()', self::ACTION )->toUrl(),
+                $runButton = Tag::href(  $this->action . $this->actSep . $this->response->action( __CLASS__ . '->runItem()', self::ACTION )->toUrl(),
                                         '<i class="fas fa-running"></i>',
                                         [
                                             'onClick' => "confirm('Are you sure? This will run the job {$schedulerItem->cmd} now')",
@@ -161,11 +163,11 @@ JS;
         $html .= Tag::_table();
         $js .= '});';
 
-        $formHtml = Tag::form( [ 'name' => $formName, 'onSubmit' => $valid->onSubmit() ] ) .
+        $formHtml = Tag::form( [ 'action' => $this->action, 'name' => $formName, 'onSubmit' => $valid->onSubmit() ] ) .
                       $html .
                       $this->response->action( __CLASS__ . '->save()', self::ACTION )->toHidden() .
                       Tag::submit( 'Save' ) .
-                      Tag::linkButton( '?' . $this->response->action( __CLASS__ . '->newItem()', self::ACTION ), 'New Item' ) .
+                      Tag::linkButton(  $this->action . $this->actSep . $this->response->action( __CLASS__ . '->newItem()', self::ACTION ), 'New Item' ) .
                     Tag::_form();
 
         return JS::libraryWithDependancies( JS::JQUERY_UI_DATETIME ) .

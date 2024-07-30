@@ -3,7 +3,7 @@
 namespace Jackbooted\Cron;
 
 /**
- * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2024 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -23,17 +23,19 @@ class Scheduler extends \Jackbooted\DB\ORM {
      */
     public static function init() {
         if ( self::$dao == null ) {
-            self::$dao = new SchedulerDAO ();
+            $clazz = static::class . 'DAO';
+            self::$dao = new $clazz();
         }
-    }
-
-    public static function factory( $data ) {
-        $clazz = __CLASS__;
-        return new $clazz( $data );
     }
 
     public static function getRowCount() {
         return self::$dao->getRowCount();
+    }
+
+    public static function findCommand( $command ) {
+        $search = [ 'where' => [ 'command' => $command ] ];
+        $table = self::$dao->search( $search );
+        return self::tableToObjectList( $table );
     }
 
     public static function displayList( $order='', $limits='' ) {
@@ -43,7 +45,7 @@ class Scheduler extends \Jackbooted\DB\ORM {
             FROM   {$tName}
             {$order}
             {$limits}
-SQL;
+        SQL;
 
         $tab = \Jackbooted\DB\DBTable::factory( self::$dao->db, $sql, null, \Jackbooted\DB\DB::FETCH_ASSOC );
         return self::tableToObjectList( $tab );
@@ -120,9 +122,12 @@ SQL;
 }
 class SchedulerDAO extends \Jackbooted\DB\DAO {
     public function __construct() {
-        $this->db             = 'local';
+        $pre      = \App\App::$dbPrefix;
+        $this->db = \App\App::DB;
+
         $this->primaryKey     = 'fldSchedulerID';
-        $this->tableName      = "tblScheduler";
+        $this->tableName      = $pre . 'tblscheduler';
+
         $this->tableStructure = <<<SQL
             CREATE TABLE IF NOT EXISTS {$this->tableName} (
                 `{$this->primaryKey}`  int(11)      NOT NULL AUTO_INCREMENT,
@@ -137,7 +142,7 @@ class SchedulerDAO extends \Jackbooted\DB\DAO {
 
                 PRIMARY KEY ({$this->primaryKey})
             ) ENGINE=MyISAM
-SQL;
+        SQL;
 
         $this->orm = [
             'group'   => 'fldGroup',
@@ -154,5 +159,5 @@ SQL;
     }
 
 }
-Scheduler::init();
 SchedulerDAO::init();
+Scheduler::init();

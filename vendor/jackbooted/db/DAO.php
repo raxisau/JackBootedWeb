@@ -5,7 +5,7 @@ namespace Jackbooted\DB;
 use \Jackbooted\Config\Cfg;
 
 /**
- * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2024 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -72,7 +72,7 @@ abstract class DAO extends \Jackbooted\Util\JB {
         return DB::oneValue( $this->db, $sql, $params );
     }
 
-    private function toWhere( $where, &$params=null ) {
+    private function toWhere( $where, &$params = null ) {
         if ( is_array( $where ) && count( $where ) > 0 ) {
             $where = $this->objToRel( $where );
             $sql = '';

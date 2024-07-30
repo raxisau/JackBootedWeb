@@ -3,7 +3,7 @@
 namespace Jackbooted\Util;
 
 /**
- * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2024 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -19,12 +19,12 @@ class StringUtil extends \Jackbooted\Util\JB {
         return $msg . ( ( $msg == '' ) ? '' : ' ' ) . $num . ' ' .  self::plural( $units, $num );
     }
 
-    public static function money( $amt, $dec=0 ) {
+    public static function money( $amt, $dec=0, $currencyChar='$' ) {
         if ( ! is_numeric( $amt ) ) {
             return 'N/A';
         }
         else {
-            return '$' . number_format( $amt, $dec );
+            return $currencyChar . number_format( $amt, $dec );
         }
     }
 

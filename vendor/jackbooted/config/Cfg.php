@@ -7,7 +7,7 @@ if ( class_exists( '\Jackbooted\Config\Cfg', false) ) {
 }
 
 /**
- * @copyright Confidential and copyright (c) 2023 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2024 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com
@@ -123,7 +123,7 @@ class Cfg {
                     Please do not manually edit URL or reuse URL (support %s).<br/>
                     You will be <a href="%s">redirected</a> in %s seconds
                     <meta HTTP-EQUIV="REFRESH" content="%s; url=%s">
-HTML;
+                HTML;
             }
         }
         else if ( ( $reqChk = \Jackbooted\Forms\Request::check() ) !== true ) {
@@ -135,7 +135,7 @@ HTML;
                 Please do not manually edit URL (support %s).<br/>
                 You will be <a href="%s">redirected</a> in %s seconds
                 <meta HTTP-EQUIV="REFRESH" content="%s; url=%s">
-HTML;
+            HTML;
         }
         else if ( ! \Jackbooted\Security\CSRFGuard::check() ) {
             self::$log->error( 'CSRFGuard Failure' );
@@ -145,7 +145,7 @@ HTML;
                 please contact support %s<br/>
                 You will be <a href="%s">redirected</a> in %s seconds
                 <meta HTTP-EQUIV="REFRESH" content="%s; url=%s">
-HTML;
+            HTML;
         }
 
         if ( $message != null ) {
