@@ -434,15 +434,14 @@ class CRUD extends \Jackbooted\Util\JB {
         $insertedCnt = 0;
         for ( $i = 0; $i < $rowsToInsert; $i++ ) {
             $params = array_merge( $this->insDefaults, $this->where );
-            $paramValues = null;
-
             if ( Cfg::get( 'jb_db', false )  && $this->db == DB::DEF ) {
                 $params[$this->primaryKey] = DBMaintenance::dbNextNumber( $this->db, $this->tableName );
             }
-            $sql = 'INSERT INTO ' . $this->tableName;
-            if ( count( $params ) > 0 ) {
-                $sql .= ' (' . join( ',', array_keys( $params ) ) . ') VALUES (' . DB::in( array_values( $params ), $paramValues ) . ')';
-            }
+
+            $paramValues = null;
+            $cols = join( ',', array_keys( $params ) );
+            $vals = DB::in( array_values( $params ), $paramValues );
+            $sql  = "INSERT INTO {$this->tableName} ({$cols}) VALUES ({$vals})";
 
             $insertedCnt += $this->exec( $sql, $paramValues );
         }
