@@ -171,7 +171,7 @@ abstract class DAO extends \Jackbooted\Util\JB {
      * @param  $where
      * @return int
      */
-    public function search( $params, $fetch = DB::FETCH_ASSOC ) {
+    public function search( $params=[], $fetch=DB::FETCH_ASSOC ) {
 
         $sql = 'SELECT';
         if ( !isset( $params['columns'] ) || $params['columns'] == null || $params['columns'] == '' ) {
