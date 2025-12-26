@@ -5,7 +5,7 @@ namespace Jackbooted\Cron;
 use \Jackbooted\Config\Cfg;
 
 /**
- * @copyright Confidential and copyright (c) 2024 Jackbooted Software. All rights reserved.
+ * @copyright Confidential and copyright (c) 2026 Jackbooted Software. All rights reserved.
  *
  * Written by Brett Dutton of Jackbooted Software
  * brett at brettdutton dot com

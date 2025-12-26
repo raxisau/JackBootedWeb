@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 use \Jackbooted\Html\Tag;
 use \Jackbooted\Forms\Request;
